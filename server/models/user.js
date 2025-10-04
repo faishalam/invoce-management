@@ -1,52 +1,47 @@
 "use strict";
 const { Model } = require("sequelize");
+const bcrypt = require("bcrypt");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       // define association here
+      User.belongsTo(models.Department, {
+        foreignKey: "departmentId",
+      });
     }
   }
   User.init(
     {
-      username: {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: {
-            msg: "username is requried",
-          },
-          notNull: {
-            msg: "username is required",
-          },
+          notEmpty: { msg: "name is required" },
+          notNull: { msg: "name is required" },
         },
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
-          notEmpty: {
-            msg: "email is requried",
-          },
-          notNull: {
-            msg: "email is required",
-          },
+          isEmail: { msg: "email must be valid" },
+          notEmpty: { msg: "email is required" },
+          notNull: { msg: "email is required" },
         },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: {
-            msg: "email is requried",
-          },
-          notNull: {
-            msg: "email is required",
-          },
+          notEmpty: { msg: "password is required" },
+          notNull: { msg: "password is required" },
         },
       },
       role: {
@@ -54,19 +49,28 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "user",
         validate: {
-          notEmpty: {
-            msg: "role is requried",
-          },
-          notNull: {
-            msg: "role is required",
-          },
+          notEmpty: { msg: "role is required" },
+          notNull: { msg: "role is required" },
         },
+      },
+      departmentId: {
+        type: DataTypes.STRING,
+      },
+      is_active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
       },
     },
     {
       hooks: {
         beforeCreate: (user) => {
-          user.password = require("bcrypt").hashSync(user.password, 10);
+          user.password = bcrypt.hashSync(user.password, 10);
+        },
+        beforeUpdate: (user) => {
+          if (user.changed("password")) {
+            user.password = bcrypt.hashSync(user.password, 10);
+          }
         },
       },
       sequelize,
