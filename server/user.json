@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Faishal Abdul Majid",
+        "password": "P@ssw0rdadmin",
+        "email": "admin@gmail.com",
+        "role": "superadmin",
+        "department": "1",
+        "is_active": true
+    }
+]
