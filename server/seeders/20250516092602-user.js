@@ -1,37 +1,39 @@
-'use strict';
-const bcrypt = require('bcryptjs');
-/** @type {import('sequelize-cli').Migration} */
+"use strict";
+const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
-    const data = require('../user.json', 'utf8').map((element) => {
-      const salt = bcrypt.genSaltSync(8);
-      const hash = bcrypt.hashSync(element.password, salt);
+    // ✅ Ambil Department yang sudah ada
+    const departments = await queryInterface.sequelize.query(
+      `SELECT id FROM "Departments" LIMIT 1;`, // ambil 1 dept dulu
+      { type: Sequelize.QueryTypes.SELECT }
+    );
 
-      delete element.id
-      element.password = hash
-      element.createdAt = new Date()
-      element.updatedAt = new Date()
-      return element
-    })
-    await queryInterface.bulkInsert("Users", data, {})
+    if (!departments.length) {
+      throw new Error("No Departments found. Please seed Departments first!");
+    }
+
+    const departmentId = departments[0].id; // UUID asli dari Departments
+
+    const data = [
+      {
+        id: uuidv4(),
+        name: "Faishal Abdul Majid",
+        email: "admin@gmail.com",
+        password: bcrypt.hashSync("P@ssw0rdadmin", 10),
+        role: "superadmin",
+        departmentId: departmentId, // pakai UUID dari Departments
+        is_active: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
+    await queryInterface.bulkInsert("Users", data, {});
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
-    await queryInterface.bulkDelete("Users", null, {})
-  }
+    await queryInterface.bulkDelete("Users", null, {});
+  },
 };

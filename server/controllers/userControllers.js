@@ -6,7 +6,7 @@ const { User } = require("../models");
 class UserController {
   static async createUser(req, res) {
     try {
-      const { username, email, password, role } = req.body;
+      const { name, email, password, role, department } = req.body;
 
       // 1. validate unique email
       const validateEmail = await User.findOne({ where: { email } });
@@ -23,18 +23,20 @@ class UserController {
 
       // 3. create account
       const newUser = await User.create({
-        username,
+        name,
         email,
         password,
         role,
+        department,
       });
 
       // 4. response without password
       const responseWithoutPassword = {
         id: newUser.id,
-        username: newUser.username,
+        name: newUser.name,
         email: newUser.email,
         role: newUser.role,
+        department: newUser.department,
       };
 
       res.status(201).json(responseWithoutPassword);
@@ -92,13 +94,145 @@ class UserController {
     }
   }
 
-  static async getLoggedInUser(req, res) {
+  static async profile(req, res) {
     try {
-      const { role, username, email } = req.user;
+      const { role, name, email, department } = req.user;
 
-      res.status(200).json({ role, username, email });
+      res.status(200).json({ role, name, email, department });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async updateProfile(req, res) {
+    try {
+      const { role, name, email, department } = req.body;
+
+      if (req.user.role === "superadmin") {
+        await User.update(
+          {
+            role,
+            name,
+            email,
+            department,
+          },
+          {
+            where: {
+              id: req.user.id,
+            },
+          }
+        );
+        res.status(200).json({ role, name, email, department });
+      }
+
+      if (req.user.role === "user") {
+        await User.update(
+          {
+            name,
+            email,
+          },
+          {
+            where: {
+              id: req.user.id,
+            },
+          }
+        );
+        res.status(200).json({ name, email });
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.name === "SequelizeValidationError") {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      if (error.name === "SequelizeUniqueConstraintError") {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async deleteProfile(req, res) {
+    try {
+      await User.destroy({
+        where: {
+          id: req.user.id,
+        },
+      });
+      res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async getAllUsers(req, res) {
+    try {
+      const users = await User.findAll({
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: Department,
+            as: "department",
+            attributes: ["name"],
+          },
+        ],
+      });
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async getUserById(req, res) {
+    try {
+      const user = await User.findByPk(req.params.id);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async changePassword(req, res) {
+    try {
+      const { current, new: newPassword, confirm } = req.body;
+
+      if (!current || !newPassword || !confirm) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      const user = await User.findByPk(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const isMatch = comparePassword(current, user.password);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect" });
+      }
+
+      if (newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "New password must be at least 6 characters" });
+      }
+
+      if (newPassword !== confirm) {
+        return res.status(400).json({ message: "Passwords do not match" });
+      }
+
+      const { hashPassword } = require("../helpers/bcrypt");
+      const hashedPassword = hashPassword(newPassword);
+
+      await User.update(
+        { password: hashedPassword },
+        { where: { id: req.user.id } }
+      );
+
+      res.status(200).json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 }
