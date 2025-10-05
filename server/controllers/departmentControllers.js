@@ -34,7 +34,12 @@ class DepartmentController {
       const departments = await Department.findAll({
         order: [["createdAt", "DESC"]],
       });
-      res.status(200).json(departments);
+
+      return res.status(200).json({
+        status: "success",
+        message: "Departments fetched successfully",
+        data: departments,
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

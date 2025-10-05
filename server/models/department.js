@@ -16,15 +16,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Department.init(
     {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: { msg: "name is required" },
-          notNull: { msg: "name is required" },
-        },
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-      code: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {

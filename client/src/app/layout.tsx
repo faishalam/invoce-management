@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Geist_Mono, Poppins } from "next/font/google";
 import { ToastContainer } from "react-toastify";
+import "./globals.css";
 import { QueryProviders } from "@/providers/QueryProviders";
-import { AuthProvider } from "./hooks";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./styles/theme";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -28,11 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.className} ${geistMono.variable} antialiased h-screen w-screen`}
       >
         <ToastContainer />
         <QueryProviders>
-          <AuthProvider>{children}</AuthProvider>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
         </QueryProviders>
       </body>
     </html>

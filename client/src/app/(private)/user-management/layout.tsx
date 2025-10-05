@@ -1,5 +1,4 @@
-import "../../../app/globals.css";
-import { UserProvider } from "./hooks";
+import { UserManagementProvider } from "./hooks";
 
 export default function Layout({
   children,
@@ -8,7 +7,7 @@ export default function Layout({
 }>) {
   return (
     <>
-      <UserProvider>{children}</UserProvider>
+      <UserManagementProvider>{children}</UserManagementProvider>
     </>
   );
 }

@@ -11,10 +11,8 @@ type TUseLoginProps = {
 };
 
 const useLogin = (props?: TUseLoginProps) => {
-  const [isLoadingLogin, setIsloading] = useState<boolean>(false);
   const useLoginFn = async (formLogin: TInputLogin) => {
     try {
-      setIsloading(true);
       const response = await AuthServices.post<TResponseType<TLoginResponse>>(
         `/login`,
         formLogin
@@ -26,11 +24,8 @@ const useLogin = (props?: TUseLoginProps) => {
 
       return data?.data;
     } catch (error) {
-      setIsloading(false);
       const err = error as AxiosError<NetworkAPIError>;
       throw err?.response?.data?.message || "Unknown error";
-    } finally {
-      setIsloading(false);
     }
   };
 
@@ -49,7 +44,7 @@ const useLogin = (props?: TUseLoginProps) => {
     },
   });
 
-  return { ...mutation, isLoadingLogin };
+  return { ...mutation };
 };
 
 export default useLogin;

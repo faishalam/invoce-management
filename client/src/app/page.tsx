@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 const DefaultPage: React.FC = () => {
   const router = useRouter();
   useEffect(() => {
-    const token = localStorage.getItem("Authorization");
+    const token = Cookies.get("accessToken");
     if (token) {
       router.push("/dashboard");
     } else {

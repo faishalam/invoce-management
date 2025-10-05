@@ -1,9 +1,12 @@
-import useLogin from "@/service/user/login";
-import { TInputLogin, TLoginResponse } from "@/service/user/types";
+"use client";
+import useLogin from "@/service/auth/login";
 import { useRouter } from "next/navigation";
 import { createContext, useContext } from "react";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { loginSchema, TLoginForm } from "./validator";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Cookies from 'js-cookie';
 
 const useUserLoginHooks = () => {
   const router = useRouter();
@@ -14,7 +17,8 @@ const useUserLoginHooks = () => {
     reset,
     control,
     resetField,
-  } = useForm<TInputLogin>({
+  } = useForm<TLoginForm>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -24,24 +28,29 @@ const useUserLoginHooks = () => {
   const {
     mutate: mutateLogin,
     data: dataLogin,
-    isLoadingLogin,
+    isPending: isLoadingLogin,
   } = useLogin({
-    onSuccess: (data: TLoginResponse) => {
+    onSuccess: (data) => {
       if (!data) return;
-      localStorage.setItem("Authorization", data.access_token);
-      router.push("/");
+      Cookies.set("accessToken", data.access_token, {
+        expires: 7,
+        sameSite: "lax",
+        path: "/",
+      });
+      router.push("/dashboard");
+      toast.success("Login Berhasil");
     },
-    onError: (error: unknown) => {
+    onError: (error) => {
       toast.error(error as string);
       reset();
     },
   });
 
-  const onSubmit: SubmitHandler<TInputLogin> = (data) => {
+  const onSubmit: SubmitHandler<TLoginForm> = (data) => {
     mutateLogin(data);
   };
 
-  const onInvalid = (errors: FieldErrors<TInputLogin>) => {
+  const onInvalid = (errors: FieldErrors<TLoginForm>) => {
     Object.entries(errors).forEach(([key, error]) => {
       console.log(key);
       if (error?.message) {
