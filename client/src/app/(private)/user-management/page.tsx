@@ -22,94 +22,93 @@ export default function UserManagementPage() {
     setMode,
     isLoadingDepartment,
   } = useUserManagement();
-  const { dataDepartment } = useGlobal();
+  const { dataDepartment, globalLoading } = useGlobal();
 
   return (
     <div className="w-[100%] h-[100%]">
-      <div className="w-full bg-white shadow-md rounded-lg">
-        <div className="w-full bg-white rounded-md overflow-x-auto">
-          <div className="min-w-[1000px] flex gap-3 p-4">
-            <div className="flex max-w-full w-full gap-2">
-              {/* <ButtonSubmit
-                btnIcon={<DownloadIcon className="" />}
-                classname="flex gap-2 text-[10px] bg-[#2976d2] transition-all cursor-pointer hover:bg-[#2956d2] rounded-[8px] px-2 text-white"
-                onClick={() => onDownloadData(dataGrid)}
-              /> */}
-              <CInput
-                value={filter.search}
-                className="w-full"
-                onChange={(e) =>
-                  setFilter({ ...filter, search: e.target.value })
-                }
-                placeholder="Search"
-              />
-            </div>
-            <div className="w-full flex gap-3">
-              <CAutoComplete
-                options={[
-                  { label: "User", value: "user" },
-                  { label: "Admin", value: "admin" },
-                ]}
-                className="w-full"
-                getOptionKey={(option) => option.value}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.value}>
-                    {option.label}
-                  </li>
-                )}
-                onChange={(_, value) => {
-                  setFilter({ ...filter, role: value?.value });
-                }}
-                getOptionLabel={(option) => option.label}
-                placeholder="Roles"
-              />
-              <CAutoComplete
-                options={dataDepartment?.data || []}
-                className="w-full"
-                getOptionKey={(option) => option.id}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.id}>
-                    {option.name}
-                  </li>
-                )}
-                onChange={(_, value) => {
-                  setFilter({ ...filter, departmentId: value?.id ?? null });
-                }}
-                getOptionLabel={(option) => option.name}
-                placeholder="Department"
-              />
-
-              <div className="w-[50%] flex">
-                <ButtonSubmit
-                  classname="flex w-full justify-center items-center cursor-pointer text-sm gap-2 text-white !bg-[#154940] hover:!bg-[#0e342d] !rounded-[8px]"
-                  btnText="Add User"
-                  onClick={() => {
-                    setMode("create");
-                    reset();
-                    setOpenModalUser(true);
-                  }}
+      {globalLoading ? (
+        <BlockingLoader />
+      ) : (
+        <div className="w-full bg-white shadow-md rounded-lg">
+          <div className="w-full bg-white rounded-md overflow-x-auto">
+            <div className="min-w-[1000px] flex gap-3 p-4">
+              <div className="flex max-w-full w-full gap-2">
+                <CInput
+                  value={filter.search}
+                  className="w-full"
+                  onChange={(e) =>
+                    setFilter({ ...filter, search: e.target.value })
+                  }
+                  placeholder="Search"
                 />
+              </div>
+              <div className="w-full flex gap-3">
+                <CAutoComplete
+                  options={[
+                    { label: "User", value: "user" },
+                    { label: "Admin", value: "admin" },
+                  ]}
+                  className="w-full"
+                  getOptionKey={(option) => option.value}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.value}>
+                      {option.label}
+                    </li>
+                  )}
+                  onChange={(_, value) => {
+                    setFilter({ ...filter, role: value?.value });
+                  }}
+                  getOptionLabel={(option) => option.label}
+                  placeholder="Roles"
+                />
+                <CAutoComplete
+                  options={dataDepartment?.data || []}
+                  className="w-full"
+                  getOptionKey={(option) => option.id}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  )}
+                  onChange={(_, value) => {
+                    setFilter({ ...filter, departmentId: value?.id ?? null });
+                  }}
+                  getOptionLabel={(option) => option.name}
+                  placeholder="Department"
+                />
+
+                <div className="w-[50%] flex">
+                  <ButtonSubmit
+                    classname="flex w-full justify-center items-center cursor-pointer gap-2 text-white !bg-blue-900 hover:!bg-blue-950 !text-xs !rounded-[8px]"
+                    btnText="Add User"
+                    onClick={() => {
+                      setMode("create");
+                      reset();
+                      setOpenModalUser(true);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {isLoadingDataUser || isLoadingDepartment ? (
-          <BlockingLoader />
-        ) : (
-          <DataGrid
-            columnDefs={usersColumnsDef}
-            rowData={dataGrid || []}
-            pagination={true}
-            loading={
-              isLoadingDeleteUser ||
-              isLoadingDataUser ||
-              isLoadingUpdateUser ||
-              isLoadingDepartment
-            }
-          />
-        )}
-      </div>
+          {isLoadingDataUser || isLoadingDepartment ? (
+            <BlockingLoader />
+          ) : (
+            <DataGrid
+              columnDefs={usersColumnsDef}
+              rowData={dataGrid || []}
+              pagination={true}
+              loading={
+                isLoadingDeleteUser ||
+                isLoadingDataUser ||
+                isLoadingUpdateUser ||
+                isLoadingDepartment
+              }
+            />
+          )}
+        </div>
+      )}
 
       {openModalUser && <UserModal />}
     </div>

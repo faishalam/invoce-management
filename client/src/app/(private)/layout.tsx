@@ -15,14 +15,14 @@ const PrivateLayout: React.FC<TProps> = ({ children }) => {
   return (
     <AppRouterCacheProvider>
       <GlobalProvider>
-        <div className="w-full max-w-full min-h-screen bg-blue-50">
-          <div className="w-full flex h-screen">
+        <div className="w-full max-w-full min-h-screen bg-blue-50 overflow-hidden">
+          <div className="w-full flex h-screen overflow-hidden">
             <div className="w-1/6">
               <Sidebar />
             </div>
             <div className="w-full max-w-full overflow-y-auto">
               <main>
-                <div className="p-8">{children}</div>
+                <div className="p-8 overflow-hidden">{children}</div>
               </main>
             </div>
           </div>

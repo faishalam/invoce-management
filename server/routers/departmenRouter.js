@@ -7,13 +7,12 @@ const departmentRouter = express.Router();
 departmentRouter.use(authentication);
 
 // CRUD Department
-departmentRouter.post("/department", DepartmentController.createDepartment); // create
+departmentRouter.post("/department", DepartmentController.createDepartment);
 departmentRouter.get("/department", DepartmentController.getAllDepartments);
-departmentRouter.get("/department/:id", DepartmentController.getDepartmentById);
-departmentRouter.put("/department/:id", DepartmentController.updateDepartment); // update
 departmentRouter.delete(
   "/department/:id",
   DepartmentController.deleteDepartment
-); // delete
+);
+departmentRouter.put("/department/:id", DepartmentController.updateDepartment);
 
 module.exports = departmentRouter;

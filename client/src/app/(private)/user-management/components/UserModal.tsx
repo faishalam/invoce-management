@@ -14,7 +14,7 @@ import CIconButton from "@/components/atoms/icon-button";
 import CAutoComplete from "@/components/atoms/auto-complete";
 import UserFormSkeleton from "./LoadingSkeleton";
 import useGlobal from "@/app/context/hooks";
-import { TDepartmentResponse } from "@/service/master/types";
+import { TDepartmentResponse } from "@/service/master/department/types";
 
 export default function UserModal() {
   const {

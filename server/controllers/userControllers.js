@@ -139,12 +139,12 @@ class UserController {
 
   static async profile(req, res) {
     try {
-      const { role, name, email, department } = req.user;
+      const { role, name, email, departmentId } = req.user;
 
       return res.status(200).json({
         status: "success",
         message: "User profile fetched",
-        data: { role, name, email, department },
+        data: { role, name, email, departmentId },
       });
     } catch (error) {
       return res.status(500).json({

@@ -1,12 +1,12 @@
-import TextField, { TextFieldProps } from '@mui/material/TextField';
-import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
-import { InputAdornment } from '@mui/material';
-import { useId } from 'react';
+import TextField, { TextFieldProps } from "@mui/material/TextField";
+import Autocomplete, { AutocompleteProps } from "@mui/material/Autocomplete";
+import { InputAdornment } from "@mui/material";
+import { useId } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TProps<T = any, Multiple extends boolean | undefined = false> = Omit<
   TextFieldProps,
-  'onChange'
+  "onChange"
 > &
   AutocompleteProps<T, Multiple, false, false> & {
     label?: string;
@@ -18,18 +18,22 @@ type TProps<T = any, Multiple extends boolean | undefined = false> = Omit<
     helperText?: string;
   };
 
-const CAutoComplete: React.FC<Omit<TProps, 'renderInput'>> = ({ error, helperText, ...props }) => {
+const CAutoComplete: React.FC<Omit<TProps, "renderInput">> = ({
+  error,
+  helperText,
+  ...props
+}) => {
   const generatedID = useId();
   const id = props.id || generatedID;
 
   return (
     <div className={props.className}>
-      {typeof props?.label === 'string' ? (
+      {typeof props?.label === "string" ? (
         <small>
           <label htmlFor={id} className="font-medium">
-            {props?.label.replace(/\*$/, '')}
-            {(props?.required || props?.label.endsWith('*')) && (
-              <span style={{ color: 'red' }}>*</span>
+            {props?.label.replace(/\*$/, "")}
+            {(props?.required || props?.label.endsWith("*")) && (
+              <span style={{ color: "red" }}>*</span>
             )}
           </label>
         </small>
@@ -44,8 +48,8 @@ const CAutoComplete: React.FC<Omit<TProps, 'renderInput'>> = ({ error, helperTex
       <Autocomplete
         {...props}
         id={id}
-        className={props?.disabled ? 'bg-[#F3F4F6] text-black' : ''}
-        renderInput={params => (
+        className={props?.disabled ? "bg-[#F3F4F6] text-black" : ""}
+        renderInput={(params) => (
           <TextField
             {...params}
             error={!!error}
@@ -54,22 +58,22 @@ const CAutoComplete: React.FC<Omit<TProps, 'renderInput'>> = ({ error, helperTex
             sx={
               props.multiple
                 ? {
-                    '& .MuiChip-root': {
-                      margin: '2px',
-                      fontSize: '10px',
+                    "& .MuiChip-root": {
+                      margin: "2px",
+                      fontSize: "10px",
                     },
                   }
                 : {
-                    height: '36px',
-                    '& .MuiInputBase-root': { height: '36px' },
-                    '& input': { height: '36px', padding: '0 14px' },
-                    '& .MuiInputBase-input': {
-                      fontSize: '12px',
-                      height: '36px',
-                      padding: '8px 14px',
+                    height: "36px",
+                    "& .MuiInputBase-root": { height: "36px" },
+                    "& input": { height: "36px", padding: "0 14px" },
+                    "& .MuiInputBase-input": {
+                      fontSize: "12px",
+                      height: "36px",
+                      padding: "8px 14px",
                     },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '6px',
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "6px",
                     },
                   }
             }
@@ -77,7 +81,9 @@ const CAutoComplete: React.FC<Omit<TProps, 'renderInput'>> = ({ error, helperTex
               ...params.InputProps,
               endAdornment: (
                 <>
-                  {props.unit && <InputAdornment position="end">{props.unit}</InputAdornment>}
+                  {props.unit && (
+                    <InputAdornment position="end">{props.unit}</InputAdornment>
+                  )}
                   {params.InputProps.endAdornment}
                 </>
               ),

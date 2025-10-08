@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.className} ${geistMono.variable} antialiased h-screen w-screen`}
+        className={`${poppins.className} ${geistMono.variable} antialiased overflow-hidden h-screen w-screen`}
       >
         <ToastContainer />
         <QueryProviders>

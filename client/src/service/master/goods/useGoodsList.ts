@@ -2,20 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { HeroServices } from "../HeroService";
-import { TDepartmentResponse } from "./types";
+import { HeroServices } from "../../HeroService";
 
-type TUseDepartmentProps = {
-  onSuccess?: (data: TDepartmentResponse) => void;
+type TUseGoodsListProps = {
+  onSuccess?: (data: { id: string; name: string; code: string }) => void;
   onError?: (error: unknown) => void;
 };
 
-const useDepartmentList = (props?: TUseDepartmentProps) => {
-  const useDepartmentListFn = async () => {
+const useGoodsList = (props?: TUseGoodsListProps) => {
+  const useGoodsListFn = async () => {
     try {
       const response = await HeroServices.get<
-        TResponseType<TDepartmentResponse[]>
-      >(`/department`);
+        TResponseType<{ id: string; name: string; code: string }[]>
+      >(`/goods`);
 
       if (response.status !== 200) return;
 
@@ -28,8 +27,8 @@ const useDepartmentList = (props?: TUseDepartmentProps) => {
   };
 
   const query = useQuery({
-    queryKey: ["useDepartmentList"],
-    queryFn: useDepartmentListFn,
+    queryKey: ["useGoodsList"],
+    queryFn: useGoodsListFn,
     staleTime: Infinity,
     enabled: true,
   });
@@ -37,4 +36,4 @@ const useDepartmentList = (props?: TUseDepartmentProps) => {
   return { ...query };
 };
 
-export default useDepartmentList;
+export default useGoodsList;

@@ -1,0 +1,115 @@
+npx sequelize-cli model:generate --name Customer --attributes name:string
+
+npx sequelize-cli model:generate --name TypeOfWork --attributes name:string,type:string
+
+npx sequelize-cli model:generate --name Satuan --attributes name:string
+
+npx sequelize-cli model:generate --name Goods --attributes name:string
+
+
+npx sequelize-cli seed:generate --name customer
+
+npx sequelize-cli seed:generate --name typeOfWork
+
+npx sequelize-cli seed:generate --name satuan
+
+npx sequelize-cli seed:generate --name goods
+
+
+
+
+
+
+
+
+
+
+npx sequelize-cli model:generate --name Berita_Acara --attributes tipe_transaksi:string,number:string,site:string,customer_id:string,periode:string,cut_off:string,tipe_customer:string,type_of_work_id:string,reguler:string,pic:string,submitted_at:string,goods_id:string,quantity:string,satuan_id:string,nill/ditagihkan:string
+
+npx sequelize-cli model:generate --name Berita_Acara_Periode --attributes berita_acara_id:string,periode:string,harga_per_liter:string,plan_liter:string,actual_liter:string,total_kelebihan:string,alokasi_backcharge:string,nilai_backcharge:string
+
+
+
+{
+  "jenis_berita_acara": "non-fuel",
+  "tipe_transaksi": "trade",
+  "customer_id": "CUS001",
+  "periode": "2025-09",
+  "cut_off": "2025-09-30",
+  "tipe_customer": "corporate",
+  "type_of_work_id": "TOW001",
+  "reguler": "yes",
+  "pic": "Andi",
+  "submitted_at": "2025-10-06",
+  "nill_ditagihkan": "no"
+}
+
+
+{
+  "jenis_berita_acara": "non-fuel",
+  "tipe_transaksi": "nontrade",
+  "customer_id": "CUS002",
+  "periode": "2025-09",
+  "cut_off": "2025-09-30",
+  "tipe_customer": "corporate",
+  "type_of_work_id": "TOW002",
+  "reguler": "no",
+  "pic": "Budi",
+  "submitted_at": "2025-10-06",
+  "nill_ditagihkan": "yes",
+  "goods_id": "G001",
+  "quantity": "1200",
+  "satuan_id": "LITER"
+}
+
+{
+  "jenis_berita_acara": "fuel",
+  "tipe_transaksi": "nontrade",
+  "customer_id": "CUS004",
+  "periode": "2025-Q3",
+  "cut_off": "2025-09-30",
+  "tipe_customer": "corporate",
+  "type_of_work_id": "TOW004",
+  "reguler": "yes",
+  "pic": "Dewi",
+  "submitted_at": "2025-10-06",
+  "nill_ditagihkan": "no",
+  "planAlokasiPeriode": [
+    {
+      "planAlokasiPeriode": "2025-07",
+      "harga_per_liter": "15500",
+      "plan_liter": "900",
+      "actual_liter": "880",
+      "total_kelebihan": "20",
+      "alokasi_backcharge": "5",
+      "nilai_backcharge": "77500"
+    },
+    {
+      "planAlokasiPeriode": "2025-08",
+      "harga_per_liter": "15600",
+      "plan_liter": "1000",
+      "actual_liter": "950",
+      "total_kelebihan": "50",
+      "alokasi_backcharge": "10",
+      "nilai_backcharge": "156000"
+    },
+    {
+      "planAlokasiPeriode": "2025-09",
+      "harga_per_liter": "15700",
+      "plan_liter": "1100",
+      "actual_liter": "1070",
+      "total_kelebihan": "30",
+      "alokasi_backcharge": "8",
+      "nilai_backcharge": "125600"
+    },
+    {
+      "planAlokasiPeriode": "2025-10",
+      "harga_per_liter": "15800",
+      "plan_liter": "1200",
+      "actual_liter": "1180",
+      "total_kelebihan": "20",
+      "alokasi_backcharge": "5",
+      "nilai_backcharge": "79000"
+    }
+  ]
+}

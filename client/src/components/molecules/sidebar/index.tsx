@@ -1,5 +1,5 @@
 "use client";
-
+import ArticleIcon from "@mui/icons-material/Article";
 import CLink from "@/components/atoms/link";
 import FolderIcon from "@mui/icons-material/Folder";
 import PersonIcon from "@mui/icons-material/Person";
@@ -42,6 +42,12 @@ const Sidebar: React.FC = () => {
             title="Dashboard"
             selected={pathname.startsWith("/dashboard")}
             href="/dashboard"
+          />
+          <MenuItems
+            Icon={ArticleIcon}
+            title="BA Management"
+            selected={pathname.startsWith("/ba-management")}
+            href="/ba-management"
           />
           <MenuItems
             Icon={PersonIcon}
