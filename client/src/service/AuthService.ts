@@ -1,6 +1,6 @@
 import Axios from "axios";
 
-const baseURL = "http://54.179.69.192/";
+const baseURL = "https://beritaacaramanagement.cloud/";
 
 export const AuthServices = Axios.create({
   baseURL: baseURL,
