@@ -71,35 +71,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       kode_objek: DataTypes.STRING,
-      uraian: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        validate: {
-          notNull: { msg: "Uraian list is required" },
-          notEmpty: { msg: "Uraian list is required" },
-          isArray(value) {
-            if (!Array.isArray(value)) {
-              throw new Error("Uraian must be an array of objects");
-            }
-            if (value.length === 0) {
-              throw new Error("Uraian cannot be empty");
-            }
-            value.forEach((item, index) => {
-              if (
-                !item.uraian ||
-                !item.satuan ||
-                !item.volume ||
-                !item.harga ||
-                !item.jumlah ||
-                !item.dpp_nilai_lain_of ||
-                !item.jumlah_ppn_of
-              ) {
-                throw new Error(`Incomplete uraian data at index ${index}`);
-              }
-            });
-          },
-        },
-      },
       ppn_of: {
         type: DataTypes.STRING,
         allowNull: false,

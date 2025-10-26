@@ -392,7 +392,10 @@ const useFakturManagement = () => {
 
   useEffect(() => {
     if (id && dataFakturById) {
-      reset(dataFakturById?.data);
+      reset({
+        ...dataFakturById?.data,
+        uraian: dataFakturById?.data?.debit_note?.uraian,
+      });
     }
   }, [dataFakturById, mode, id]);
 
@@ -408,6 +411,7 @@ const useFakturManagement = () => {
     }
   }, [mode, dataDebitNoteById, id]);
 
+  console.log(getValues());
   return {
     isLoadingDataFakturList,
     isLoadingDeleteFaktur,

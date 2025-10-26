@@ -3,6 +3,7 @@ import useDataManagement from "../hooks";
 import CloseIcon from "@mui/icons-material/Close";
 import { Controller } from "react-hook-form";
 import { CInput } from "@/components/atoms";
+import { TextArea } from "@/components/atoms/Input-text-area";
 
 export default function ModalCustomer() {
   const {
@@ -64,6 +65,33 @@ export default function ModalCustomer() {
                     type="text"
                     placeholder="Masukkan code"
                     error={!!errorsCustomer.code}
+                  />
+                )}
+              />
+              <Controller
+                name="phone"
+                control={controlCustomer}
+                render={({ field }) => (
+                  <CInput
+                    {...field}
+                    label="Phone*"
+                    className="w-full"
+                    type="text"
+                    placeholder="Masukkan phone"
+                    error={!!errorsCustomer.phone}
+                  />
+                )}
+              />
+              <Controller
+                name="alamat"
+                control={controlCustomer}
+                render={({ field }) => (
+                  <TextArea
+                    {...field}
+                    label="Alamat*"
+                    placeholder="Jl. Contoh No. Contoh"
+                    className="w-full"
+                    error={!!errorsCustomer.alamat}
                   />
                 )}
               />

@@ -4,7 +4,12 @@ import { AxiosError } from "axios";
 import { HeroServices } from "@/service/HeroService";
 
 type TUseCreateCustomer = {
-  onSuccess?: (data: { name: string; code: string }) => void;
+  onSuccess?: (data: {
+    name: string;
+    code: string;
+    phone: string;
+    alamat: string;
+  }) => void;
   onError?: (error: unknown) => void;
 };
 
@@ -15,7 +20,12 @@ const useCreateCustomer = (props?: TUseCreateCustomer) => {
   }) => {
     try {
       const response = await HeroServices.post<
-        TResponseType<{ name: string; code: string }>
+        TResponseType<{
+          name: string;
+          code: string;
+          phone: string;
+          alamat: string;
+        }>
       >(`/customer`, payload);
 
       if (response.status !== 201) return;

@@ -214,7 +214,7 @@ class DebitNoteController {
         debitNote.berita_acara_id
       );
 
-      await findBeritaAcara.update({ status: "Submitted Berita Acara" });
+      await findBeritaAcara.update({ status: "Signed" });
 
       if (!debitNote) {
         return res.status(404).json({

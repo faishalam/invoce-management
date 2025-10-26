@@ -7,8 +7,6 @@ import FolderIcon from "@mui/icons-material/Folder";
 import PersonIcon from "@mui/icons-material/Person";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
-import DescriptionIcon from "@mui/icons-material/Description";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Cookies from "js-cookie";
 import { toast } from "sonner";

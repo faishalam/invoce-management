@@ -4,7 +4,12 @@ import { AxiosError } from "axios";
 import { HeroServices } from "@/service/HeroService";
 
 type TUseUpdateCustomer = {
-  onSuccess?: (data: { name: string; code: string }) => void;
+  onSuccess?: (data: {
+    name: string;
+    code: string;
+    alamat: string;
+    phone: string;
+  }) => void;
   onError?: (error: unknown) => void;
 };
 
@@ -14,11 +19,16 @@ const useUpdateCustomer = (props?: TUseUpdateCustomer) => {
     payload,
   }: {
     id: string;
-    payload: { name: string; code: string };
+    payload: { name: string; code: string; alamat: string; phone: string };
   }) => {
     try {
       const response = await HeroServices.put<
-        TResponseType<{ name: string; code: string }>
+        TResponseType<{
+          name: string;
+          code: string;
+          alamat: string;
+          phone: string;
+        }>
       >(`/customer/${id}`, payload);
 
       if (response.status !== 200) return;

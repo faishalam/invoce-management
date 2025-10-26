@@ -59,10 +59,6 @@ module.exports = {
       kode_objek: {
         type: Sequelize.STRING,
       },
-      uraian: {
-        type: Sequelize.JSON,
-        allowNull: false,
-      },
       ppn_of: {
         type: Sequelize.STRING,
         allowNull: false,

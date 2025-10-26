@@ -40,9 +40,12 @@ class FakturController {
         ppn_fk,
         jumlah_ppn_fk,
         kode_objek,
-        uraian,
         ppn_of,
       });
+
+      const findDebitNote = await Debit_Note.findByPk(debit_note_id);
+      await findDebitNote.update({ uraian: uraian });
+
       return res.status(201).json({
         status: "success",
         message: "Faktur created successfully",

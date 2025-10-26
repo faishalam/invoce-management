@@ -103,11 +103,13 @@ const useDataManagementHooks = () => {
     reset: resetCustomer,
     control: controlCustomer,
     formState: { errors: errorsCustomer },
-  } = useForm<{ name: string; code: string }>({
+  } = useForm<{ name: string; code: string; alamat: string; phone: string }>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: "",
       code: "",
+      alamat: "",
+      phone: "",
     },
   });
 
@@ -432,6 +434,8 @@ const useDataManagementHooks = () => {
   const onSubmitCustomer: SubmitHandler<{
     name: string;
     code: string;
+    alamat: string;
+    phone: string;
   }> = (data) => {
     if (modeCustomer === "create") {
       modalWarningInfo.open({
@@ -775,7 +779,7 @@ const useDataManagementHooks = () => {
   }, [dataCustomer, filterCustomer]);
 
   const customerColumnDef = useMemo<
-    ColDef<{ name: string; code: string }>[]
+    ColDef<{ name: string; code: string; alamat: string; phone: string }>[]
   >(() => {
     return [
       {
@@ -797,7 +801,18 @@ const useDataManagementHooks = () => {
       {
         field: "code",
         headerName: "Code",
-        width: 250,
+        width: 100,
+      },
+      {
+        field: "alamat",
+        headerName: "Alamat",
+        width: 350,
+        flex: 1,
+      },
+      {
+        field: "phone",
+        headerName: "Phone",
+        width: 100,
         flex: 1,
       },
       {
@@ -807,6 +822,8 @@ const useDataManagementHooks = () => {
         pinned: "right",
         cellRenderer: (
           params: ICellRendererParams<{
+            alamat: string | undefined;
+            phone: string | undefined;
             id: string;
             code: string;
             name: string;
@@ -822,6 +839,8 @@ const useDataManagementHooks = () => {
                       resetCustomer({
                         name: params.data.name,
                         code: params.data?.code,
+                        alamat: params.data?.alamat,
+                        phone: params.data?.phone,
                       });
                       setModeCustomer("edit");
                       setOpenModalCustomer(true);

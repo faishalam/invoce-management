@@ -114,6 +114,9 @@ const useDebitNoteHooks = () => {
           queryKey: ["useDebitNoteList"],
         });
         queryClient.invalidateQueries({
+          queryKey: ["useFakturById"],
+        });
+        queryClient.invalidateQueries({
           queryKey: ["useDebitNoteById"],
         });
         router.push("/dn-management");

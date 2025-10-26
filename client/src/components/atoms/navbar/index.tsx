@@ -1,11 +1,8 @@
 "use client";
 import Image from "next/image";
 import LogoutAccountIcon from "@mui/icons-material/Logout";
-import UserAccountIcon from "@mui/icons-material/AccountCircle";
 import { TProps } from "./types";
-import SearchIcon from "@mui/icons-material/Search";
 import NotificationIcon from "@mui/icons-material/Notifications";
-import CInput from "@/components/atoms/input";
 import DropdownButton from "@/components/atoms/dropdown-button";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";

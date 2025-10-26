@@ -4,7 +4,6 @@ import useUserManagement from "./hooks";
 import { CAutoComplete, CInput } from "@/components/atoms";
 import ButtonSubmit from "@/components/atoms/button-submit";
 import UserModal from "./components/UserModal";
-import { BlockingLoader } from "@/components/atoms/loader";
 import useGlobal from "@/app/(private)/hooks";
 import CardHeader from "./components/CardHeader";
 

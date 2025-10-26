@@ -16,6 +16,8 @@ export const typeOfWorkSchema = z.object({
 export const customerSchema = z.object({
   name: z.string().min(1, "Name wajib diisi"),
   code: z.string().min(1, "Name wajib diisi"),
+  alamat: z.string().min(1, "Alamat wajib diisi"),
+  phone: z.string().min(1, "Phone wajib diisi"),
 });
 
 export const goodsSchema = z.object({

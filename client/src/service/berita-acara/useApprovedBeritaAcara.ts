@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
 import { HeroServices } from "../HeroService";
-import { TBeritaAcaraForm } from "@/app/(private)/ba-management/validator";
 import { TBeritaAcaraList } from "./types";
 
 type TUseApprovedBeritraAcara = {

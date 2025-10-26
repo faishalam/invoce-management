@@ -74,7 +74,7 @@ cron.schedule(
             include: [
               {
                 model: Department,
-                as: "Department",
+                as: "department",
                 attributes: ["name"],
               },
             ],
@@ -96,6 +96,7 @@ cron.schedule(
           groupedByUser[email] = {
             name: ba.User.name,
             email,
+            department: ba.User?.department?.name,
             baList: [],
           };
         }
@@ -182,12 +183,8 @@ class BeritaAcaraController {
 
       const isFAT = userLogin.department?.name === "FAT";
 
-      // Filter dinamis berdasarkan department
-      const userWhere = isFAT
-        ? {} // FAT boleh lihat semua
-        : { department_id: userLogin.department_id };
+      const userWhere = isFAT ? {} : { department_id: userLogin.department_id };
 
-      // Ambil semua berita acara dengan user-nya (supaya bisa filter department)
       const getAllBeritaAcara = await Berita_Acara.findAll({
         include: [
           {
@@ -200,7 +197,6 @@ class BeritaAcaraController {
 
       const beritaAcaraIds = getAllBeritaAcara.map((ba) => ba.id);
 
-      // Filter debit note & faktur hanya yang terkait dengan berita acara di atas
       const getAllDebitNote = await Debit_Note.findAll({
         where: isFAT ? {} : { berita_acara_id: beritaAcaraIds },
       });

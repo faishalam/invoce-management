@@ -39,7 +39,6 @@ const useBeritaAcaraManagementHooks = () => {
   const [selectedBaId, setSelectedBaId] = useState<string>("");
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { dataUserProfile } = useGlobal();
   const [openModalDocument, setOpenModalDocument] = useState<boolean>(false);
   const {
     control,
