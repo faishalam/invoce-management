@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debit Note Template</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                padding: 20mm;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: white;
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .header .logo-placeholder {
+            width: 35px;
+            height: 35px;
+            border: 2px solid #000;
+            border-radius: 50%;
+        }
+
+        .header .company-name {
+            font-size: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .header .company-tagline {
+            font-size: 11px;
+            font-style: italic;
+            color: #333;
+        }
+
+        .header-border {
+            border-top: 2px solid #000;
+            margin: 10px 0 15px 0;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 15px 0 5px 0;
+        }
+
+        .doc-number {
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        /* Info Table - Using Flexbox */
+        .info-container {
+            display: flex;
+            border: 1px solid #000;
+            margin-bottom: 20px;
+            font-size: 10.5px;
+        }
+
+        .info-left {
+            display: flex;
+            flex: 1;
+            border-right: 1px solid #000;
+        }
+
+        .info-labels {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #000;
+            width: 70px;
+        }
+
+        .info-label-item {
+            padding: 6px 8px;
+            font-weight: bold;
+        }
+
+        .info-label-item.nama {
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label-item.alamat {
+            height: 60px;
+            display: flex;
+            align-items: flex-start;
+            padding-top: 6px;
+        }
+
+        .info-label-item.up {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            padding-top: 6px;
+        }
+
+        .info-contents {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .info-content-item {
+            padding: 6px 8px;
+        }
+
+        .info-content-item.nama {
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-content-item.alamat {
+            height: 60px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .info-content-item.up {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .info-right {
+            display: flex;
+            flex-direction: column;
+            width: 310px;
+        }
+
+        .info-right-top {
+            display: flex;
+            border-bottom: 1px solid #000;
+        }
+
+        .info-right-labels {
+            display: flex;
+            flex-direction: column;
+            width: 110px;
+            border-right: 1px solid #000;
+        }
+
+        .info-right-label-item {
+            padding: 6px 8px;
+            font-weight: bold;
+        }
+
+        .info-right-contents {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .info-right-content-item {
+            padding: 6px 8px;
+        }
+
+        .info-right-content-item.date {
+            text-align: right;
+        }
+
+        .info-right-full {
+            padding: 10px 8px;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Items Table Container */
+        .items-container {
+            border: 1px solid #000;
+            margin-bottom: 0;
+            font-size: 10.5px;
+        }
+
+        /* Items Header */
+        .items-header {
+            display: grid;
+            grid-template-columns: 7% 30% 13% 13% 17% 20%;
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+        }
+
+        .items-header-cell {
+            padding: 6px 8px;
+            text-align: center;
+            border-right: 1px solid #000;
+        }
+
+        .items-header-cell:last-child {
+            border-right: none;
+        }
+
+        /* Items Body */
+        .items-body {
+            display: flex;
+            min-height: 300px;
+        }
+
+        .items-rows {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .items-row {
+            display: grid;
+            grid-template-columns: 7% 30% 13% 13% 17% 20%;
+        }
+
+        .items-cell {
+            padding: 6px 8px;
+            text-align: center;
+            border-right: 1px solid #000;
+        }
+
+        .items-cell:last-child {
+            border-right: none;
+        }
+
+        .items-cell.text-left {
+            text-align: left;
+        }
+
+        .items-cell.text-right {
+            text-align: right;
+        }
+
+        .items-spacer {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 7% 30% 13% 13% 17% 20%;
+        }
+
+        .items-spacer-cell {
+            border-right: 1px solid #000;
+        }
+
+        .items-spacer-cell:last-child {
+            border-right: none;
+        }
+
+        /* Summary Table - Separate */
+        .summary-table-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -1px;
+        }
+
+        .summary-table {
+            width: 265px;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            font-size: 10.5px;
+        }
+
+        .summary-table td {
+            border: 1px solid #000;
+            padding: 5px 8px;
+        }
+
+        .summary-table .summary-label-col {
+            font-weight: bold;
+            text-align: left;
+            width: 120px;
+        }
+
+        .summary-table .summary-value-col {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        /* Terbilang */
+        .terbilang-section {
+            margin: 15px 0;
+            font-size: 10.5px;
+        }
+
+        .terbilang-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .terbilang-box {
+            border: 1px solid #000;
+            padding: 10px;
+            min-height: 35px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Signature */
+        .signature-section {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 10.5px;
+        }
+
+        .signature-box {
+            display: inline-block;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .company-stamp {
+            margin: 25px 0;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .stamp-placeholder {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #999;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 9px;
+            flex-direction: column;
+        }
+
+        .signature-name {
+            margin-top: 5px;
+            font-weight: bold;
+            text-decoration: underline;
+            padding-bottom: 2px;
+        }
+
+        .signature-title {
+            margin-top: 3px;
+            font-size: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            font-size: 8.5px;
+            line-height: 1.4;
+        }
+
+        .footer-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+    <img src={{logo_url}} alt="Company Logo" style="width: 50px; height: auto;" />
+                    <div class="company-name">PT KALIMANTAN PRIMA PERSADA</div>
+                    </div>
+                    <div class="company-tagline">Integrated Mining Services</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-border"></div>
+
+        <div class="title">DEBIT NOTE</div>
+        <div class="doc-number">{{number_debit_note}}</div>
+
+        <!-- Info Section with Flexbox -->
+        <div class="info-container">
+            <!-- Left Section -->
+            <div class="info-left">
+                <!-- Labels -->
+                <div class="info-labels">
+                    <div class="info-label-item nama">Nama</div>
+                    <div class="info-label-item alamat">Alamat</div>
+                    <div class="info-label-item up">Up<br>Telp<br>Fax</div>
+                </div>
+                
+                <!-- Contents -->
+                <div class="info-contents">
+                    <div class="info-content-item nama">{{nama_customer}}</div>
+                    <div class="info-content-item alamat">
+                        {{alamat_customer}}
+                    </div>
+                    <div class="info-content-item up">Finance Dept.</div>
+                </div>
+            </div>
+            
+            <!-- Right Section -->
+            <div class="info-right">
+                <div class="info-right-top">
+                    <!-- Right Labels -->
+                    <div class="info-right-labels">
+                        <div class="info-right-label-item">Date</div>
+                        <div class="info-right-label-item">Kontrak No.</div>
+                        <div class="info-right-label-item">Tanggal Kontrak</div>
+                    </div>
+                    
+                    <!-- Right Contents -->
+                    <div class="info-right-contents">
+                        <div class="info-right-content-item date">{{tanggal}}</div>
+                        <div class="info-right-content-item"></div>
+                        <div class="info-right-content-item"></div>
+                    </div>
+                </div>
+                
+                <div class="info-right-full">
+                    <div>Batas Akhir Pembayaran</div>
+                    <div style="font-weight: bold; margin-top: 2px;">{{batas_akhir}}</div>
+                    <div style="margin-top: 2px;">BSAPID</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Container with Grid -->
+        <div class="items-container">
+            <!-- Header -->
+            <div class="items-header">
+                <div class="items-header-cell">Nomor</div>
+                <div class="items-header-cell">Uraian</div>
+                <div class="items-header-cell">Satuan</div>
+                <div class="items-header-cell">Volume</div>
+                <div class="items-header-cell">Harga (IDR)</div>
+                <div class="items-header-cell">Jumlah (IDR)</div>
+            </div>
+
+            <!-- Body with Flex -->
+            <div class="items-body">
+                <div class="items-rows">
+                    <!-- Row 1 -->
+                    {{#uraian}}
+                    <div class="items-row">
+                        <div class="items-cell">{{no}}</div>
+                        <div class="items-cell text-left">{{nama_uraian}}<br>{{periode}}</div>
+                        <div class="items-cell">{{satuan}}</div>
+                        <div class="items-cell text-right">{{volume}}</div>
+                        <div class="items-cell text-right">{{harga}}</div>
+                        <div class="items-cell text-right">{{jumlah}}</div>
+                    </div>
+                    {{/uraian}}
+
+                    <!-- Spacer (fills remaining space) -->
+                    <div class="items-spacer">
+                        <div class="items-spacer-cell"></div>
+                        <div class="items-spacer-cell"></div>
+                        <div class="items-spacer-cell"></div>
+                        <div class="items-spacer-cell"></div>
+                        <div class="items-spacer-cell"></div>
+                        <div class="items-spacer-cell"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Table (Separate) -->
+        <div class="summary-table-container">
+            <table class="summary-table">
+                <tr>
+                    <td class="summary-label-col">Sub Total</td>
+                    <td class="summary-value-col">{{sub_total}}</td>
+                </tr>
+                <tr>
+                    <td class="summary-label-col">PPN</td>
+                    <td class="summary-value-col">{{ppn}}</td>
+                </tr>
+                <tr>
+                    <td class="summary-label-col">Total</td>
+                    <td class="summary-value-col">{{total}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Terbilang -->
+        <div class="terbilang-section">
+            <div class="terbilang-label">Terbilang :</div>
+            <div class="terbilang-box">
+                
+            </div>
+        </div>
+
+        <!-- Signature -->
+        <div class="signature-section">
+            <div class="signature-box">
+                <div style="font-weight: bold;">PT KALIMANTAN PRIMA PERSADA</div>
+                <div class="company-stamp">
+                    <div class="">
+                        
+                        
+                    </div>
+                </div>
+                <div class="signature-name">Fredy Surya Wijaya</div>
+                <div class="signature-title">HCGS & FAT Dept Head</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-title">Jakarta Office</div>
+            <div>Jl. Rawa Gelam I No. 9</div>
+            <div>Kawasan Industri Pulo Gadung</div>
+            <div>Jakarta Timur 13930</div>
+            <div>Phone: (021) 468 34 633</div>
+            <div>Fax: (021) 468 23 988</div>
+            <div>VSAT: 1613</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -6,10 +6,34 @@ const beritaAcaraRouter = express.Router();
 
 beritaAcaraRouter.use(authentication);
 
-beritaAcaraRouter.post("/berita-acara", BeritaAcaraController.createBeritaAcara);
+beritaAcaraRouter.post(
+  "/berita-acara",
+  BeritaAcaraController.createBeritaAcara
+);
 beritaAcaraRouter.get("/berita-acara", BeritaAcaraController.getAllBeritaAcara);
-beritaAcaraRouter.delete("/berita-acara/:id", BeritaAcaraController.deleteBeritaAcara);
-beritaAcaraRouter.put("/berita-acara/:id", BeritaAcaraController.updateBeritaAcara);
-beritaAcaraRouter.get("/berita-acara/:id", BeritaAcaraController.getBeritaAcaraById);
+beritaAcaraRouter.get(
+  "/berita-acara-calculate",
+  BeritaAcaraController.getAllCalculate
+);
+beritaAcaraRouter.get(
+  "/berita-acara-waiting",
+  BeritaAcaraController.getBeritaAcaraWaiting
+);
+beritaAcaraRouter.put(
+  "/berita-acara-approved/:id",
+  BeritaAcaraController.beritaAcaraAcepted
+);
+beritaAcaraRouter.delete(
+  "/berita-acara/:id",
+  BeritaAcaraController.deleteBeritaAcara
+);
+beritaAcaraRouter.put(
+  "/berita-acara/:id",
+  BeritaAcaraController.updateBeritaAcara
+);
+beritaAcaraRouter.get(
+  "/berita-acara/:id",
+  BeritaAcaraController.getBeritaAcaraById
+);
 
 module.exports = beritaAcaraRouter;

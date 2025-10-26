@@ -1,11 +1,9 @@
 "use client";
-import EyeIcon from "@/assets/svg/eye-icon.svg";
 import IconPencil from "@/assets/svg/icon-pencil.svg";
-import DeleteIcon from "@/assets/svg/delete-icon.svg";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useModalWarningInfo } from "@/components/atoms/modal-warning";
 import { useQueryClient } from "@tanstack/react-query";
-import useGlobal from "@/app/context/hooks";
+import useGlobal from "@/app/(private)/hooks";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,7 +14,7 @@ import {
   typeOfWorkSchema,
 } from "./validator";
 import useCreateDepartment from "@/service/master/department/useCreateDepartment";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import useCreateSatuan from "@/service/master/satuan/useCreateSatuan";
 import useCreateTypeOfWork from "@/service/master/typeOfWork/useCreateTypeOfWork";
 import useCreateCustomer from "@/service/master/customer/useCreateCustomer";
@@ -300,8 +298,8 @@ const useDataManagementHooks = () => {
   };
 
   const onInvalidDepartment = (errors: FieldErrors<{ name: string }>) => {
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.entries(errors).forEach(([key, error]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(errors).forEach(([_, error]) => {
       if (error?.message) {
         toast.error(error.message);
       }
@@ -371,8 +369,8 @@ const useDataManagementHooks = () => {
   };
 
   const onInvalidSatuan = (errors: FieldErrors<{ name: string }>) => {
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.entries(errors).forEach(([key, error]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(errors).forEach(([_, error]) => {
       if (error?.message) {
         toast.error(error.message);
       }
@@ -380,8 +378,8 @@ const useDataManagementHooks = () => {
   };
 
   const onInvalidGoods = (errors: FieldErrors<{ name: string }>) => {
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.entries(errors).forEach(([key, error]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(errors).forEach(([_, error]) => {
       if (error?.message) {
         toast.error(error.message);
       }
@@ -423,8 +421,8 @@ const useDataManagementHooks = () => {
   const onInvalidTypeOfWork = (
     errors: FieldErrors<{ name: string; type: string }>
   ) => {
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.entries(errors).forEach(([key, error]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(errors).forEach(([_, error]) => {
       if (error?.message) {
         toast.error(error.message);
       }
@@ -470,8 +468,8 @@ const useDataManagementHooks = () => {
   const onInvalidCustomer = (
     errors: FieldErrors<{ name: string; code: string }>
   ) => {
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.entries(errors).forEach(([key, error]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(errors).forEach(([_, error]) => {
       if (error?.message) {
         toast.error(error.message);
       }
@@ -1052,6 +1050,11 @@ const useDataManagementHooks = () => {
     filterGoods,
     setFilterGoods,
     resetGoods,
+    mutateCreateCustomer,
+    mutateDeleteCustomer,
+    mutateDeleteSatuan,
+    mutateDeleteTypeOfWork,
+    mutateDeleteDepartment,
   };
 };
 

@@ -1,25 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { HeroServices } from "../HeroService";
-import { TBeritaAcara } from "./types";
+import { TBeritaAcaraList } from "./types";
 
 type TUseBeritaAcaraListProps = {
-  onSuccess?: (data: TBeritaAcara) => void;
+  onSuccess?: (data: TBeritaAcaraList) => void;
   onError?: (error: unknown) => void;
+  params: {
+    status?: string;
+  };
 };
 
-const useBeritaAcaraList = (props?: TUseBeritaAcaraListProps) => {
+const useBeritaAcaraList = (props: TUseBeritaAcaraListProps) => {
   const useBeritaAcaraListFn = async () => {
     try {
-      const response = await HeroServices.get<TResponseType<TBeritaAcara[]>>(
-        `/berita-acara`
-      );
+      const response = await HeroServices.get<
+        TResponseType<TBeritaAcaraList[]>
+      >(`/berita-acara`, {
+        params: {
+          ...(props?.params?.status && { status: props.params.status }),
+        },
+      });
 
       if (response.status !== 200) return;
 
-      return response?.data;
+      return response?.data?.data;
     } catch (error) {
       const err = error as AxiosError<NetworkAPIError>;
       toast.error(err?.response?.data?.message);
@@ -28,7 +35,7 @@ const useBeritaAcaraList = (props?: TUseBeritaAcaraListProps) => {
   };
 
   const query = useQuery({
-    queryKey: ["useBeritaAcaraList"],
+    queryKey: ["useBeritaAcaraList", props?.params?.status],
     queryFn: useBeritaAcaraListFn,
     staleTime: Infinity,
     enabled: true,

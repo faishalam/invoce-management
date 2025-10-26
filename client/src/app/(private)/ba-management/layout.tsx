@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { BeritaAcaraProvider } from "./hooks";
 
 export default function Layout({
@@ -7,7 +8,9 @@ export default function Layout({
 }>) {
   return (
     <>
-      <BeritaAcaraProvider>{children}</BeritaAcaraProvider>
+      <Suspense>
+        <BeritaAcaraProvider>{children}</BeritaAcaraProvider>
+      </Suspense>
     </>
   );
 }

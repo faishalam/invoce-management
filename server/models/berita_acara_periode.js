@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Berita_Acara_Periode.belongsTo(models.Berita_Acara, {
         foreignKey: "berita_acara_id",
-        onDelete: "CASCADE",
       });
     }
   }
@@ -23,14 +22,14 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       berita_acara_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         validate: {
           notNull: { msg: "Berita acara ID is required" },
           notEmpty: { msg: "Berita acara ID is required" },
         },
       },
-      planAlokasiPeriode: {
+      plan_alokasi_periode: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {

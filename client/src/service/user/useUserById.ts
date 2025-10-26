@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { TUserListResponse } from "./types";
 import { HeroServices } from "../HeroService";
 

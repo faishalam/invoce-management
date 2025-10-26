@@ -6,6 +6,20 @@ npx sequelize-cli model:generate --name Satuan --attributes name:string
 
 npx sequelize-cli model:generate --name Goods --attributes name:string
 
+npx sequelize-cli model:generate --name Template_Berita_Acara --attributes berita_acara_id:string,template_id:string,html_rendered:string
+
+npx sequelize-cli model:generate --name Template_Debit_Note --attributes debit_note_id:string,berita_acara_id:string,html_rendered:string
+
+npx sequelize-cli model:generate --name Berita_Acara_General --attributes berita_acara_id:string,goods_name:string,goods_code:string,satuan:string,quantity:string
+
+npx sequelize-cli model:generate --name Jenis_Backcharge --attributes jenis_backcharge:string,code:string
+
+npx sequelize-cli model:generate --name Backcharge --attributes name:string,type:string
+
+npx sequelize-cli model:generate --name Debit_Note --attributes costumer_name:string,customer_code:string,phone:string,alamat:string,batas_akhir:string,dn_number:string,uraian:string,satuan:string,volume:string,harga:string,jumlah:string,sub_total:string,PPN:string,total:string
+
+npx sequelize-cli model:generate --name Faktur --attributes berita_acara_id:string,debit_note_id:string,nomor_seri_faktur:string,masa_pajak:string,tahun:string,npwp:string,customer_id:string,sub_total:string,dpp:string,jumlah_ppn:string,jumlah_ppnbm:string,id_keterangan_tambahan:string,fg_uang_muka:string,uang_muka_dpp:string,uang_muka_ppn:string,uang_muka_ppnbm:string,kode_objek:string,diskon:string,dpp_nilai_lain:string,PPN:string
+
 
 npx sequelize-cli seed:generate --name customer
 

@@ -14,16 +14,20 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname === "/login" && accessToken) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/ba-management", request.url));
   }
 
   if (!accessToken && pathname !== "/login") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  if (pathname === "/" && accessToken) {
+    return NextResponse.redirect(new URL("/ba-management", request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!_next|favicon.ico|api).*)"], // hanya jalankan middleware untuk path selain ini
+  matcher: ["/((?!_next|favicon.ico|api).*)"],
 };

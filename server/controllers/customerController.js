@@ -6,7 +6,7 @@ class CustomerController {
   // CREATE
   static async createCustomer(req, res) {
     try {
-      const { name, code } = req.body;
+      const { name, code, alamat, phone } = req.body;
 
       if (!name) {
         return res.status(400).json({ message: "Name is required" });
@@ -21,6 +21,8 @@ class CustomerController {
         id: uuidv4(),
         name,
         code,
+        alamat,
+        phone,
       });
 
       res.status(201).json({
@@ -72,11 +74,11 @@ class CustomerController {
       res.status(500).json({ message: error.message });
     }
   }
-  
+
   static async updateCustomer(req, res) {
     try {
       const { id } = req.params;
-      const { name, code } = req.body;
+      const { name, code, alamat, phone } = req.body;
 
       // Cari customer berdasarkan id dulu
       const customer = await Customer.findByPk(id);
@@ -99,6 +101,8 @@ class CustomerController {
       // Update data
       customer.name = name ?? customer.name;
       customer.code = code ?? customer.code;
+      customer.alamat = alamat ?? customer.alamat;
+      customer.phone = phone ?? customer.phone;
       await customer.save();
 
       res.status(200).json({

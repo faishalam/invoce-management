@@ -5,12 +5,7 @@ import { toast } from "react-toastify";
 import { HeroServices } from "../../HeroService";
 import { TDepartmentResponse } from "./types";
 
-type TUseDepartmentProps = {
-  onSuccess?: (data: TDepartmentResponse) => void;
-  onError?: (error: unknown) => void;
-};
-
-const useDepartmentList = (props?: TUseDepartmentProps) => {
+const useDepartmentList = () => {
   const useDepartmentListFn = async () => {
     try {
       const response = await HeroServices.get<

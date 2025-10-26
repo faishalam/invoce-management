@@ -1,9 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Cookies from "js-cookie";
-
 type TProps = {
   children?: React.ReactNode;
 };

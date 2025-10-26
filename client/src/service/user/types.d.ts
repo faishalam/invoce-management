@@ -5,7 +5,8 @@ export type TUserListResponse = {
   password?: string;
   role: string;
   is_active: boolean;
-  departmentId: string;
+  department: string;
+  department_id: string;
 };
 
 export type TUserForm = {
@@ -13,5 +14,5 @@ export type TUserForm = {
   email?: string;
   role?: string;
   is_active?: boolean;
-  departmentId?: string;
+  department_id?: string;
 };

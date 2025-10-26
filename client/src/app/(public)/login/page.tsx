@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import FormLoginSection from "./components/FormLoginSection";
+import logoKpp from "@/assets/img/kpp-logo.png";
+import logoSatuIndonesia from "@/assets/img/logo-satu-indonesia.png";
 
 export default function LoginPage() {
   return (
@@ -11,29 +13,30 @@ export default function LoginPage() {
           <div className="hidden  lg:block w-full max-w-full">
             <div className="flex flex-col h-full bg-gray-300 rounded-r-3xl relative overflow-hidden p-16">
               <Image
-                src="/assets/logo/logoPosindoWhite.png"
-                alt="logo-pos-white.png"
-                width={80}
-                height={80}
+                src={logoKpp}
+                alt="logo.png"
+                width={110}
+                height={110}
                 className="absolute z-10 right-10"
                 priority
               />
               <Image
                 alt="bg.jpg"
-                src={
-                  "https://static.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2023/07/01/Lowongan-kerja-di-PT-Kalimantan-Prima-Persada-KPP-2898829358.jpg"
-                }
-                className="brightness-75"
+                src="https://www.digitalwarroom.com/hubfs/document%20management%20system.jpg"
+                className="brightness-60"
                 fill
-                style={{ objectFit: "cover" }}
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "right top",
+                }}
                 priority
                 unoptimized
               />
               <Image
-                src="/assets/logo/bumn-white.png"
-                alt="logo-pos-white.png"
-                width={200}
-                height={200}
+                src={logoSatuIndonesia}
+                alt="logo.png"
+                width={120}
+                height={120}
                 className="absolute z-10 "
                 priority
               />

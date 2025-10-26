@@ -6,7 +6,7 @@ const { User, Department } = require("../models");
 class UserController {
   static async createUser(req, res) {
     try {
-      const { name, email, password, role, departmentId } = req.body;
+      const { name, email, password, role, department_id } = req.body;
 
       // 1. validate unique email
       const validateEmail = await User.findOne({ where: { email } });
@@ -33,7 +33,7 @@ class UserController {
         email,
         password,
         role,
-        departmentId,
+        department_id,
       });
 
       // 4. response without password
@@ -42,7 +42,7 @@ class UserController {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-        departmentId: newUser.departmentId,
+        department_id: newUser.department_id,
       };
 
       return res.status(201).json({
@@ -139,12 +139,21 @@ class UserController {
 
   static async profile(req, res) {
     try {
-      const { role, name, email, departmentId } = req.user;
+      const { role, name, email, department_id } = req.user;
+
+      const findDepartment = await Department.findByPk(department_id);
+      if (!findDepartment) {
+        return res.status(404).json({
+          status: "error",
+          message: "Department not found",
+          data: null,
+        });
+      }
 
       return res.status(200).json({
         status: "success",
         message: "User profile fetched",
-        data: { role, name, email, departmentId },
+        data: { role, name, email, department: findDepartment.name },
       });
     } catch (error) {
       return res.status(500).json({

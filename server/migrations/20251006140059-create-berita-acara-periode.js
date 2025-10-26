@@ -15,8 +15,10 @@ module.exports = {
           model: "Berita_Acaras",
           key: "id",
         },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
-      planAlokasiPeriode: {
+      plan_alokasi_periode: {
         type: Sequelize.STRING,
       },
       harga_per_liter: {

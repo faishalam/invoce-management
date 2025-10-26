@@ -3,7 +3,7 @@ export type TUserList = {
   name: string;
   email: string;
   role: string;
-  departmentId: string;
+  department_id: string;
   is_active: boolean;
 };
 

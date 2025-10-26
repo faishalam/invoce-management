@@ -9,6 +9,8 @@ module.exports = {
         id: uuidv4(),
         name: element.name,
         code: element.code,
+        alamat: element.alamat,
+        phone: element.phone,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

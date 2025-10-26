@@ -15,6 +15,9 @@ module.exports = {
       tipe_transaksi: {
         type: Sequelize.STRING,
       },
+      jenis_berita_acara: {
+        type: Sequelize.STRING,
+      },
       number: {
         type: Sequelize.STRING,
       },
@@ -22,6 +25,9 @@ module.exports = {
         type: Sequelize.STRING,
       },
       customer_id: {
+        type: Sequelize.UUID,
+      },
+      customer_code: {
         type: Sequelize.STRING,
       },
       periode: {
@@ -30,11 +36,14 @@ module.exports = {
       cut_off: {
         type: Sequelize.STRING,
       },
+      status: {
+        type: Sequelize.STRING,
+      },
       tipe_customer: {
         type: Sequelize.STRING,
       },
       type_of_work_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
       },
       reguler: {
         type: Sequelize.STRING,
@@ -43,15 +52,6 @@ module.exports = {
         type: Sequelize.STRING,
       },
       submitted_at: {
-        type: Sequelize.STRING,
-      },
-      goods_id: {
-        type: Sequelize.STRING,
-      },
-      quantity: {
-        type: Sequelize.STRING,
-      },
-      satuan_id: {
         type: Sequelize.STRING,
       },
       nill_ditagihkan: {

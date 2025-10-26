@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthServices } from "../AuthService";
 import { TInputLogin, TLoginResponse } from "./types";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
-import { useState } from "react";
 import { AxiosError } from "axios";
 
 type TUseLoginProps = {

@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.belongsTo(models.Department, {
-        foreignKey: "departmentId",
+        foreignKey: "department_id",
+        as: "department",
       });
 
       User.hasMany(models.Berita_Acara, {
@@ -57,8 +58,8 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "role is required" },
         },
       },
-      departmentId: {
-        type: DataTypes.STRING,
+      department_id: {
+        type: DataTypes.UUID,
       },
       is_active: {
         type: DataTypes.BOOLEAN,

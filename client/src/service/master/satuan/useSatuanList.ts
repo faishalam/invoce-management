@@ -1,15 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { HeroServices } from "../../HeroService";
 
-type TUseSatuanListProps = {
-  onSuccess?: (data: { id: string; name: string }) => void;
-  onError?: (error: unknown) => void;
-};
-
-const useSatuanList = (props?: TUseSatuanListProps) => {
+const useSatuanList = () => {
   const useSatuanListFn = async () => {
     try {
       const response = await HeroServices.get<

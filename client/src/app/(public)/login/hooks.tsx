@@ -3,10 +3,10 @@ import useLogin from "@/service/auth/login";
 import { useRouter } from "next/navigation";
 import { createContext, useContext } from "react";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { loginSchema, TLoginForm } from "./validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 const useUserLoginHooks = () => {
   const router = useRouter();
@@ -37,7 +37,7 @@ const useUserLoginHooks = () => {
         sameSite: "lax",
         path: "/",
       });
-      router.push("/dashboard");
+      router.push("/ba-management");
       toast.success("Login Berhasil");
     },
     onError: (error) => {

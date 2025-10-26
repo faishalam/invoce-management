@@ -9,14 +9,45 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Berita_Acara.hasMany(models.Berita_Acara_Periode, {
-        foreignKey: "berita_acara_id",
-        onDelete: "CASCADE",
-      });
-
       Berita_Acara.belongsTo(models.User, {
         foreignKey: "user_id",
         onDelete: "CASCADE",
+      });
+      Berita_Acara.hasMany(models.Berita_Acara_Periode, {
+        foreignKey: "berita_acara_id",
+        as: "plan_alokasi_periode",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      Berita_Acara.hasMany(models.Berita_Acara_General, {
+        foreignKey: "berita_acara_id",
+        as: "berita_acara_general",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      Berita_Acara.hasOne(models.Template_Berita_Acara, {
+        foreignKey: "berita_acara_id",
+        as: "template_berita_acara",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      Berita_Acara.hasOne(models.Debit_Note, {
+        foreignKey: "berita_acara_id",
+        as: "debit_note",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      Berita_Acara.hasOne(models.Faktur, {
+        foreignKey: "berita_acara_id",
+        as: "faktur",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      Berita_Acara.hasOne(models.Template_Debit_Note, {
+        foreignKey: "berita_acara_id",
+        as: "template_debit_note",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       });
     }
   }
@@ -35,8 +66,16 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Tipe transaksi is required" },
         },
       },
-      user_id: {
+      jenis_berita_acara: {
         type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Tipe transaksi is required" },
+          notEmpty: { msg: "Tipe transaksi is required" },
+        },
+      },
+      user_id: {
+        type: DataTypes.UUID,
         allowNull: false,
         validate: {
           notNull: { msg: "User Id is required" },
@@ -60,11 +99,11 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       customer_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         validate: {
-          notNull: { msg: "Customer ID is required" },
-          notEmpty: { msg: "Customer ID is required" },
+          notNull: { msg: "Periode is required" },
+          notEmpty: { msg: "Periode is required" },
         },
       },
       periode: {
@@ -92,11 +131,11 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       type_of_work_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         allowNull: false,
         validate: {
-          notNull: { msg: "Type of work ID is required" },
-          notEmpty: { msg: "Type of work ID is required" },
+          notNull: { msg: "Type of work is required" },
+          notEmpty: { msg: "Type of work is required" },
         },
       },
       reguler: {
@@ -115,6 +154,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "PIC is required" },
         },
       },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Status is required" },
+          notEmpty: { msg: "Status is required" },
+        },
+      },
       submitted_at: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -122,18 +169,6 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "Submitted date is required" },
           notEmpty: { msg: "Submitted date is required" },
         },
-      },
-      goods_id: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      quantity: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      satuan_id: {
-        type: DataTypes.STRING,
-        allowNull: true,
       },
       nill_ditagihkan: {
         type: DataTypes.STRING,

@@ -4,31 +4,21 @@ import IconPencil from "@/assets/svg/icon-pencil.svg";
 import DeleteIcon from "@/assets/svg/delete-icon.svg";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  createUserSchema,
-  TUserForm,
-  updateUserSchema,
-  userSchema,
-} from "./validator";
+import { createUserSchema, TUserForm, updateUserSchema } from "./validator";
 import useUserList from "@/service/user/useUserList";
 import useCreateUser from "@/service/user/useCreateUser";
 import useDeleteUser from "@/service/user/useDeleteUser";
 import useUpdateUser from "@/service/user/useUpdateUser";
-import {
-  ColDef,
-  ColGroupDef,
-  ICellRendererParams,
-} from "@ag-grid-community/core";
+import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 import { TUserListResponse } from "@/service/user/types";
-import { TUserList, TUserListCol } from "./types";
+import { TUserListCol } from "./types";
 import Image from "next/image";
 import { useModalWarningInfo } from "@/components/atoms/modal-warning";
 import useUserById from "@/service/user/useUserById";
-import useGlobal from "@/app/context/hooks";
+import useGlobal from "@/app/(private)/hooks";
 
 const useUserManagementHooks = () => {
   const modalWarningInfo = useModalWarningInfo();
@@ -54,15 +44,15 @@ const useUserManagementHooks = () => {
       password: "",
       is_active: true,
       role: "",
-      departmentId: "",
+      department_id: "",
     },
     mode: "onChange",
   });
   const [filter, setFilter] = useState<{
     search: string;
     role: string | null;
-    departmentId: string | null;
-  }>({ search: "", role: null, departmentId: null });
+    department_id: string | null;
+  }>({ search: "", role: null, department_id: null });
   const { data: dataUser, isPending: isLoadingDataUser } = useUserList();
 
   const { data: dataUserById, isPending: isLoadingDataUserById } = useUserById({
@@ -139,7 +129,8 @@ const useUserManagementHooks = () => {
   };
 
   const onInvalid = (errors: FieldErrors<TUserForm>) => {
-    Object.entries(errors).forEach(([key, error]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(errors).forEach(([_, error]) => {
       if (error?.message) {
         toast.error(error.message);
       }
@@ -160,7 +151,7 @@ const useUserManagementHooks = () => {
 
       const departmentName =
         dataDepartment?.data
-          .find((d) => d.id === x.departmentId)
+          .find((d) => d.id === x.department_id)
           ?.name?.toLowerCase() ?? "";
       const search4 = departmentName
         .toLowerCase()
@@ -169,8 +160,8 @@ const useUserManagementHooks = () => {
       const search = search1 || search2 || search3 || search4;
 
       const byRoles = filter.role ? x.role === filter.role : true;
-      const byDepartment = filter?.departmentId
-        ? x.departmentId === filter?.departmentId
+      const byDepartment = filter?.department_id
+        ? x.department_id === filter?.department_id
         : true;
       return search && byRoles && byDepartment;
     });
@@ -215,13 +206,13 @@ const useUserManagementHooks = () => {
         ),
       },
       {
-        field: "departmentId",
+        field: "department_id",
         headerName: "Department",
         flex: 1,
         cellRenderer: (params: ICellRendererParams<TUserListResponse>) => {
           const departmentName =
             dataDepartment?.data?.find(
-              (dept) => dept.id === params.data?.departmentId
+              (dept) => dept.id === params.data?.department_id
             )?.name ?? "-";
           return <span>{departmentName}</span>;
         },
@@ -295,7 +286,7 @@ const useUserManagementHooks = () => {
           id: dataUserById.data.id,
           email: dataUserById.data.email,
           password: dataUserById.data.password ?? "",
-          departmentId: dataUserById.data.departmentId,
+          department_id: dataUserById.data.department_id,
           role: dataUserById.data.role,
           name: dataUserById.data.name,
           is_active: dataUserById.data.is_active,
@@ -309,7 +300,7 @@ const useUserManagementHooks = () => {
         password: "",
         role: "",
         is_active: true,
-        departmentId: "",
+        department_id: "",
       });
     }
   }, [dataUserById, mode, reset]);

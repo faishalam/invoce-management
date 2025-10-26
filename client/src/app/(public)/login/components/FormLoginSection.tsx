@@ -4,14 +4,13 @@ import { Controller } from "react-hook-form";
 import { useUserLogin } from "../hooks";
 import Link from "next/link";
 import ContinueWithSection from "./ContinueWithSection";
-import ButtonSubmit from "@/components/atoms/button-submit";
 import { CInput } from "@/components/atoms";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LockOutlineIcon from "@mui/icons-material/LockOutline";
 import EmailIcon from "@mui/icons-material/Email";
-import SecurityIcon from "@mui/icons-material/Security";
 import CIconButton from "@/components/atoms/icon-button";
+import { Button } from "@mui/material";
 
 export default function FormLoginSection() {
   const { handleSubmit, errors, isLoadingLogin, control, onSubmit, onInvalid } =
@@ -24,7 +23,7 @@ export default function FormLoginSection() {
         <div>
           <p className="text-3xl font-semibold">Hai, Selamat Datang</p>
           <p className="text-3xl font-semibold">
-            di <span className="text-green-700">BA & DN Management</span>
+            di <span className="text-blue-900">BA & DN Management</span>
           </p>
         </div>
         <p className="text-md font-medium">Silakan Masuk</p>
@@ -122,14 +121,14 @@ export default function FormLoginSection() {
           </div>
 
           <div className="flex flex-col space-y-4">
-            <ButtonSubmit
-              type={"submit"}
-              classname={
-                "w-fulll max-w-full rounded-md text-sm bg-green-900 text-white hover:bg-green-950 cursor-pointer p-1.5"
-              }
-              btnText="Login"
-              btnLoading={isLoadingLogin}
-            />
+            <Button
+              type="submit"
+              variant="contained"
+              color={"secondary"}
+              loading={isLoadingLogin}
+            >
+            Login
+            </Button>
           </div>
           <ContinueWithSection />
         </form>

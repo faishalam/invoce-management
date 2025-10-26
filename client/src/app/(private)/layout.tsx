@@ -1,34 +1,41 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Sidebar from "@/components/molecules/sidebar";
 import Cookies from "js-cookie";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { GlobalProvider } from "../context/hooks";
+import Sidebar from "@/components/molecules/sidebar";
+import { GlobalProvider } from "./hooks";
+import Navbar from "@/components/atoms/navbar";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type TProps = {
   children?: React.ReactNode;
 };
 
 const PrivateLayout: React.FC<TProps> = ({ children }) => {
+  const router = useRouter();
+  const accessToken = Cookies.get("accessToken");
+
+  useEffect(() => {
+    if (!accessToken) {
+      router.replace("/login");
+      return;
+    }
+  }, [accessToken, router]);
   return (
-    <AppRouterCacheProvider>
-      <GlobalProvider>
-        <div className="w-full max-w-full min-h-screen bg-blue-50 overflow-hidden">
-          <div className="w-full flex h-screen overflow-hidden">
-            <div className="w-1/6">
-              <Sidebar />
-            </div>
-            <div className="w-full max-w-full overflow-y-auto">
-              <main>
-                <div className="p-8 overflow-hidden">{children}</div>
-              </main>
-            </div>
+    <GlobalProvider>
+      <div className="w-full max-w-full min-h-screen bg-blue-50 overflow-hidden">
+        <div className="w-full flex h-screen overflow-hidden">
+          <div className="w-1/6">
+            <Sidebar />
+          </div>
+          <div className="w-full max-w-full overflow-y-auto">
+            <Navbar />
+            <main>
+              <div className="px-8 pb-8 pt-2 overflow-hidden">{children}</div>
+            </main>
           </div>
         </div>
-      </GlobalProvider>
-    </AppRouterCacheProvider>
+      </div>
+    </GlobalProvider>
   );
 };
 

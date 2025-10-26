@@ -22,10 +22,11 @@ module.exports = {
       role: {
         type: Sequelize.STRING,
       },
-      departmentId: {
+      department_id: {
         type: Sequelize.UUID,
         references: {
           model: "Departments",
+          as: "department",
           key: "id",
         },
       },

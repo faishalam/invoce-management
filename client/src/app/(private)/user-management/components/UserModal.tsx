@@ -1,7 +1,4 @@
 import { Box, Button, IconButton, Modal } from "@mui/material";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import EmailIcon from "@mui/icons-material/Email";
-import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import useUserManagement from "../hooks";
@@ -9,12 +6,11 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import { Controller } from "react-hook-form";
 import CInput from "@/components/atoms/input";
 import { useMemo, useState } from "react";
-import LockOutlineIcon from "@mui/icons-material/LockOutline";
 import CIconButton from "@/components/atoms/icon-button";
 import CAutoComplete from "@/components/atoms/auto-complete";
 import UserFormSkeleton from "./LoadingSkeleton";
-import useGlobal from "@/app/context/hooks";
-import { TDepartmentResponse } from "@/service/master/department/types";
+import useGlobal from "@/app/(private)/hooks";
+
 
 export default function UserModal() {
   const {
@@ -142,14 +138,14 @@ export default function UserModal() {
                     )}
                     {mode !== "edit" && (
                       <Controller
-                        name="departmentId"
+                        name="department_id"
                         control={control}
                         render={({ field: { onChange, value } }) => {
                           const options = dataDepartment?.data ?? [];
                           console.log(options, "<<");
                           return (
                             <CAutoComplete
-                              error={!!errors.departmentId}
+                              error={!!errors.department_id}
                               label="Department*"
                               options={options}
                               className="w-full"

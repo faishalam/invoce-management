@@ -1,15 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { HeroServices } from "../../HeroService";
 
-type TUseGoodsListProps = {
-  onSuccess?: (data: { id: string; name: string; code: string }) => void;
-  onError?: (error: unknown) => void;
-};
-
-const useGoodsList = (props?: TUseGoodsListProps) => {
+const useGoodsList = () => {
   const useGoodsListFn = async () => {
     try {
       const response = await HeroServices.get<

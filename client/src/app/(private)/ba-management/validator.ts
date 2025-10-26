@@ -1,99 +1,178 @@
-import { z } from "zod";
+export type TBeritaAcaraForm = {
+  id?: string;
+  tipe_transaksi: string;
+  jenis_berita_acara: string;
+  customer_id: string;
+  periode: string;
+  cut_off: string;
+  submitted_at: string;
+  tipe_customer: string;
+  type_of_work_id: string;
+  reguler: string;
+  pic: string;
+  nill_ditagihkan: string;
+  berita_acara_general?: Array<{
+    goods_id: string | null;
+    satuan: string | null;
+    quantity: string | null;
+  }>;
+  plan_alokasi_periode?: Array<{
+    plan_alokasi_periode: string | null;
+    total_kelebihan: string | null;
+    harga_per_liter: string | null;
+    plan_liter: string | null;
+    actual_liter: string | null;
+    alokasi_backcharge: string | null;
+    nilai_backcharge: string | null;
+  }>;
+};
 
-export const beritaAcaraPeriodeSchema = z.object({
-  planAlokasiPeriode: z.string().min(1, "Plan Alokasi Periode wajib diisi"),
-  harga_per_liter: z.string().min(1, "Harga per liter wajib diisi"),
-  plan_liter: z.string().optional(),
-  actual_liter: z.string().optional(),
-  total_kelebihan: z.string().optional(),
-  alokasi_backcharge: z.string().optional(),
-  nilai_backcharge: z.string().optional(),
-});
+export type ValidationErrors = {
+  [key: string]: string | ValidationErrors | ValidationErrors[];
+};
 
-export const createBeritaAcaraSchema = z
-  .object({
-    jenis_berita_acara: z.string().min(1, "Jenis Berita Acara wajib dipilih"),
+export const validateBeritaAcara = (
+  data: TBeritaAcaraForm
+): { isValid: boolean; errors: ValidationErrors } => {
+  const errors: ValidationErrors = {};
 
-    tipe_transaksi: z.string().min(1, "Jenis Berita Acara wajib dipilih"),
+  // Validasi field wajib umum
+  if (!data?.tipe_transaksi) {
+    errors.tipe_transaksi = "Tipe Transaksi wajib diisi";
+  }
 
-    customer_id: z.string().min(1, "Customer wajib diisi"),
+  if (!data?.jenis_berita_acara) {
+    errors.jenis_berita_acara = "Jenis Berita Acara wajib diisi";
+  }
 
-    periode: z.string().nullable().optional(),
-    cut_off: z.string().nullable().optional(),
-    tipe_customer: z.string().nullable().optional(),
-    type_of_work_id: z.string().nullable().optional(),
-    reguler: z.string().nullable().optional(),
-    pic: z.string().min(1, "PIC wajib diisi"),
-    submitted_at: z.string().nullable().optional(),
-    nill_ditagihkan: z.string().nullable().optional(),
+  if (!data?.customer_id) {
+    errors.customer_id = "Customer wajib diisi";
+  }
 
-    goods_id: z.string().nullable().optional(),
-    quantity: z.string().nullable().optional(),
-    satuan_id: z.string().nullable().optional(),
-    alokasi_backcharge_total: z.string().nullable().optional(),
+  if (!data?.periode) {
+    errors.periode = "Periode wajib diisi";
+  }
 
-    planAlokasiPeriode: z.array(beritaAcaraPeriodeSchema).optional(),
-  })
-  .superRefine((data, ctx) => {
-    // 🔹 Jika non-fuel → periode & cut_off wajib
-    if (data.jenis_berita_acara !== "fuel") {
-      if (!data.periode) {
-        ctx.addIssue({
-          path: ["periode"],
-          message: "Periode wajib diisi untuk non-fuel",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!data.cut_off) {
-        ctx.addIssue({
-          path: ["cut_off"],
-          message: "Cut off wajib diisi untuk non-fuel",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-    }
+  if (!data?.cut_off) {
+    errors.cut_off = "Cut Off wajib diisi";
+  }
 
-    // 🔹 Jika fuel → wajib isi array planAlokasiPeriode minimal 1
-    if (data.jenis_berita_acara === "fuel") {
-      if (
-        !Array.isArray(data.planAlokasiPeriode) ||
-        data.planAlokasiPeriode.length === 0
-      ) {
-        ctx.addIssue({
-          path: ["planAlokasiPeriode"],
-          message: "Plan Alokasi Periode wajib diisi untuk fuel",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-    }
+  if (!data?.submitted_at) {
+    errors.submitted_at = "Submitted At wajib diisi";
+  }
 
-    // 🔹 Jika nontrade dan non-fuel → wajib isi goods_id, quantity, satuan_id
+  if (!data?.tipe_customer) {
+    errors.tipe_customer = "Tipe Customer wajib diisi";
+  }
+
+  if (!data?.type_of_work_id) {
+    errors.type_of_work_id = "Type of Work wajib diisi";
+  }
+
+  if (!data?.reguler) {
+    errors.reguler = "Reguler wajib diisi";
+  }
+
+  if (!data?.pic) {
+    errors.pic = "PIC wajib diisi";
+  }
+
+  if (!data?.nill_ditagihkan) {
+    errors.nill_ditagihkan = "Nilai/Ditagihkan wajib diisi";
+  }
+
+  // Validasi untuk Non-Trade Non-Fuel
+  if (
+    data?.tipe_transaksi === "nontrade" &&
+    data.jenis_berita_acara === "nonfuel"
+  ) {
     if (
-      data.tipe_transaksi === "nontrade" &&
-      data.jenis_berita_acara !== "fuel"
+      !data?.berita_acara_general ||
+      data?.berita_acara_general?.length === 0
     ) {
-      if (!data.goods_id) {
-        ctx.addIssue({
-          path: ["goods_id"],
-          message: "Goods wajib diisi untuk Nontrade Non-Fuel",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!data.quantity) {
-        ctx.addIssue({
-          path: ["quantity"],
-          message: "Quantity wajib diisi untuk Nontrade Non-Fuel",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!data.satuan_id) {
-        ctx.addIssue({
-          path: ["satuan_id"],
-          message: "Satuan wajib diisi untuk Nontrade Non-Fuel",
-          code: z.ZodIssueCode.custom,
-        });
+      errors.berita_acara_general = "Minimal 1 Backcharge";
+    } else {
+      const generalErrors: ValidationErrors[] = [];
+
+      data.berita_acara_general.forEach((general, index) => {
+        const itemErrors: ValidationErrors = {};
+
+        if (!general?.goods_id) {
+          itemErrors.goods_name = "Jenis Backcharge wajib diisi";
+        }
+
+        if (!general?.quantity) {
+          itemErrors.quantity = "Quantity wajib diisi";
+        }
+
+        if (!general?.satuan) {
+          itemErrors.satuan = "Satuan wajib diisi";
+        }
+
+        if (Object.keys(itemErrors).length > 0) {
+          generalErrors[index] = itemErrors;
+        }
+      });
+
+      if (generalErrors.length > 0) {
+        errors.berita_acara_general = generalErrors;
       }
     }
-  });
+  }
 
-export type TBeritaAcaraForm = z.infer<typeof createBeritaAcaraSchema>;
+  // Validasi untuk Non-Trade Fuel
+  if (
+    data?.tipe_transaksi === "nontrade" &&
+    data.jenis_berita_acara === "fuel"
+  ) {
+    if (
+      !data?.plan_alokasi_periode ||
+      data?.plan_alokasi_periode?.length === 0
+    ) {
+      errors.plan_alokasi_periode = "Minimal 1 periode wajib diisi";
+    } else {
+      // Validasi setiap item dalam plan_alokasi_periode
+      const periodeErrors: ValidationErrors[] = [];
+
+      data.plan_alokasi_periode.forEach((periode, index) => {
+        const itemErrors: ValidationErrors = {};
+
+        if (!periode?.harga_per_liter) {
+          itemErrors.harga_per_liter = "Harga Per Liter wajib diisi";
+        }
+
+        if (!periode?.plan_liter) {
+          itemErrors.plan_liter = "Plan Liter wajib diisi";
+        }
+
+        if (!periode?.actual_liter) {
+          itemErrors.actual_liter = "Actual Liter wajib diisi";
+        }
+
+        if (!periode?.alokasi_backcharge) {
+          itemErrors.alokasi_backcharge = "Alokasi Backcharge wajib diisi";
+        }
+
+        if (!periode?.nilai_backcharge) {
+          itemErrors.nilai_backcharge = "Nilai Backcharge wajib diisi";
+        }
+
+        // Hanya tambahkan jika ada error
+        if (Object.keys(itemErrors).length > 0) {
+          periodeErrors[index] = itemErrors;
+        }
+      });
+
+      // Jika ada error pada periode, tambahkan ke errors
+      if (periodeErrors.length > 0) {
+        errors.plan_alokasi_periode = periodeErrors;
+      }
+    }
+  }
+
+  // Return hasil validasi
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
+};

@@ -17,6 +17,12 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true,
       },
+      alamat: {
+        type: Sequelize.STRING,
+      },
+      phone: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

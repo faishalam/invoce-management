@@ -7,7 +7,7 @@ import ModalCustomer from "./components/ModalCustomer";
 import ModalDepartment from "./components/ModalDepartment";
 import ModalTypeOfWork from "./components/ModalTypeOfWork";
 import ModalSatuan from "./components/ModalSatuan";
-import useGlobal from "@/app/context/hooks";
+import useGlobal from "@/app/(private)/hooks";
 import { BlockingLoader } from "@/components/atoms/loader";
 import ModalGoods from "./components/ModalGoods";
 

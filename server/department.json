@@ -1,11 +1,17 @@
 [
     {
-        "name" : "SPRL"
-    },
-    {
         "name" : "PROD"
     },
     {
         "name" : "FAT"
+    },
+    {
+        "name" : "SHE"
+    },
+    {
+        "name" : "HCGS"
+    },
+    {
+        "name" : "PLANT"
     }
 ]
