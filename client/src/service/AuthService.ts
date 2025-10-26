@@ -1,6 +1,6 @@
 import Axios from "axios";
 
-const baseURL = "http://localhost:3000/";
+const baseURL = "http://localhost:3001/";
 
 export const AuthServices = Axios.create({
   baseURL: baseURL,

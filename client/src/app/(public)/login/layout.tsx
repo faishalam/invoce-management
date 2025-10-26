@@ -1,5 +1,3 @@
-"use client";
-
 import "../../../app/globals.css";
 import { UserProvider } from "./hooks";
 

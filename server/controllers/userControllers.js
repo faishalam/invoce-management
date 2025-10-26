@@ -1,24 +1,30 @@
 const { Op } = require("sequelize");
 const { comparePassword } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
-const { User } = require("../models");
+const { User, Department } = require("../models");
 
 class UserController {
   static async createUser(req, res) {
     try {
-      const { name, email, password, role, department } = req.body;
+      const { name, email, password, role, department_id } = req.body;
 
       // 1. validate unique email
       const validateEmail = await User.findOne({ where: { email } });
       if (validateEmail) {
-        return res.status(400).json({ message: "Email already exists" });
+        return res.status(400).json({
+          status: "error",
+          message: "Email already exists",
+          data: null,
+        });
       }
 
       // 2. validate length of password
       if (password.length < 6) {
-        return res
-          .status(400)
-          .json({ message: "Password must be at least 6 characters" });
+        return res.status(400).json({
+          status: "error",
+          message: "Password must be at least 6 characters",
+          data: null,
+        });
       }
 
       // 3. create account
@@ -27,7 +33,7 @@ class UserController {
         email,
         password,
         role,
-        department,
+        department_id,
       });
 
       // 4. response without password
@@ -36,131 +42,184 @@ class UserController {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-        department: newUser.department,
+        department_id: newUser.department_id,
       };
 
-      res.status(201).json(responseWithoutPassword);
+      return res.status(201).json({
+        status: "success",
+        message: "User created successfully",
+        data: responseWithoutPassword,
+      });
     } catch (error) {
-      if (error.name === "SequelizeValidationError") {
-        return res.status(400).json({ message: error.errors[0].message });
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        return res.status(400).json({
+          status: "error",
+          message: error.errors[0].message,
+          data: null,
+        });
       }
-      if (error.name === "SequelizeUniqueConstraintError") {
-        return res.status(400).json({ message: error.errors[0].message });
-      }
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+        data: null,
+      });
     }
   }
 
   static async login(req, res) {
     try {
       const { email, password } = req.body;
-      // 1. validasi form
+
       if (!email)
-        return res.status(400).json({ message: "Please enter your email" });
+        return res.status(400).json({
+          status: "error",
+          message: "Please enter your email",
+          data: null,
+        });
+
       if (!password)
-        return res.status(400).json({ message: "Please enter your password" });
+        return res.status(400).json({
+          status: "error",
+          message: "Please enter your password",
+          data: null,
+        });
 
-      // 2. cari user
-      let findUser = await User.findOne({ where: { email } });
+      const findUser = await User.findOne({ where: { email } });
       if (!findUser)
-        return res.status(401).json({ message: "Invalid email/password" });
+        return res.status(401).json({
+          status: "error",
+          message: "Invalid email/password",
+          data: null,
+        });
 
-      // 3. verify password
-      let checkPassword = comparePassword(password, findUser.password);
+      const checkPassword = comparePassword(password, findUser.password);
       if (!checkPassword)
-        return res.status(401).json({ message: "Invalid email/password" });
+        return res.status(401).json({
+          status: "error",
+          message: "Invalid email/password",
+          data: null,
+        });
 
-      let access_token = signToken({
+      const access_token = signToken({
         id: findUser.id,
         email: findUser.email,
         role: findUser.role,
       });
 
-      res.status(200).json({
+      return res.status(200).json({
+        status: "success",
+        message: "Login successful",
         data: {
-          access_token: access_token,
+          access_token,
           role: findUser.role,
         },
       });
     } catch (error) {
       console.log(error);
-      if (error.name === "SequelizeValidationError") {
-        return res.status(400).json({ message: error.errors[0].message });
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        return res.status(400).json({
+          status: "error",
+          message: error.errors[0].message,
+          data: null,
+        });
       }
-      if (error.name === "SequelizeUniqueConstraintError") {
-        return res.status(400).json({ message: error.errors[0].message });
-      }
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+        data: null,
+      });
     }
   }
 
   static async profile(req, res) {
     try {
-      const { role, name, email, department } = req.user;
+      const { role, name, email, department_id } = req.user;
 
-      res.status(200).json({ role, name, email, department });
+      const findDepartment = await Department.findByPk(department_id);
+      if (!findDepartment) {
+        return res.status(404).json({
+          status: "error",
+          message: "Department not found",
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "User profile fetched",
+        data: { role, name, email, department: findDepartment.name },
+      });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        status: "error",
+        message: error.message,
+        data: null,
+      });
     }
   }
 
-  static async updateProfile(req, res) {
+  static async updateUser(req, res) {
     try {
-      const { role, name, email, department } = req.body;
+      const { name, email } = req.body;
+      const { id } = req.params;
 
-      if (req.user.role === "superadmin") {
-        await User.update(
-          {
-            role,
-            name,
-            email,
-            department,
-          },
-          {
-            where: {
-              id: req.user.id,
-            },
-          }
-        );
-        res.status(200).json({ role, name, email, department });
-      }
+      await User.update({ name, email }, { where: { id: id } });
 
-      if (req.user.role === "user") {
-        await User.update(
-          {
-            name,
-            email,
-          },
-          {
-            where: {
-              id: req.user.id,
-            },
-          }
-        );
-        res.status(200).json({ name, email });
-      }
+      return res.status(200).json({
+        status: "success",
+        message: "User updated successfully",
+        data: { name, email },
+      });
     } catch (error) {
       console.log(error);
-      if (error.name === "SequelizeValidationError") {
-        return res.status(400).json({ message: error.errors[0].message });
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        return res.status(400).json({
+          status: "error",
+          message: error.errors[0].message,
+          data: null,
+        });
       }
-      if (error.name === "SequelizeUniqueConstraintError") {
-        return res.status(400).json({ message: error.errors[0].message });
-      }
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+        data: null,
+      });
     }
   }
 
-  static async deleteProfile(req, res) {
+  static async deleteUser(req, res) {
     try {
-      await User.destroy({
-        where: {
-          id: req.user.id,
-        },
-      });
-      res.status(200).json({ message: "User deleted successfully" });
+      const { id } = req.params;
+
+      if (req.user.role === "superadmin") {
+        await User.destroy({ where: { id } });
+        return res.status(200).json({
+          status: "success",
+          message: "User deleted successfully",
+          data: null,
+        });
+      } else {
+        return res.status(403).json({
+          status: "error",
+          message: "Unauthorized to delete user",
+          data: null,
+        });
+      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        status: "error",
+        message: error.message,
+        data: null,
+      });
     }
   }
 
@@ -168,26 +227,48 @@ class UserController {
     try {
       const users = await User.findAll({
         order: [["createdAt", "DESC"]],
-        include: [
-          {
-            model: Department,
-            as: "department",
-            attributes: ["name"],
-          },
-        ],
+        attributes: { exclude: ["password"] },
       });
-      res.status(200).json(users);
+
+      return res.status(200).json({
+        status: "success",
+        message: "Users fetched successfully",
+        data: users,
+      });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        status: "error",
+        message: error.message,
+        data: null,
+      });
     }
   }
 
   static async getUserById(req, res) {
     try {
-      const user = await User.findByPk(req.params.id);
-      res.status(200).json(user);
+      const user = await User.findByPk(req.params.id, {
+        attributes: { exclude: ["password"] },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          status: "error",
+          message: "User not found",
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "User fetched successfully",
+        data: user,
+      });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        status: "error",
+        message: error.message,
+        data: null,
+      });
     }
   }
 
@@ -196,29 +277,45 @@ class UserController {
       const { current, new: newPassword, confirm } = req.body;
 
       if (!current || !newPassword || !confirm) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({
+          status: "error",
+          message: "All fields are required",
+          data: null,
+        });
       }
 
       const user = await User.findByPk(req.user.id);
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({
+          status: "error",
+          message: "User not found",
+          data: null,
+        });
       }
 
       const isMatch = comparePassword(current, user.password);
       if (!isMatch) {
-        return res
-          .status(400)
-          .json({ message: "Current password is incorrect" });
+        return res.status(400).json({
+          status: "error",
+          message: "Current password is incorrect",
+          data: null,
+        });
       }
 
       if (newPassword.length < 6) {
-        return res
-          .status(400)
-          .json({ message: "New password must be at least 6 characters" });
+        return res.status(400).json({
+          status: "error",
+          message: "New password must be at least 6 characters",
+          data: null,
+        });
       }
 
       if (newPassword !== confirm) {
-        return res.status(400).json({ message: "Passwords do not match" });
+        return res.status(400).json({
+          status: "error",
+          message: "Passwords do not match",
+          data: null,
+        });
       }
 
       const { hashPassword } = require("../helpers/bcrypt");
@@ -229,10 +326,18 @@ class UserController {
         { where: { id: req.user.id } }
       );
 
-      res.status(200).json({ message: "Password changed successfully" });
+      return res.status(200).json({
+        status: "success",
+        message: "Password changed successfully",
+        data: null,
+      });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+        data: null,
+      });
     }
   }
 }

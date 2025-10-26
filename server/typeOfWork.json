@@ -1,0 +1,11 @@
+[
+  { "name": "Joint Survey", "type": "trade" },
+  { "name": "Rental Alat", "type": "trade" },
+  { "name": "BC Fuel", "type": "nontrade" },
+  { "name": "BC Limbah Bekas", "type": "nontrade" },
+  { "name": "BC Besi Bekas", "type": "nontrade" },
+  { "name": "BC Part", "type": "nontrade" },
+  { "name": "BC MCU", "type": "nontrade" },
+  { "name": "BC Material", "type": "nontrade" }
+]
+

@@ -1,0 +1,11 @@
+[
+  { "name": "PT STARGATE PASIFIC RESOURCE", "code": "STAPR2", "alamat": "Jl. Jend. Sudirman No. 1, Jakarta Pusat, 10110, Indonesia", "phone": "021-7722-9999" },
+  { "name": "PT FEROS BINTANG MOROWALI", "code": "FEBWID" , "alamat" : "", "phone": ""},
+  { "name": "PT SULTRA ALAM PERKASA", "code": "BSAPID" , "alamat" : "", "phone": ""},
+  { "name": "CV HALIMAH MOKORAI TEKNIK", "code": "HAMTID" , "alamat" : "", "phone": ""},
+  { "name": "PT SOLID PERSADA INDONESIA", "code": "SOPIID" , "alamat" : "", "phone": ""},
+  { "name": "PT TEKNO PUTRA PERKASA", "code": "TEPPIID" , "alamat" : "", "phone": ""},
+  { "name": "PT JEJAK HASANAH", "code": "JEJHID" , "alamat" : "", "phone": ""},
+  { "name": "PT INTITEKNINDO MEGA ABADI", "code": "INMAID" , "alamat" : "", "phone": ""},
+  { "name": "PT UNITED TRACTORS", "code": "UT", "alamat" : "", "phone": "" }
+]

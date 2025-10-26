@@ -10,23 +10,22 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Department.hasMany(models.User, {
-        foreignKey: "departmentId",
+        foreignKey: "department_id",
+        as: "users",
       });
     }
   }
   Department.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: {
-          notEmpty: { msg: "name is required" },
-          notNull: { msg: "name is required" },
-        },
-      },
-      code: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        unique: true,
         validate: {
           notEmpty: { msg: "name is required" },
           notNull: { msg: "name is required" },

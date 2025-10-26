@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Poppins } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
-import { ToastContainer } from "react-toastify";
 import { QueryProviders } from "@/providers/QueryProviders";
-import { AuthProvider } from "./hooks";
+import { ThemeProvider } from "@mui/material";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { theme } from "./styles/theme";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -28,12 +27,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.className} ${geistMono.variable} antialiased overflow-hidden h-screen w-screen`}
       >
-        <ToastContainer />
-        <QueryProviders>
-          <AuthProvider>{children}</AuthProvider>
-        </QueryProviders>
+        <AppRouterCacheProvider>
+          <Toaster richColors closeButton position="top-right" />
+          <QueryProviders>
+            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          </QueryProviders>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Berita Acara Pemakaian Solar</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        color: #000;
+        margin: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .header img {
+        width: 90px;
+        height: auto;
+      }
+
+      .header h2 {
+        margin: 0;
+        font-size: 16px;
+        text-transform: uppercase;
+      }
+
+      .header h3 {
+        margin: 5px 0;
+        text-transform: uppercase;
+        font-size: 14px;
+        text-decoration: underline;
+      }
+
+      .number {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      th,
+      td {
+        padding: 6px;
+        text-align: center;
+      }
+
+      .footer {
+        margin-top: 30px;
+        text-align: justify;
+      }
+
+      .text-right {
+        text-align: right;
+      }
+
+      .bold {
+        font-weight: bold;
+      }
+
+      /* Bagian tanda tangan */
+      .sign-section {
+        margin-top: 30px;
+      }
+
+      .sign-header {
+        text-align: right;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .sign-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .sign-table th,
+      .sign-table td {
+        border: 1px solid black;
+        text-align: center;
+        padding: 8px;
+      }
+
+      .sign-space {
+        height: 80px; /* ruang tanda tangan */
+      }
+      .empty-space {
+          height: 20px;
+      }
+      .header-flex {
+      display: flex;
+      justify-content: center; /* posisi di tengah secara horizontal */
+      align-items: center; /* vertikal tengah */
+    }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="header-flex">
+        <img src={{logo_url}} alt="Logo KPP" />
+        <h2>PT. KALIMANTAN PRIMA PERSADA</h2>
+      </div>
+      <h3>BERITA ACARA PEMAKAIAN SOLAR</h3>
+    </div>
+    <div class="number">
+      <p><strong>{{number}}</strong></p>
+    </div>
+
+    <p>
+      Sehubungan telah berakhirnya periode pekerjaan bulan <strong>{{periode}}</strong>, dengan ini kami sampaikan
+      rekonsiliasi penggunaan fuel oleh <strong>{{customer}}</strong>:
+    </p>
+
+    <p><strong>Plan Kontrak:</strong></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Periode</th>
+          <th>Harga per Liter (Rp)</th>
+          <th>Plan (Liter)</th>
+          <th>Actual (Liter)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#plan_kontrak}}
+        <tr>
+          <td>{{periode}}</td>
+          <td>Rp {{harga_per_liter}}</td>
+          <td>{{plan}}</td>
+          <td>{{actual}}</td>
+        </tr>
+        {{/plan_kontrak}}
+        <tr>
+          <td colspan="2" class="text-center bold">Total Plan</td>
+          <td class="bold">{{total_plan}}</td>
+          <td class="bold">{{total_actual}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Total Kelebihan:</strong> {{total_kelebihan}}</p>
+
+    <p><strong>Alokasi Backcharge:</strong></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Periode</th>
+          <th>Harga per Liter (Rp)</th>
+          <th>Alokasi Backcharge (Liter)</th>
+          <th>Nilai Backcharge (Rp)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#alokasi_backcharge}}
+        <tr>
+          <td>{{periode}}</td>
+          <td>Rp {{harga_per_liter}}</td>
+          <td>{{alokasi_liter}}</td>
+          <td>Rp {{nilai_backcharge}}</td>
+        </tr>
+        {{/alokasi_backcharge}}
+        <tr>
+         <td colspan="2" class="text-center bold">Total</td>
+          <td class="bold">{{total_kelebihan}}</td>
+          <td class="bold">{{total_nilai_backcharge}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <p>
+        Berita Acara ini disusun sebagai bukti administrasi dan akan dilampirkan dalam dokumen penagihan resmi.
+        Apabila di kemudian hari terdapat kekeliruan dalam perhitungan, maka akan dilakukan penyesuaian sesuai data dan
+        kondisi yang sebenarnya.
+      </p>
+    </div>
+
+    <div class="sign-section">
+      <div class="sign-header">Lameruru, {{tanggal}}</div>
+      <table class="sign-table">
+        <thead>
+          <tr>
+            <th>Dibuat Oleh</th>
+            <th>Diketahui Oleh</th>
+            <th>Disetujui Oleh</th>
+            <th>Vendor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="sign-space">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+           <tr class="empty-space">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>SM GL</td>
+            <td>Plant SM Dept. Head</td>
+            <td>Project Manager</td>
+            <td>{{customer}}</td>
+          </tr>
+         
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

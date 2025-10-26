@@ -1,28 +1,18 @@
-export type TInputLogin = {
-  password: string;
+export type TUserListResponse = {
+  id?: string;
+  name: string;
   email: string;
-};
-
-export type TLoginResponse = {
-  access_token: string;
+  password?: string;
   role: string;
+  is_active: boolean;
+  department: string;
+  department_id: string;
 };
 
-export type TInputRegister = {
-  username: string;
-  email: string;
-  password: string;
-};
-
-export type TRegisterResponse = {
-  id: string;
-  access_token: string;
-  role: string;
-  username: string;
-};
-
-export type TUserLoggedInResponse = {
-  email: string;
-  username: string;
-  role: string;
+export type TUserForm = {
+  name?: string;
+  email?: string;
+  role?: string;
+  is_active?: boolean;
+  department_id?: string;
 };

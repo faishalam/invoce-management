@@ -1,37 +1,42 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-import useAuth from "../hooks";
-import { useEffect } from "react";
+import Cookies from "js-cookie";
 import Sidebar from "@/components/molecules/sidebar";
-import MobileSidebar from "@/components/molecules/mobileSidebar";
-import Navbar from "@/components/molecules/navbar";
+import { GlobalProvider } from "./hooks";
+import Navbar from "@/components/atoms/navbar";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type TProps = {
   children?: React.ReactNode;
 };
+
 const PrivateLayout: React.FC<TProps> = ({ children }) => {
   const router = useRouter();
-  const { dataUser } = useAuth();
+  const accessToken = Cookies.get("accessToken");
+
   useEffect(() => {
-    const token = localStorage.getItem("Authorization");
-    if (token) {
-      router.push("/dashboard");
-    } else {
-      router.push("/login");
+    if (!accessToken) {
+      router.replace("/login");
+      return;
     }
-  }, [router]);
+  }, [accessToken, router]);
   return (
-    <div className="w-full max-w-full min-h-screen bg-gray-100">
-      <Sidebar />
-      <Navbar />
-      <MobileSidebar />
-      <div className="lg:pl-72 w-full max-w-full">
-        <main className="py-6 w-full max-w-full ">
-          <div className="px-4 sm:px-6 lg:px-8 w-full">{children}</div>
-        </main>
+    <GlobalProvider>
+      <div className="w-full max-w-full min-h-screen bg-blue-50 overflow-hidden">
+        <div className="w-full flex h-screen overflow-hidden">
+          <div className="w-1/6">
+            <Sidebar />
+          </div>
+          <div className="w-full max-w-full overflow-y-auto">
+            <Navbar />
+            <main>
+              <div className="px-8 pb-8 pt-2 overflow-hidden">{children}</div>
+            </main>
+          </div>
+        </div>
       </div>
-    </div>
+    </GlobalProvider>
   );
 };
+
 export default PrivateLayout;

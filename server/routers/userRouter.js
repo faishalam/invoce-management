@@ -5,12 +5,12 @@ const userRouter = express.Router();
 
 userRouter.post("/login", UserController.login);
 userRouter.use(authentication);
-userRouter.post("/register", UserController.createUser);
+userRouter.post("/users", UserController.createUser);
 userRouter.get("/profile", UserController.profile);
-userRouter.put("/profile", UserController.updateProfile);
-userRouter.delete("/profile", UserController.deleteProfile);
-userRouter.patch("/change-password", UserController.changePassword);
 userRouter.get("/users", UserController.getAllUsers);
-userRouter.get("/user/:id", UserController.getUserById);
+userRouter.put("/users/:id", UserController.updateUser);
+userRouter.delete("/users/:id", UserController.deleteUser);
+userRouter.patch("/change-password", UserController.changePassword);
+userRouter.get("/users/:id", UserController.getUserById);
 
 module.exports = userRouter;

@@ -1,16 +1,16 @@
-import { IconButton, IconButtonProps } from '@mui/material'
+import { IconButton, IconButtonProps } from "@mui/material";
+import { useId } from "react";
 
 type TProps = IconButtonProps & {
-  children?: React.ReactNode
-}
+  children?: React.ReactNode;
+};
 
 const CIconButton: React.FC<TProps> = ({ children, ...props }) => {
-  const generatedID = Math.random().toString(36).substring(7)
-  const id = props.id || generatedID
-  const ariaLabel = props['aria-label'] || `custom-icon-button-${id}`
-  const title = props.title || `custom-icon-button-${id}`
-  const ariaLabelledBy = props['aria-labelledby'] || `custom-icon-button-${id}`
-  const role = props.role || 'button'
+  const id = useId();
+  const ariaLabel = props["aria-label"] || `custom-icon-button-${id}`;
+  const title = props.title || `custom-icon-button-${id}`;
+  const ariaLabelledBy = props["aria-labelledby"] || `custom-icon-button-${id}`;
+  const role = props.role || "button";
   return (
     <IconButton
       {...props}
@@ -23,6 +23,6 @@ const CIconButton: React.FC<TProps> = ({ children, ...props }) => {
     >
       {children}
     </IconButton>
-  )
-}
-export default CIconButton
+  );
+};
+export default CIconButton;

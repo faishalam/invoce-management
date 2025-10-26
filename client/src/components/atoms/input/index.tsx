@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import {
   TextFieldProps,
   TextField,
@@ -13,7 +13,6 @@ type CInputProps = {
   onUnitChange?: (unit: string) => void;
   inputClassName?: string;
   required?: boolean;
-  errors?: string;
 } & TextFieldProps;
 
 const CInput: React.FC<CInputProps> = ({
@@ -24,16 +23,16 @@ const CInput: React.FC<CInputProps> = ({
   onUnitChange,
   inputClassName,
   required,
-  errors,
   ...props
 }) => {
-  const id = props?.id;
+  const reactId = useId();
+  const id = reactId;
 
   return (
     <div className={props.className}>
       {typeof label === "string" ? (
-        <small className={`${errors && "text-red-500"}`}>
-          <label htmlFor={id}>
+        <small>
+          <label htmlFor={id} className="font-medium">
             {label.replace(/\*$/, "")}
             {(required || label.endsWith("*")) && (
               <span style={{ color: "red" }}>*</span>
@@ -41,8 +40,10 @@ const CInput: React.FC<CInputProps> = ({
           </label>
         </small>
       ) : (
-        <small className={`${errors && "text-red-500"}`}>
-          <label htmlFor={id}>{label}</label>
+        <small>
+          <label htmlFor={id} className="font-medium">
+            {label}
+          </label>
         </small>
       )}
       <TextField
@@ -87,7 +88,15 @@ const CInput: React.FC<CInputProps> = ({
           "& .MuiInputBase-input": {
             fontSize: "12px",
             height: "36px",
-            padding: "8px 14px",
+            // padding: '8px 14px',
+          },
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "6px", // ✅ custom border radius di sini
+          },
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: "0 0 0 1000px white inset",
+            WebkitTextFillColor: "black",
+            transition: "5000s ease-in-out 0s",
           },
           ...props.sx,
         }}

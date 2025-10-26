@@ -1,18 +1,27 @@
-import { ThreeDot } from 'react-loading-indicators'
+"use client";
+
+import { CircularProgress, Typography } from "@mui/material";
+import React from "react";
+
 const BlockingLoader: React.FC<{ text?: string }> = ({ text }) => {
   return (
     <div
-      style={{ zIndex: 3000 }}
-      className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center"
+      style={{ zIndex: 3000, backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      className="fixed inset-0 flex flex-col justify-center items-center gap-4"
     >
-      <ThreeDot
-        variant="bounce"
-        color="#006766"
-        size="medium"
-        text={text || 'Loading'}
-        textColor="#006766"
-      />
+      <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center">
+        <CircularProgress size={48} thickness={4} color="primary" />
+        {text && (
+          <Typography
+            variant="body1"
+            className="text-white mt-4 text-center tracking-wide"
+          >
+            {text}
+          </Typography>
+        )}
+      </div>
     </div>
-  )
-}
-export default BlockingLoader
+  );
+};
+
+export default BlockingLoader;

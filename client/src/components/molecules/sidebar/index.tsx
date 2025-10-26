@@ -1,83 +1,134 @@
 "use client";
-import { HomeIcon } from "@/assets/svg/home-icon";
-import { InquiryIcon } from "@/assets/svg/inquiry-icon";
-import { usePathname } from "next/navigation";
-import { useMemo } from "react";
-import Image from "next/image";
+import ArticleIcon from "@mui/icons-material/Article";
+import { motion, AnimatePresence } from "framer-motion";
+import logoKpp from "@/assets/img/kpp-logo.png";
 import CLink from "@/components/atoms/link";
+import FolderIcon from "@mui/icons-material/Folder";
+import PersonIcon from "@mui/icons-material/Person";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo } from "react";
+import LogoutIcon from "@mui/icons-material/Logout";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import useGlobal from "@/app/(private)/hooks";
+import Image from "next/image";
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
-  const selectedMenu = (path: string) => {
-    if (path === "/inquiry") {
-      return pathname.includes(path) && !pathname.includes("/inquiry-approval");
-    }
-    return pathname.includes(path);
+  const router = useRouter();
+  const { dataUserProfile, isLoadingUserProfile } = useGlobal();
+  const queryClient = useQueryClient();
+
+  const sidebarClass = useMemo(() => {
+    if (pathname.includes("/messages")) return "hidden";
+    return "w-full h-full box-border p-2 bg-slate-900 flex flex-col justify-between";
+  }, [pathname]);
+
+  const handleLogout = () => {
+    queryClient.clear();
+    Cookies.remove("accessToken");
+    router.push("/login");
+    toast.success("Logout Berhasil");
   };
 
-  const handleShowSidebar = useMemo(() => {
-    return (
-      <>
-        <div className="w-full">
-          <MenuItems
-            Icon={HomeIcon}
-            title="Dashboard"
-            selected={selectedMenu("/dashboard")}
-            href="/dashboard"
-          />
-          <MenuItems
-            title="Asset Management"
-            href="/asset-management/completed-asset"
-            Icon={InquiryIcon}
-            selected={
-              selectedMenu("/asset-management/incoming") ||
-              selectedMenu("/asset-management/department") ||
-              selectedMenu("/asset-management/completed-asset")
-            }
-          />
-          <SubMenuItems
-            title="Completed Asset"
-            selected={selectedMenu("/asset-management/completed-asset")}
-            href="/asset-management/completed-asset"
-            hide={!selectedMenu("/asset-management")}
-          />
-          <SubMenuItems
-            title="Incoming Asset"
-            selected={selectedMenu("/asset-management/incoming")}
-            href="/asset-management/incoming"
-            hide={!selectedMenu("/asset-management")}
-          />
-        </div>
-      </>
-    );
-  }, []);
   return (
-    <>
-      <div className="hidden h-screen lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex bg-[#0e342d] border-gray-500 shadow-xl items-center p-1 border-b">
-          <Image
-            src="/assets/logoWhite.png"
-            alt="Logo KPP Mining"
-            width={80}
-            height={80}
-            className="p-3"
-          />
-          <p className="text-white font-medium">KPP MONITORING</p>{" "}
-          {/* Tambahkan margin jika perlu */}
-        </div>
-        <div className="bg-[#0e342d] h-screen border-gray-500 shadow-xl items-center p-1 border-b">
-          {handleShowSidebar}
-        </div>
-      </div>
-    </>
+    <AnimatePresence mode="wait">
+      {!isLoadingUserProfile && (
+        <motion.div
+          key="sidebar"
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 100, opacity: 0 }}
+          transition={{ duration: 0.6 }}
+          className={sidebarClass}
+        >
+          <div>
+            <div className="h-[55px] justify-start p-3 items-center flex gap-2 border-b border-gray-300 mb-10">
+              {/* <div className="flex gap-4 justify-center items-center w-6 h-6 border bg-[#2784c7] rounded-md"> */}
+              <Image
+                src={logoKpp}
+                alt="logo.png"
+                width={70}
+                height={50}
+                className=""
+                priority
+              />
+              {/* </div> */}
+              <div>
+                <p className="text-white text-xs font-bold">BA & DN</p>
+                <p className="text-white text-xs font-bold">Management</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {/* <MenuItems
+            Icon={DashboardIcon}
+            title="Dashboard"
+            selected={pathname.startsWith("/dashboard")}
+            href="/dashboard"
+          /> */}
+              <MenuItems
+                Icon={ArticleIcon}
+                title="BA Management"
+                selected={pathname.startsWith("/ba-management")}
+                href="/ba-management"
+              />
+              <MenuItems
+                Icon={ArticleIcon}
+                title="DN Management"
+                selected={pathname.startsWith("/dn-management")}
+                href="/dn-management"
+              />
+              <MenuItems
+                Icon={ArticleIcon}
+                title="Faktur Management"
+                selected={pathname.startsWith("/faktur-management")}
+                href="/faktur-management"
+              />
+              {dataUserProfile?.data?.role === "superadmin" && (
+                <>
+                  <MenuItems
+                    Icon={PersonIcon}
+                    title="User Management"
+                    selected={pathname.startsWith("/user-management")}
+                    href="/user-management"
+                  />
+                  <MenuItems
+                    Icon={FolderIcon}
+                    title="Data Management"
+                    selected={pathname.startsWith("/data-management")}
+                    href="/data-management"
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          <button
+            className="group text-white w-full rounded-md p-3 cursor-pointer transition-colors flex items-center gap-2 border-gray-200 bg-transparent hover:bg-[#fef7ed]"
+            onClick={handleLogout}
+          >
+            <LogoutIcon
+              sx={{ fontSize: "1rem" }}
+              className="text-white transition-colors group-hover:text-[#f46e31]"
+            />
+            <small className="font-medium text-white transition-colors group-hover:text-[#f46e31]">
+              Logout
+            </small>
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
+
 export default Sidebar;
 
 type TMenuItemProps = {
   selected: boolean;
   title: string;
-  Icon: React.FC<{ fill?: boolean }>;
+  Icon: React.ElementType;
   href?: string;
 };
 
@@ -88,42 +139,24 @@ const MenuItems: React.FC<TMenuItemProps> = ({
   href,
 }) => {
   return (
-    <CLink href={href ? href : ""} prefetch>
+    <CLink href={href ?? ""} prefetch>
       <div
-        className={`flex hover:bg-[#207262] rounded-sm p-3 gap-2 items-center cursor-pointer ${
-          selected ? "bg-[#207262]" : ""
-        }`}
+        className={`group flex items-center gap-2 p-3 rounded-md cursor-pointer transition-colors
+      ${selected ? "bg-[#fef7ed]" : "hover:bg-[#fef7ed]"}
+    `}
       >
-        <Icon fill={selected} />
-        <small className="font-bold text-white">{title}</small>
-      </div>
-    </CLink>
-  );
-};
-type TSubMenuProps = {
-  selected?: boolean;
-  title?: string;
-  hide?: boolean;
-  href?: string;
-  Icon?: React.FC<{ fill?: boolean }>;
-};
-const SubMenuItems: React.FC<TSubMenuProps> = ({
-  selected,
-  title,
-  hide,
-  href,
-  Icon,
-}) => {
-  return (
-    <CLink href={href ? href : ""} prefetch>
-      <div
-        className={`flex text-white rounded-sm hover:bg-[#207262] p-3 gap-2 items-center cursor-pointer ${
-          selected ? "bg-[#207262]" : ""
-        } ${hide ? "hidden" : ""}`}
-      >
-        {Icon && <Icon fill={selected} />}
+        <Icon
+          sx={{ fontSize: "1rem" }}
+          className={`
+        transition-colors
+        ${selected ? "text-[#f46e31]" : "text-white group-hover:text-[#f46e31]"}
+      `}
+        />
+
         <small
-          className={`font-bold text-white ${Icon ? "" : "pl-[24px] ml-2"}`}
+          className={`font-medium text-xs transition-colors
+        ${selected ? "text-[#f46e31]" : "text-white group-hover:text-[#f46e31]"}
+      `}
         >
           {title}
         </small>

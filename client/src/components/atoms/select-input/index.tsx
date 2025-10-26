@@ -1,17 +1,23 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { TextField, Select, MenuItem, InputAdornment, TextFieldProps } from '@mui/material'
+import * as React from "react";
+import {
+  TextField,
+  Select,
+  MenuItem,
+  InputAdornment,
+  TextFieldProps,
+} from "@mui/material";
 
 type SelectInputProps = {
-  label?: string
-  value: string | number
-  unit?: string
-  required?: boolean
-  onUnitChange?: (unit: string) => void
-  units?: string[]
-  placeholder?: string
-} & TextFieldProps
+  label?: string;
+  value: string | number;
+  unit?: string;
+  required?: boolean;
+  onUnitChange?: (unit: string) => void;
+  units?: string[];
+  placeholder?: string;
+} & TextFieldProps;
 
 export default function SelectInput({
   label,
@@ -23,8 +29,8 @@ export default function SelectInput({
   placeholder,
   ...props
 }: SelectInputProps) {
-  const generatedID = Math.random().toString(36).substring(7)
-  const id = generatedID
+  const generatedID = React.useId();
+  const id = generatedID;
   return (
     <div className={props.className}>
       {label && (
@@ -44,10 +50,10 @@ export default function SelectInput({
               <InputAdornment position="end">
                 <Select
                   value={unit}
-                  onChange={e => onUnitChange?.(e.target.value)}
+                  onChange={(e) => onUnitChange?.(e.target.value)}
                   variant="standard"
                 >
-                  {units?.map(unit => (
+                  {units?.map((unit) => (
                     <MenuItem key={unit} value={unit}>
                       {unit}
                     </MenuItem>
@@ -58,17 +64,17 @@ export default function SelectInput({
           },
         }}
         sx={{
-          width: '100%',
-          '& .MuiInputBase-root': { height: '36px' },
-          '& input': { height: '36px', padding: '0 14px' },
-          '& .MuiInputBase-input': {
-            fontSize: '12px',
-            height: '36px',
-            padding: '8px 14px',
+          width: "100%",
+          "& .MuiInputBase-root": { height: "36px" },
+          "& input": { height: "36px", padding: "0 14px" },
+          "& .MuiInputBase-input": {
+            fontSize: "12px",
+            height: "36px",
+            padding: "8px 14px",
           },
           ...props.sx,
         }}
       />
     </div>
-  )
+  );
 }
