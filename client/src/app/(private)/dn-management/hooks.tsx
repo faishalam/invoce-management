@@ -197,7 +197,6 @@ const useDebitNoteHooks = () => {
   };
 
   const onInvalid = (errors: FieldErrors) => {
-    console.log(errors);
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;

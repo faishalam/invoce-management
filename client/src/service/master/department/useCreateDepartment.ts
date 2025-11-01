@@ -15,7 +15,6 @@ const useCreateDepartment = (props?: TUseCreateDepartmentProps) => {
         `/department`,
         payload
       );
-      console.log(response)
       if (response.status !== 201) return;
       return response.data.data;
     } catch (error) {

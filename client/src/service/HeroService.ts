@@ -1,7 +1,7 @@
 import Axios from "axios";
 import Cookies from "js-cookie";
 
-const baseURL = "https://beritaacaramanagement.cloud/";
+const baseURL = "https://ba-management.online/";
 // const baseURL = "http://localhost:3001/";
 
 export const HeroServices = Axios.create({

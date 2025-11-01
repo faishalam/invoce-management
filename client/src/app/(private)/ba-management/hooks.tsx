@@ -694,8 +694,6 @@ const useBeritaAcaraManagementHooks = () => {
     }
   }, [dataBeritaAcaraById?.data, mode, id]);
 
-  console.log(getValues());
-
   return {
     selectedBaId,
     beritaAcaraColumnDef,
