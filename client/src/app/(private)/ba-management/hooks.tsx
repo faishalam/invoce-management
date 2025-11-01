@@ -11,7 +11,12 @@ import useDeleteBeritaAcara from "@/service/berita-acara/useDeleteBeritaAcara";
 import { useModalWarningInfo } from "@/components/atoms/modal-warning";
 import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 import Image from "next/image";
-import { TBeritaAcaraForm, validateBeritaAcara } from "./validator";
+import {
+  acceptedSchema,
+  TAcceptedForm,
+  TBeritaAcaraForm,
+  validateBeritaAcara,
+} from "./validator";
 import { TBeritaAcaraList } from "@/service/berita-acara/types";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
 import useCreateBeritaAcara from "@/service/berita-acara/useCreateBeritaAcara";
@@ -20,6 +25,7 @@ import useBeritaAcaraById from "@/service/berita-acara/useBeritaAcaraById";
 import { Radio } from "@mui/material";
 import useGlobal from "@/app/(private)/hooks";
 import useApprovedBeritaAcara from "@/service/berita-acara/useApprovedBeritaAcara";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const useBeritaAcaraManagementHooks = () => {
   const pathName = usePathname();
@@ -34,6 +40,7 @@ const useBeritaAcaraManagementHooks = () => {
     return lastPath;
   }, [pathName]);
   const searchParams = useSearchParams();
+  const [openModalAccept, setOpenModalAccept] = useState<boolean>(false);
   const mode = searchParams.get("mode");
   const modalWarningInfo = useModalWarningInfo();
   const [selectedBaId, setSelectedBaId] = useState<string>("");
@@ -62,6 +69,24 @@ const useBeritaAcaraManagementHooks = () => {
       tipe_customer: "",
       type_of_work_id: "",
       pic: "",
+      signers: [
+        {
+          name: "",
+          dept: "",
+        },
+        {
+          name: "",
+          dept: "",
+        },
+        {
+          name: "",
+          dept: "",
+        },
+        {
+          name: "",
+          dept: "",
+        },
+      ],
       submitted_at: new Date().toISOString().split("T")[0],
       plan_alokasi_periode: [
         {
@@ -74,7 +99,7 @@ const useBeritaAcaraManagementHooks = () => {
           total_kelebihan: null,
         },
       ],
-      berita_acara_general: [
+      berita_acara_uraian: [
         {
           goods_id: null,
           satuan: null,
@@ -85,7 +110,22 @@ const useBeritaAcaraManagementHooks = () => {
     mode: "onChange",
   });
 
-  const { dataCustomer, dataTypeOfWork } = useGlobal();
+  const {
+    control: controlAccepted,
+    handleSubmit: handleSubmitAccepted,
+    watch: watchAccepted,
+    formState: { errors: errorsAccepted },
+    reset: resetAccepted,
+    setValue: setValueAccepted,
+  } = useForm<TAcceptedForm>({
+    resolver: zodResolver(acceptedSchema),
+    defaultValues: {
+      link_doc: "",
+    },
+    mode: "onChange",
+  });
+
+  const { dataCustomer, dataTypeOfWork, dataUserProfile } = useGlobal();
 
   const [filter, setFilter] = useState<{
     search: string;
@@ -112,6 +152,7 @@ const useBeritaAcaraManagementHooks = () => {
       queryClient.invalidateQueries({
         queryKey: ["useTotalList"],
       });
+      reset();
       router.push("/ba-management");
       toast.success("Berita Acara dan Template berhasil ditambahkan");
     },
@@ -143,6 +184,7 @@ const useBeritaAcaraManagementHooks = () => {
       queryClient.invalidateQueries({
         queryKey: ["useFakturById"],
       });
+      reset();
       router.push("/ba-management");
       toast.success("Berita Acara Berhasil Diperbarui");
     },
@@ -167,7 +209,13 @@ const useBeritaAcaraManagementHooks = () => {
       queryClient.invalidateQueries({
         queryKey: ["useBeritaAcaraList"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraById"],
+      });
+      reset();
       setSelectedBaId("");
+      setOpenModalAccept(false);
+      resetAccepted();
       toast.success("Berita Acara Berhasil Disetujui");
     },
     onError: (error) => {
@@ -239,6 +287,37 @@ const useBeritaAcaraManagementHooks = () => {
   };
 
   const onInvalid = (errors: FieldErrors) => {
+    const showErrors = (errs: FieldErrors) => {
+      Object.values(errs).forEach((error) => {
+        if (!error) return;
+        if (error.message) {
+          toast.error(error.message as string);
+        }
+        if (error && typeof error === "object") {
+          if ("types" in error || "_errors" in error) return;
+          showErrors(error as FieldErrors);
+        }
+      });
+    };
+
+    showErrors(errors);
+  };
+
+  const onSubmitAccepted: SubmitHandler<TAcceptedForm> = (data) => {
+    modalWarningInfo.open({
+      title: "Konfirmasi",
+      message: (
+        <div>
+          <p>Apakah anda yakin sudah menerima Berita Acara ini?</p>
+        </div>
+      ),
+      onConfirm: () => {
+        mutateApprovedBeritaAcara({ id: selectedBaId, payload: data });
+      },
+    });
+  };
+
+  const onInvalidAccepted = (errors: FieldErrors) => {
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -352,6 +431,7 @@ const useBeritaAcaraManagementHooks = () => {
     return [
       {
         width: 80,
+        hide: dataUserProfile?.data?.department !== "FAT",
         pinned: "left",
         cellRenderer: (params: ICellRendererParams<TBeritaAcaraList>) => {
           const idRow = params?.data?.id;
@@ -526,6 +606,8 @@ const useBeritaAcaraManagementHooks = () => {
                 return "bg-yellow-100 text-yellow-700 rounded-xl text-xs";
               case "Submitted Faktur":
                 return "bg-purple-100 text-purple-700 rounded-xl text-xs";
+              case "Faktur Accepted":
+                return "bg-orange-100 text-orange-700 rounded-xl text-xs";
               default:
                 return "bg-gray-100 text-gray-600 rounded-xl text-xs";
             }
@@ -612,6 +694,8 @@ const useBeritaAcaraManagementHooks = () => {
     }
   }, [dataBeritaAcaraById?.data, mode, id]);
 
+  console.log(getValues());
+
   return {
     selectedBaId,
     beritaAcaraColumnDef,
@@ -646,6 +730,16 @@ const useBeritaAcaraManagementHooks = () => {
     mutateApprovedBeritaAcara,
     isLoadingApprovedBeritaAcara,
     setActiveTabs,
+    openModalAccept,
+    setOpenModalAccept,
+    controlAccepted,
+    handleSubmitAccepted,
+    onSubmitAccepted,
+    setSelectedBaId,
+    onInvalidAccepted,
+    errorsAccepted,
+    watchAccepted,
+    setValueAccepted,
   };
 };
 

@@ -1,3 +1,5 @@
+import z from "zod";
+
 export type TBeritaAcaraForm = {
   id?: string;
   tipe_transaksi: string;
@@ -11,7 +13,7 @@ export type TBeritaAcaraForm = {
   reguler: string;
   pic: string;
   nill_ditagihkan: string;
-  berita_acara_general?: Array<{
+  berita_acara_uraian?: Array<{
     goods_id: string | null;
     satuan: string | null;
     quantity: string | null;
@@ -24,6 +26,10 @@ export type TBeritaAcaraForm = {
     actual_liter: string | null;
     alokasi_backcharge: string | null;
     nilai_backcharge: string | null;
+  }>;
+  signers?: Array<{
+    name: string | null;
+    dept: string | null;
   }>;
 };
 
@@ -86,15 +92,12 @@ export const validateBeritaAcara = (
     data?.tipe_transaksi === "nontrade" &&
     data.jenis_berita_acara === "nonfuel"
   ) {
-    if (
-      !data?.berita_acara_general ||
-      data?.berita_acara_general?.length === 0
-    ) {
-      errors.berita_acara_general = "Minimal 1 Backcharge";
+    if (!data?.berita_acara_uraian || data?.berita_acara_uraian?.length === 0) {
+      errors.berita_acara_uraian = "Minimal 1 Backcharge";
     } else {
       const generalErrors: ValidationErrors[] = [];
 
-      data.berita_acara_general.forEach((general, index) => {
+      data.berita_acara_uraian.forEach((general, index) => {
         const itemErrors: ValidationErrors = {};
 
         if (!general?.goods_id) {
@@ -115,7 +118,7 @@ export const validateBeritaAcara = (
       });
 
       if (generalErrors.length > 0) {
-        errors.berita_acara_general = generalErrors;
+        errors.berita_acara_uraian = generalErrors;
       }
     }
   }
@@ -170,9 +173,43 @@ export const validateBeritaAcara = (
     }
   }
 
+  if (data?.tipe_transaksi === "nontrade") {
+    if (!data?.signers || data.signers.length === 0) {
+      errors.signers = "Signer wajib diisi";
+    } else {
+      const signerErrors: ValidationErrors[] = [];
+
+      data.signers.forEach((signer, index) => {
+        const itemErrors: ValidationErrors = {};
+
+        if (!signer?.name) {
+          itemErrors.name = "Nama signer wajib diisi";
+        }
+
+        if (!signer?.dept) {
+          itemErrors.dept = "Departemen signer wajib diisi";
+        }
+
+        if (Object.keys(itemErrors).length > 0) {
+          signerErrors[index] = itemErrors;
+        }
+      });
+
+      if (signerErrors.length > 0) {
+        errors.signers = signerErrors;
+      }
+    }
+  }
+
   // Return hasil validasi
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
   };
 };
+
+export const acceptedSchema = z.object({
+  link_doc: z.string().min(1, { message: "Link Dokumen wajib diisi" }),
+});
+
+export type TAcceptedForm = z.infer<typeof acceptedSchema>;

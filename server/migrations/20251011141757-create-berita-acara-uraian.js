@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Berita_Acara_Generals", {
+    await queryInterface.createTable("Berita_Acara_Uraians", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -27,6 +27,18 @@ module.exports = {
       quantity: {
         type: Sequelize.STRING,
       },
+      harga: {
+        type: Sequelize.STRING,
+      },
+      total: {
+        type: Sequelize.STRING,
+      },
+      dpp_nilai_lain_of: {
+        type: Sequelize.STRING,
+      },
+      jumlah_ppn_of: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -38,6 +50,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Berita_Acara_Generals");
+    await queryInterface.dropTable("Berita_Acara_Uraians");
   },
 };

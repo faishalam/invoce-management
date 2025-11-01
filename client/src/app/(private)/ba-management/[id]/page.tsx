@@ -9,6 +9,7 @@ import BackchargeForm from "./components/BackchargeForm";
 import ModalViewDocument from "./components/ModalVIewDocument";
 import BeritaAcaraSkeleton from "./components/loadingSkeleton";
 import { BlockingLoader } from "@/components/atoms/loader";
+import Signer from "./components/Signer";
 
 export default function Page() {
   const {
@@ -23,22 +24,22 @@ export default function Page() {
     isLoadingDataBeritaAcaraById,
     isLoadingCreateBeritaAcara,
     isLoadingUpdateBeritaAcara,
+    dataBeritaAcaraById,
   } = useBeritaAcara();
-
   const tipeTransaksi = watch("tipe_transaksi");
   const jenisBeritaAcara = watch("jenis_berita_acara");
 
   useEffect(() => {
     if (tipeTransaksi === "nontrade") {
       if (jenisBeritaAcara === "fuel") {
-        setValue("berita_acara_general", []);
+        setValue("berita_acara_uraian", []);
       }
       if (jenisBeritaAcara === "nonfuel") {
         setValue("plan_alokasi_periode", []);
       }
     }
     if (tipeTransaksi === "trade") {
-      setValue("berita_acara_general", []);
+      setValue("berita_acara_uraian", []);
       setValue("plan_alokasi_periode", []);
     }
   }, [tipeTransaksi, jenisBeritaAcara]);
@@ -55,17 +56,33 @@ export default function Page() {
           <p className="text-sm text-gray-600">Kelola Berita Acara Dokumen</p>
         </div>
         {mode === "view" && (
-          <div>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => {
-                setOpenModalDocument(true);
-              }}
-            >
-              Lihat Document
-            </Button>
-          </div>
+          <>
+            <div className="flex gap-2">
+              <Button
+                color="secondary"
+                variant="contained"
+                disabled={!dataBeritaAcaraById?.data?.link_doc}
+                onClick={() => {
+                  const link = dataBeritaAcaraById?.data?.link_doc;
+                  if (link) {
+                    window.open(link, "_blank");
+                  }
+                }}
+              >
+                Signed Dokumen
+              </Button>
+
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => {
+                  setOpenModalDocument(true);
+                }}
+              >
+                Lihat Document
+              </Button>
+            </div>
+          </>
         )}
       </div>
       <form
@@ -93,8 +110,22 @@ export default function Page() {
                 <BackchargeForm />
               </div>
             )}
-            {mode !== "view" && (
-              <div className="flex justify-end pt-6">
+            {tipeTransaksi === "nontrade" && (
+              <div className="bg-white w-full rounded-md shadow flex flex-col p-6 gap-4">
+                <Signer />
+              </div>
+            )}
+
+            <div className="flex justify-end pt-6 gap-2">
+              <Button
+                variant="outlined"
+                color="secondary"
+                type="button"
+                onClick={() => window.history.back()}
+              >
+                Kembali
+              </Button>
+              {mode !== "view" && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -103,8 +134,8 @@ export default function Page() {
                 >
                   Simpan Berita Acara
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </form>

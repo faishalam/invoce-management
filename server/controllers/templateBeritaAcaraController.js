@@ -5,7 +5,7 @@ const {
   Customer,
   TypeOfWork,
   Berita_Acara_Periode,
-  Berita_Acara_General,
+  Berita_Acara_Uraian,
   Goods,
 } = require("../models");
 const Mustache = require("mustache");
@@ -20,7 +20,7 @@ class TemplateBeritaAcaraController {
         include: [
           { model: Berita_Acara_Periode, as: "plan_alokasi_periode" },
           { model: Template_Berita_Acara, as: "template_berita_acara" },
-          { model: Berita_Acara_General, as: "berita_acara_general" },
+          { model: Berita_Acara_Uraian, as: "berita_acara_uraian" },
         ],
       });
 
@@ -94,7 +94,7 @@ class TemplateBeritaAcaraController {
       let baseDataTemplate = {};
 
       if (code === "BA-GENERAL") {
-        const generalItems = findBeritaAcara?.berita_acara_general || [];
+        const generalItems = findBeritaAcara?.berita_acara_uraian || [];
         const find_type_of_work = await TypeOfWork.findByPk(
           findBeritaAcara.type_of_work_id
         );
@@ -127,6 +127,13 @@ class TemplateBeritaAcaraController {
               qty_liter: item.quantity,
             };
           }),
+          signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_2_name: findBeritaAcara?.signers[1]?.name,
+          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_3_name: findBeritaAcara?.signers[2]?.name,
+          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_4_name: findBeritaAcara?.signers[3]?.name,
+          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
         };
       }
 
@@ -180,6 +187,13 @@ class TemplateBeritaAcaraController {
             .toLocaleString("id-ID")}`,
 
           tanggal: `${day} ${monthName} ${year}`,
+          signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_2_name: findBeritaAcara?.signers[1]?.name,
+          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_3_name: findBeritaAcara?.signers[2]?.name,
+          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_4_name: findBeritaAcara?.signers[3]?.name,
+          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
         };
       }
 
@@ -210,12 +224,11 @@ class TemplateBeritaAcaraController {
     try {
       const { id } = req.params;
 
-      // ✅ 1. Cari Berita Acara dengan relasi
       const findBeritaAcara = await Berita_Acara.findByPk(id, {
         include: [
           { model: Berita_Acara_Periode, as: "plan_alokasi_periode" },
           { model: Template_Berita_Acara, as: "template_berita_acara" },
-          { model: Berita_Acara_General, as: "berita_acara_general" },
+          { model: Berita_Acara_Uraian, as: "berita_acara_uraian" },
         ],
       });
 
@@ -226,7 +239,6 @@ class TemplateBeritaAcaraController {
         });
       }
 
-      // ✅ 2. Cari Template Berita Acara yang sudah ada
       const existingTemplate = await Template_Berita_Acara.findOne({
         where: {
           berita_acara_id: id,
@@ -308,7 +320,7 @@ class TemplateBeritaAcaraController {
 
       // ✅ 5. BA-GENERAL (SAMA SEPERTI CREATE)
       if (code === "BA-GENERAL") {
-        const generalItems = findBeritaAcara?.berita_acara_general || [];
+        const generalItems = findBeritaAcara?.berita_acara_uraian || [];
         const find_type_of_work = await TypeOfWork.findByPk(
           findBeritaAcara.type_of_work_id
         );
@@ -341,6 +353,13 @@ class TemplateBeritaAcaraController {
               qty_liter: item.quantity,
             };
           }),
+          signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_2_name: findBeritaAcara?.signers[1]?.name,
+          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_3_name: findBeritaAcara?.signers[2]?.name,
+          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_4_name: findBeritaAcara?.signers[3]?.name,
+          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
         };
       }
 
@@ -394,6 +413,13 @@ class TemplateBeritaAcaraController {
             )
             .toLocaleString("id-ID")}`,
           tanggal: `${day} ${monthName} ${year}`,
+          signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_2_name: findBeritaAcara?.signers[1]?.name,
+          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_3_name: findBeritaAcara?.signers[2]?.name,
+          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_4_name: findBeritaAcara?.signers[3]?.name,
+          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
         };
       }
 

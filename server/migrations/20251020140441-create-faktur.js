@@ -35,6 +35,12 @@ module.exports = {
       masa_pajak: {
         type: Sequelize.STRING,
       },
+      range_periode: {
+        type: Sequelize.STRING,
+      },
+      transaction_id: {
+        type: Sequelize.STRING,
+      },
       tahun: {
         type: Sequelize.STRING,
       },

@@ -33,6 +33,14 @@ module.exports = {
       periode: {
         type: Sequelize.STRING,
       },
+      link_doc: {
+        type: Sequelize.STRING,
+      },
+      signers: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: [],
+      },
       cut_off: {
         type: Sequelize.STRING,
       },

@@ -1,6 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
 const { Op } = require("sequelize");
-const { Faktur, Berita_Acara, Debit_Note } = require("../models");
+const {
+  Faktur,
+  Berita_Acara,
+  Debit_Note,
+  Berita_Acara_Uraian,
+} = require("../models");
 
 class FakturController {
   static async createFaktur(req, res) {
@@ -18,14 +23,29 @@ class FakturController {
         ppn_fk,
         jumlah_ppn_fk,
         kode_objek,
-        uraian,
         ppn_of,
       } = req.body;
 
-      const findBeritaAcara = await Berita_Acara.findByPk(berita_acara_id);
+      const findBeritaAcara = await Berita_Acara.findByPk(berita_acara_id, {
+        include: [
+          {
+            model: Berita_Acara_Uraian,
+            as: "berita_acara_uraian",
+          },
+        ],
+      });
 
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita Acara not found",
+        });
+      }
+
+      // Update status berita acara
       await findBeritaAcara.update({ status: "Submitted Faktur" });
 
+      // Buat faktur
       const faktur = await Faktur.create({
         id: uuidv4(),
         berita_acara_id,
@@ -43,8 +63,16 @@ class FakturController {
         ppn_of,
       });
 
-      const findDebitNote = await Debit_Note.findByPk(debit_note_id);
-      await findDebitNote.update({ uraian: uraian });
+      // Update semua uraian terkait berita acara ini
+      await Berita_Acara_Uraian.update(
+        {
+          dpp_nilai_lain_of: dpp_nilai_lain_fk,
+          jumlah_ppn_of: jumlah_ppn_fk,
+        },
+        {
+          where: { berita_acara_id },
+        }
+      );
 
       return res.status(201).json({
         status: "success",
@@ -80,12 +108,18 @@ class FakturController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number"],
+            attributes: ["customer_id", "number", "status"],
+            include: [
+              {
+                model: Berita_Acara_Uraian,
+                as: "berita_acara_uraian",
+              },
+            ],
           },
           {
             model: Debit_Note,
             as: "debit_note",
-            attributes: ["debit_note_number", "uraian"],
+            attributes: ["debit_note_number"],
           },
         ],
       });
@@ -133,7 +167,10 @@ class FakturController {
 
       const faktur = await Faktur.findByPk(id);
       if (!faktur) {
-        return res.status(404).json({ message: "Faktur not found" });
+        return res.status(404).json({
+          status: "error",
+          message: "Faktur not found",
+        });
       }
 
       const {
@@ -153,7 +190,7 @@ class FakturController {
         ppn_of,
       } = req.body;
 
-      await Faktur.update({
+      await faktur.update({
         berita_acara_id,
         debit_note_id,
         nomor_seri_faktur,
@@ -169,14 +206,30 @@ class FakturController {
         uraian,
         ppn_of,
       });
+
+      if (berita_acara_id) {
+        await Berita_Acara_Uraian.update(
+          {
+            dpp_nilai_lain_of: dpp_nilai_lain_fk,
+            jumlah_ppn_of: jumlah_ppn_fk,
+          },
+          {
+            where: { berita_acara_id },
+          }
+        );
+      }
+
       return res.status(200).json({
         status: "success",
-        message: "Faktur created successfully",
+        message: "Faktur updated successfully",
         data: faktur,
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+      console.error("❌ Error updateFaktur:", error);
+      return res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+      });
     }
   }
 
@@ -193,11 +246,17 @@ class FakturController {
             model: Berita_Acara,
             as: "berita_acara",
             attributes: ["customer_id", "number"],
+            include: [
+              {
+                model: Berita_Acara_Uraian,
+                as: "berita_acara_uraian",
+              },
+            ],
           },
           {
             model: Debit_Note,
             as: "debit_note",
-            attributes: ["debit_note_number", "uraian"],
+            attributes: ["debit_note_number"],
           },
         ],
       });
@@ -208,6 +267,94 @@ class FakturController {
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async acceptedFaktur(req, res) {
+    try {
+      const { id } = req.params;
+      const { nomor_seri_faktur, kode_objek } = req.body;
+
+      const findFaktur = await Faktur.findByPk(id);
+      if (!findFaktur) {
+        return res.status(404).json({
+          status: "error",
+          message: "Faktur tidak ditemukan",
+        });
+      }
+
+      const findBeritaAcara = await Berita_Acara.findByPk(
+        findFaktur.berita_acara_id
+      );
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita acara terkait tidak ditemukan",
+        });
+      }
+
+      await Promise.all([
+        findBeritaAcara.update({ status: "Faktur Accepted" }),
+        findFaktur.update({ nomor_seri_faktur, kode_objek }),
+      ]);
+
+      return res.status(200).json({
+        status: "success",
+        message: "Faktur berhasil diterima",
+        data: findFaktur,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "error",
+        message: error.message || "Terjadi kesalahan pada server",
+      });
+    }
+  }
+
+  static async transactionFaktur(req, res) {
+    try {
+      const { id } = req.params;
+      const { transaction_id } = req.body;
+
+      const findFaktur = await Faktur.findByPk(id);
+      if (!findFaktur) {
+        return res.status(404).json({
+          status: "error",
+          message: "Faktur tidak ditemukan",
+        });
+      }
+
+      const findBeritaAcara = await Berita_Acara.findByPk(
+        findFaktur.berita_acara_id
+      );
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita acara terkait tidak ditemukan",
+        });
+      }
+
+      const cutOffDate = new Date(findBeritaAcara.cut_off);
+      const transactionDate = new Date();
+      const diffTime = Math.abs(transactionDate - cutOffDate);
+      const range_periode = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // konversi ms → hari
+
+      await Promise.all([
+        findBeritaAcara.update({ status: "Done" }),
+        findFaktur.update({ transaction_id, range_periode }),
+      ]);
+
+      return res.status(200).json({
+        status: "success",
+        message: "Faktur berhasil diproses dan range_periode dihitung",
+        data: findFaktur,
+      });
+    } catch (error) {
+      console.error("Error in transactionFaktur:", error);
+      return res.status(500).json({
+        status: "error",
+        message: error.message || "Terjadi kesalahan pada server",
+      });
     }
   }
 }

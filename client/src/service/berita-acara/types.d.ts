@@ -12,8 +12,21 @@ export interface TTemplates {
   html_rendered: string;
 }
 
+export interface TBeritaAcaraUraian {
+  id: string;
+  berita_acara_id: string;
+  goods_id: string;
+  satuan: string;
+  quantity: string;
+  harga: string;
+  total: string;
+  dpp_nilai_lain_of?: null;
+  jumlah_ppn_of?: null;
+}
+
 export interface TBeritaAcaraList {
   id: string;
+  link_doc?: string;
   tipe_transaksi: string;
   jenis_berita_acara: string;
   number: string;
@@ -35,4 +48,5 @@ export interface TBeritaAcaraList {
   plan_alokasi_periode: TBeritaAcaraPeriode[];
   template_berita_acara: TTemplates;
   debit_note: { id: string };
+  berita_acara_uraian: TBeritaAcaraUraian[];
 }

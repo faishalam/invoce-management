@@ -4,6 +4,8 @@ const {
   Customer,
   Template_Debit_Note,
   Debit_Note,
+  Berita_Acara_Uraian,
+  Goods,
 } = require("../models");
 const Mustache = require("mustache");
 const { v4: uuidv4 } = require("uuid");
@@ -22,6 +24,12 @@ class TemplateBeritaAcaraController {
             model: Berita_Acara,
             as: "berita_acara",
             attributes: ["customer_id", "number"],
+            include: [
+              {
+                model: Berita_Acara_Uraian,
+                as: "berita_acara_uraian",
+              },
+            ],
           },
         ],
       });
@@ -47,7 +55,7 @@ class TemplateBeritaAcaraController {
       }
 
       const findCustomer = await Customer.findByPk(
-        findDebitNote?.berita_acara?.customer_id
+        findDebitNote?.berita_acara.customer_id
       );
 
       if (!findCustomer) {
@@ -56,6 +64,17 @@ class TemplateBeritaAcaraController {
           message: "Customer not found",
         });
       }
+
+      const goodsList = await Goods.findAll({
+        attributes: ["id", "name"],
+        raw: true,
+      });
+
+      // buat map id → name
+      const goodsMap = goodsList.reduce((acc, item) => {
+        acc[item.id] = item.name;
+        return acc;
+      }, {});
 
       const baseDataTemplate = {
         logo_url: "https://career.kppmining.com/logo.svg",
@@ -78,18 +97,23 @@ class TemplateBeritaAcaraController {
             year: "numeric",
           }
         ),
-        uraian: findDebitNote.uraian.map((item, i) => ({
-          no: i + 1,
-          nama_uraian: item.uraian,
-          satuan: item.satuan,
-          volume: item.volume,
-          harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
-          jumlah: `Rp ${Number(item.jumlah).toLocaleString("id-ID")}`,
-        })),
+        harga_terbilang: findDebitNote.harga_terbilang,
+        uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
+          (item, i) => ({
+            no: i + 1,
+            nama_uraian: goodsMap[item.goods_id] || "-",
+            satuan: item.satuan,
+            volume: item.quantity,
+            harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
+            jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
+          })
+        ),
         sub_total: `Rp ${Number(findDebitNote.sub_total).toLocaleString(
           "id-ID"
         )}`,
-        ppn: `${findDebitNote.ppn}%`,
+        ppn: `Rp ${Number(
+          findDebitNote.sub_total * (findDebitNote.ppn / 100)
+        ).toLocaleString("id-ID")}`,
         total: `Rp ${Number(findDebitNote.total).toLocaleString("id-ID")}`,
       };
 
@@ -122,17 +146,21 @@ class TemplateBeritaAcaraController {
 
   static async updateTemplateDebitNote(req, res) {
     try {
-      const { id } = req.params;
+      const { id } = req.params; 
 
       const findDebitNote = await Debit_Note.findOne({
-        where: {
-          id: id,
-        },
+        where: { id },
         include: [
           {
             model: Berita_Acara,
             as: "berita_acara",
             attributes: ["customer_id", "number"],
+            include: [
+              {
+                model: Berita_Acara_Uraian,
+                as: "berita_acara_uraian",
+              },
+            ],
           },
         ],
       });
@@ -145,15 +173,18 @@ class TemplateBeritaAcaraController {
       }
 
       const findTemplateDebitNote = await Template_Debit_Note.findOne({
-        where: {
-          debit_note_id: id,
-        },
+        where: { debit_note_id: id },
       });
 
+      if (!findTemplateDebitNote) {
+        return res.status(404).json({
+          status: "error",
+          message: "Template Debit Note record not found",
+        });
+      }
+
       const findTemplate = await Template.findOne({
-        where: {
-          code: "DEBIT-NOTE",
-        },
+        where: { code: "DEBIT-NOTE" },
       });
 
       if (!findTemplate) {
@@ -174,11 +205,22 @@ class TemplateBeritaAcaraController {
         });
       }
 
+      const goodsList = await Goods.findAll({
+        attributes: ["id", "name"],
+        raw: true,
+      });
+
+      const goodsMap = goodsList.reduce((acc, item) => {
+        acc[item.id] = item.name;
+        return acc;
+      }, {});
+
       const baseDataTemplate = {
         logo_url: "https://career.kppmining.com/logo.svg",
         number_debit_note: findDebitNote.debit_note_number,
         nama_customer: findCustomer.name,
         alamat_customer: findCustomer.alamat,
+        harga_terbilang: findDebitNote.harga_terbilang,
         tanggal: new Date(findDebitNote?.createdAt).toLocaleDateString(
           "id-ID",
           {
@@ -195,18 +237,22 @@ class TemplateBeritaAcaraController {
             year: "numeric",
           }
         ),
-        uraian: findDebitNote.uraian.map((item, i) => ({
-          no: i + 1,
-          nama_uraian: item.uraian,
-          satuan: item.satuan,
-          volume: item.volume,
-          harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
-          jumlah: `Rp ${Number(item.jumlah).toLocaleString("id-ID")}`,
-        })),
+        uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
+          (item, i) => ({
+            no: i + 1,
+            nama_uraian: goodsMap[item.goods_id] || "-",
+            satuan: item.satuan,
+            volume: item.quantity,
+            harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
+            jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
+          })
+        ),
         sub_total: `Rp ${Number(findDebitNote.sub_total).toLocaleString(
           "id-ID"
         )}`,
-        ppn: `${findDebitNote.ppn}%`,
+        ppn: `Rp ${Number(
+          findDebitNote.sub_total * (findDebitNote.ppn / 100)
+        ).toLocaleString("id-ID")}`,
         total: `Rp ${Number(findDebitNote.total).toLocaleString("id-ID")}`,
       };
 
@@ -231,7 +277,7 @@ class TemplateBeritaAcaraController {
         },
       });
     } catch (error) {
-      console.error("❌ Error updateTemplateBeritaAcara:", error);
+      console.error("❌ Error updateTemplateDebitNote:", error);
       return res.status(500).json({
         status: "error",
         message: "Internal server error",

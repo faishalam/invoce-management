@@ -1,12 +1,4 @@
-import { TBeritaAcaraList } from "../berita-acara/types";
-
-export type TUraianDebitNote = {
-  uraian: string;
-  satuan: string;
-  volume: string;
-  harga: string;
-  jumlah: string;
-};
+import { TBeritaAcaraList, TBeritaAcaraUraian } from "../berita-acara/types";
 
 export type TTemplateDebitNote = {
   id: string;
@@ -19,7 +11,7 @@ export type TDebitNoteList = {
   berita_acara_id: string;
   debit_note_number: string;
   batas_akhir: string;
-  uraian: TUraianDebitNote[];
+  uraian: TBeritaAcaraUraian[];
   sub_total: string;
   ppn: string;
   total: string;

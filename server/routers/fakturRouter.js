@@ -11,5 +11,7 @@ FakturRouter.get("/faktur", FakturController.getAllFaktur);
 FakturRouter.delete("/faktur/:id", FakturController.deleteFaktur);
 FakturRouter.put("/faktur/:id", FakturController.updateFaktur);
 FakturRouter.get("/faktur/:id", FakturController.fakturById);
+FakturRouter.put("/faktur-accepted/:id", FakturController.acceptedFaktur);
+FakturRouter.put("/faktur-transaction/:id", FakturController.transactionFaktur);
 
 module.exports = FakturRouter;

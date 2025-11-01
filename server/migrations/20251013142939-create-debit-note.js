@@ -32,10 +32,6 @@ module.exports = {
         allowNull: true,
         unique: true,
       },
-      uraian: {
-        type: Sequelize.JSON,
-        allowNull: false,
-      },
       sub_total: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -45,6 +41,10 @@ module.exports = {
         allowNull: false,
       },
       total: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      harga_terbilang: {
         type: Sequelize.STRING,
         allowNull: false,
       },

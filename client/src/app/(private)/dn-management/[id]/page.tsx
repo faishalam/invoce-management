@@ -140,25 +140,24 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Uraian Section */}
           <UraianSection />
 
           {/* Submit Button */}
-          {mode !== "view" && (
-            <div className="flex justify-end gap-4">
-              <Button
-                variant="outlined"
-                color="secondary"
-                type="button"
-                onClick={() => window.history.back()}
-              >
-                Batal
-              </Button>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outlined"
+              color="secondary"
+              type="button"
+              onClick={() => window.history.back()}
+            >
+              Batal
+            </Button>
+            {mode !== "view" && (
               <Button variant="contained" color="primary" type="submit">
                 Simpan Debit Note
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </form>
       )}
 

@@ -8,6 +8,7 @@ import { useEffect, useMemo } from "react";
 import useFaktur from "../hooks";
 import { Controller, useFieldArray, useWatch } from "react-hook-form";
 import LoadingSkeleton from "./components/LoadingSkeleton";
+import { BlockingLoader } from "@/components/atoms/loader";
 
 const formatCurrency = (value: string | number | undefined | null): string => {
   if (!value) return "";
@@ -80,7 +81,7 @@ export default function Page() {
     name: "uraian",
   });
 
-  const { dataCustomer, dataSatuan } = useGlobal();
+  const { dataCustomer, dataSatuan, dataGoods } = useGlobal();
 
   const uraian = useWatch({ control, name: "uraian" });
   const ppnOf = useWatch({ control, name: "ppn_of" });
@@ -91,7 +92,7 @@ export default function Page() {
     const ppnPersen = Number(ppnOf) || 0;
 
     uraian.forEach((item, index) => {
-      const jumlah = Number(item?.jumlah) || 0;
+      const jumlah = Number(item?.total) || 0;
       const dpp = (jumlah * 11) / 12;
       const jumlahPpn = (dpp * ppnPersen) / 100;
 
@@ -152,7 +153,7 @@ export default function Page() {
 
   return (
     <div className="w-full">
-      {(isLoadingUpdateFaktur || isLoadingCreateFaktur) && <LoadingSkeleton />}
+      {(isLoadingUpdateFaktur || isLoadingCreateFaktur) && <BlockingLoader />}
       <div className="mb-8 flex items-center justify-between">
         <div className="flex flex-col">
           <p className="text-2xl font-bold">Faktur</p>
@@ -244,35 +245,38 @@ export default function Page() {
           <div className="-mx-6 border-t border-gray-200" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Controller
-              name="nomor_seri_faktur"
-              control={control}
-              render={({ field }) => (
-                <CInput
-                  {...field}
-                  label="Nomor Seri Faktur*"
-                  type="text"
-                  disabled={isViewMode}
-                  error={!!errors.nomor_seri_faktur}
-                  placeholder="000-00.00000000"
+            {mode === "view" && (
+              <>
+                <Controller
+                  name="nomor_seri_faktur"
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      label="Nomor Seri Faktur*"
+                      type="text"
+                      disabled={isViewMode}
+                      error={!!errors.nomor_seri_faktur}
+                      placeholder="000-00.00000000"
+                    />
+                  )}
                 />
-              )}
-            />
-
-            <Controller
-              name="kode_objek"
-              control={control}
-              render={({ field }) => (
-                <CInput
-                  {...field}
-                  label="Kode Objek*"
-                  type="text"
-                  disabled={isViewMode}
-                  error={!!errors.kode_objek}
-                  placeholder="Masukkan kode objek"
+                <Controller
+                  name="kode_objek"
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      label="Kode Objek"
+                      type="text"
+                      disabled={isViewMode}
+                      error={!!errors.kode_objek}
+                      placeholder="Masukkan kode objek"
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            )}
 
             <Controller
               name="masa_pajak"
@@ -452,7 +456,7 @@ export default function Page() {
                 </h3>
 
                 <Controller
-                  name={`uraian.${index}.uraian`}
+                  name={`uraian.${index}.goods_id`}
                   control={control}
                   render={({ field }) => (
                     <CInput
@@ -460,7 +464,11 @@ export default function Page() {
                       label="Nama Object*"
                       placeholder="Nama Object"
                       disabled
-                      error={!!errors.uraian?.[index]?.uraian}
+                      value={
+                        dataGoods?.data?.find((item) => item.id === field.value)
+                          ?.name
+                      }
+                      error={!!errors.uraian?.[index]?.goods_id}
                     />
                   )}
                 />
@@ -509,7 +517,7 @@ export default function Page() {
                 />
 
                 <Controller
-                  name={`uraian.${index}.volume`}
+                  name={`uraian.${index}.quantity`}
                   control={control}
                   render={({ field: { value, onChange } }) => (
                     <CInput
@@ -522,13 +530,13 @@ export default function Page() {
                       }}
                       placeholder="0"
                       disabled
-                      error={!!errors.uraian?.[index]?.volume}
+                      error={!!errors.uraian?.[index]?.quantity}
                     />
                   )}
                 />
 
                 <Controller
-                  name={`uraian.${index}.jumlah`}
+                  name={`uraian.${index}.total`}
                   control={control}
                   render={({ field: { value } }) => (
                     <CInput
@@ -537,7 +545,7 @@ export default function Page() {
                       icon="Rp"
                       value={formatCurrency(value)}
                       disabled
-                      error={!!errors.uraian?.[index]?.jumlah}
+                      error={!!errors.uraian?.[index]?.total}
                     />
                   )}
                 />
@@ -582,21 +590,21 @@ export default function Page() {
         </div>
 
         {/* Action Buttons */}
-        {!isViewMode && (
-          <div className="flex justify-end gap-4">
-            <Button
-              variant="outlined"
-              color="secondary"
-              type="button"
-              onClick={() => window.history.back()}
-            >
-              Batal
-            </Button>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outlined"
+            color="secondary"
+            type="button"
+            onClick={() => window.history.back()}
+          >
+            Kembali
+          </Button>
+          {!isViewMode && (
             <Button variant="contained" color="primary" type="submit">
               Simpan Faktur
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </form>
     </div>
   );

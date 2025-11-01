@@ -14,7 +14,7 @@ module.exports = {
       throw new Error("No Departments found. Please seed Departments first!");
     }
 
-    const department_id = departments[0].id; // UUID asli dari Departments
+    const department_id = departments[0].id; 
 
     const data = [
       {

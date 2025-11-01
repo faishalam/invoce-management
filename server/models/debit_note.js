@@ -55,17 +55,6 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Due date is required" },
         },
       },
-      uraian: {
-        type: DataTypes.JSONB,
-        allowNull: true,
-        validate: {
-          isArray(value) {
-            if (value && !Array.isArray(value)) {
-              throw new Error("Uraian must be an array of objects");
-            }
-          },
-        },
-      },
       sub_total: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -88,6 +77,14 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notNull: { msg: "Total amount is required" },
           notEmpty: { msg: "Total amount is required" },
+        },
+      },
+      harga_terbilang: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Harga terbilang is required" },
+          notEmpty: { msg: "Harga terbilang is required" },
         },
       },
     },

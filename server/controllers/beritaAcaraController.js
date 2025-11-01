@@ -4,10 +4,12 @@ const {
   User,
   sequelize,
   Template_Berita_Acara,
-  Berita_Acara_General,
+  Berita_Acara_Uraian,
   Debit_Note,
   Faktur,
   Department,
+  Goods,
+  Satuan,
 } = require("../models");
 const { generateNoBA } = require("../helpers/generateNoBA");
 const cron = require("node-cron");
@@ -232,11 +234,19 @@ class BeritaAcaraController {
         tipe_transaksi,
         jenis_berita_acara,
         plan_alokasi_periode,
-        berita_acara_general,
+        berita_acara_uraian,
       } = body;
+
+      if (!tipe_transaksi || !jenis_berita_acara) {
+        return res.status(400).json({
+          status: "error",
+          message: "Field tipe_transaksi dan jenis_berita_acara wajib diisi",
+        });
+      }
 
       const lastBA = await Berita_Acara.findOne({
         order: [["createdAt", "DESC"]],
+        transaction: t,
       });
 
       const lastNumber = lastBA
@@ -258,23 +268,19 @@ class BeritaAcaraController {
 
       let beritaAcara;
 
-      if (isTrade && isFuel) {
-        beritaAcara = await Berita_Acara.create(baseData, { transaction: t });
-      } else if (isTrade && !isFuel) {
+      if (isTrade) {
         beritaAcara = await Berita_Acara.create(baseData, { transaction: t });
       } else if (isNonTrade && !isFuel) {
         beritaAcara = await Berita_Acara.create(baseData, { transaction: t });
         if (
-          Array.isArray(berita_acara_general) &&
-          berita_acara_general.length > 0
+          Array.isArray(berita_acara_uraian) &&
+          berita_acara_uraian.length > 0
         ) {
-          const general = berita_acara_general?.map((p) => ({
+          const uraian = berita_acara_uraian.map((p) => ({
             berita_acara_id: beritaAcara.id,
             ...p,
           }));
-          await Berita_Acara_General.bulkCreate(general, {
-            transaction: t,
-          });
+          await Berita_Acara_Uraian.bulkCreate(uraian, { transaction: t });
         } else {
           throw new Error(
             "Kombinasi tipe_transaksi / jenis_berita_acara tidak valid"
@@ -282,6 +288,7 @@ class BeritaAcaraController {
         }
       } else if (isNonTrade && isFuel) {
         beritaAcara = await Berita_Acara.create(baseData, { transaction: t });
+
         if (
           Array.isArray(plan_alokasi_periode) &&
           plan_alokasi_periode.length > 0
@@ -293,12 +300,33 @@ class BeritaAcaraController {
           await Berita_Acara_Periode.bulkCreate(periodeList, {
             transaction: t,
           });
+
+          const findGoods = await Goods.findOne({
+            where: { name: "Backcharge Fuel" },
+            transaction: t,
+          });
+          const findSatuan = await Satuan.findOne({
+            where: { name: "LITER" },
+            transaction: t,
+          });
+
+          const uraianFuel = plan_alokasi_periode.map((p) => ({
+            berita_acara_id: beritaAcara.id,
+            goods_id: findGoods?.id,
+            satuan: findSatuan?.name,
+            quantity: p.alokasi_backcharge,
+            harga: p.harga_per_liter,
+            total: p.nilai_backcharge,
+          }));
+
+          await Berita_Acara_Uraian.bulkCreate(uraianFuel, { transaction: t });
         }
       } else {
         throw new Error(
           "Kombinasi tipe_transaksi / jenis_berita_acara tidak valid"
         );
       }
+
       await t.commit();
       return res.status(201).json({
         status: "success",
@@ -306,7 +334,8 @@ class BeritaAcaraController {
         data: beritaAcara,
       });
     } catch (error) {
-      await t.rollback();
+      console.log(error, "shibal");
+      if (t) await t.rollback();
       return res.status(500).json({
         status: "error",
         message: error.message || "Internal server error",
@@ -386,6 +415,7 @@ class BeritaAcaraController {
   static async beritaAcaraAcepted(req, res) {
     try {
       const { id } = req.params;
+      const { link_doc } = req.body;
 
       const beritaAcara = await Berita_Acara.findByPk(id);
       if (!beritaAcara) {
@@ -393,6 +423,7 @@ class BeritaAcaraController {
       }
 
       beritaAcara.status = "Signed";
+      beritaAcara.link_doc = link_doc;
       await beritaAcara.save();
 
       return res.status(200).json({
@@ -452,8 +483,8 @@ class BeritaAcaraController {
             as: "template_berita_acara",
           },
           {
-            model: Berita_Acara_General,
-            as: "berita_acara_general",
+            model: Berita_Acara_Uraian,
+            as: "berita_acara_uraian",
           },
         ],
       });
@@ -480,101 +511,175 @@ class BeritaAcaraController {
     const t = await sequelize.transaction();
     try {
       const { id } = req.params;
-      const body = req.body;
       const {
         tipe_transaksi,
         jenis_berita_acara,
         plan_alokasi_periode,
-        berita_acara_general,
-      } = body;
+        berita_acara_uraian,
+        ...baseData
+      } = req.body;
 
-      const beritaAcara = await Berita_Acara.findByPk(id, { transaction: t });
-      if (!beritaAcara) throw new Error("Berita Acara not found");
+      if (!tipe_transaksi || !jenis_berita_acara) {
+        return res.status(400).json({
+          status: "error",
+          message: "Field tipe_transaksi dan jenis_berita_acara wajib diisi",
+        });
+      }
+
+      // 🔹 Ambil berita acara beserta relasi
+      const findBeritaAcara = await Berita_Acara.findByPk(id, {
+        include: [
+          { model: Berita_Acara_Periode, as: "plan_alokasi_periode" },
+          { model: Berita_Acara_Uraian, as: "berita_acara_uraian" },
+        ],
+        transaction: t,
+      });
+
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita Acara not found",
+        });
+      }
 
       const isTrade = tipe_transaksi === "trade";
       const isNonTrade = tipe_transaksi === "nontrade";
       const isFuel = jenis_berita_acara === "fuel";
 
-      if (
-        !(
-          (isTrade && isFuel) ||
-          (isTrade && !isFuel) ||
-          (isNonTrade && !isFuel) ||
-          (isNonTrade && isFuel)
-        )
-      ) {
-        throw new Error(
-          "Kombinasi tipe_transaksi / jenis_berita_acara tidak valid"
-        );
-      }
+      // 🔹 Update header Berita Acara
+      await findBeritaAcara.update(
+        { ...baseData, tipe_transaksi, jenis_berita_acara },
+        { transaction: t }
+      );
 
-      await beritaAcara.update(body, { transaction: t });
-
-      async function upsertChild(model, items, idField) {
+      // 🔹 Helper untuk upsert + delete missing
+      async function syncItems(model, items, allowedFields = [], foreignKey) {
         if (!Array.isArray(items)) return;
 
-        const existing = await model.findAll({
-          where: { berita_acara_id: id },
+        // Ambil semua id lama
+        const existingItems = await model.findAll({
+          where: { [foreignKey]: id },
           transaction: t,
         });
 
-        const existingMap = new Map(existing.map((i) => [i[idField], i]));
-        const incomingIds = items
-          .filter((i) => i[idField])
-          .map((i) => i[idField]);
+        const existingIds = existingItems.map((i) => i.id);
+        const incomingIds = items.filter((i) => i.id).map((i) => i.id);
 
-        // Hapus yang tidak ada di request
-        const toDelete = existing.filter(
-          (i) => !incomingIds.includes(i[idField])
+        // 1️⃣ Hapus item yang tidak ada di payload
+        const toDelete = existingIds.filter(
+          (eid) => !incomingIds.includes(eid)
         );
         if (toDelete.length > 0) {
           await model.destroy({
-            where: { id: toDelete.map((i) => i[idField]) },
+            where: { id: toDelete },
             transaction: t,
           });
         }
 
-        // Update atau create
+        // 2️⃣ Update atau create
         for (const item of items) {
-          if (item[idField] && existingMap.has(item[idField])) {
-            await model.update(item, {
-              where: { id: item[idField] },
+          const data = {};
+          for (const field of allowedFields) {
+            if (item[field] !== undefined) data[field] = item[field];
+          }
+
+          if (item.id) {
+            await model.update(data, {
+              where: { id: item.id },
               transaction: t,
             });
           } else {
             await model.create(
-              { ...item, berita_acara_id: id },
+              { ...data, [foreignKey]: id },
               { transaction: t }
             );
           }
         }
       }
 
-      // Update child sesuai tipe
+      // 🔹 Non-trade + Fuel
       if (isNonTrade && isFuel) {
-        await upsertChild(Berita_Acara_Periode, plan_alokasi_periode, "id");
+        // Sinkronkan tabel periode
+        await syncItems(
+          Berita_Acara_Periode,
+          plan_alokasi_periode,
+          [
+            "plan_alokasi_periode",
+            "plan_liter",
+            "actual_liter",
+            "total_kelebihan",
+            "alokasi_backcharge",
+            "harga_per_liter",
+            "nilai_backcharge",
+          ],
+          "berita_acara_id"
+        );
+
+        const findGoods = await Goods.findOne({
+          where: { name: "Backcharge Fuel" },
+          transaction: t,
+        });
+
+        const findSatuan = await Satuan.findOne({
+          where: { name: "LITER" },
+          transaction: t,
+        });
+
+        if (findGoods && plan_alokasi_periode?.length > 0) {
+          const uraianData = plan_alokasi_periode.map((periode) => ({
+            berita_acara_id: id,
+            goods_id: findGoods.id,
+            quantity: periode.alokasi_backcharge,
+            harga: periode.harga_per_liter,
+            total: periode.nilai_backcharge,
+            satuan: findSatuan?.name,
+            keterangan: periode.plan_alokasi_periode,
+          }));
+
+          await syncItems(
+            Berita_Acara_Uraian,
+            uraianData,
+            ["goods_id", "quantity", "harga", "total", "satuan"],
+            "berita_acara_id"
+          );
+        }
       }
 
-      if (isNonTrade && !isFuel) {
-        await upsertChild(Berita_Acara_General, berita_acara_general, "id");
+      // 🔹 Non-trade + Non-fuel
+      else if (isNonTrade && !isFuel) {
+        await syncItems(
+          Berita_Acara_Uraian,
+          berita_acara_uraian,
+          ["goods_id", "satuan", "quantity"],
+          "berita_acara_id"
+        );
       }
 
-      const updatedBeritaAcara = await Berita_Acara.findByPk(id, {
+      // 🔹 Trade
+      else if (isTrade) {
+        await syncItems(
+          Berita_Acara_Uraian,
+          berita_acara_uraian,
+          ["goods_id", "satuan", "quantity", "harga", "total", "description"],
+          "berita_acara_id"
+        );
+      }
+
+      // 🔹 Ambil data hasil akhir
+      const updated = await Berita_Acara.findByPk(id, {
         include: [
           { model: Berita_Acara_Periode, as: "plan_alokasi_periode" },
-          { model: Berita_Acara_General, as: "berita_acara_general" },
-          { model: Template_Berita_Acara, as: "template_berita_acara" },
+          { model: Berita_Acara_Uraian, as: "berita_acara_uraian" },
           { model: Debit_Note, as: "debit_note" },
         ],
         transaction: t,
       });
 
       await t.commit();
-
       return res.status(200).json({
         status: "success",
-        message: `Berita Acara (${tipe_transaksi}) updated successfully`,
-        data: updatedBeritaAcara,
+        message: "Berita Acara updated successfully",
+        data: updated,
       });
     } catch (error) {
       await t.rollback();
@@ -586,7 +691,6 @@ class BeritaAcaraController {
     }
   }
 
-  // 🔹 DELETE
   static async deleteBeritaAcara(req, res) {
     const t = await sequelize.transaction();
     try {
@@ -596,6 +700,11 @@ class BeritaAcaraController {
       if (!beritaAcara) throw new Error("Berita Acara not found");
 
       await Berita_Acara_Periode.destroy({
+        where: { berita_acara_id: id },
+        transaction: t,
+      });
+
+      await Berita_Acara_Uraian.destroy({
         where: { berita_acara_id: id },
         transaction: t,
       });

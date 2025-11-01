@@ -17,7 +17,7 @@ export default function PlanAlokasiForm() {
     remove: removeGenereal,
   } = useFieldArray({
     control,
-    name: "berita_acara_general",
+    name: "berita_acara_uraian",
   });
   return (
     <>
@@ -104,7 +104,7 @@ export default function PlanAlokasiForm() {
               {/* Left Column */}
               <div className="w-full flex flex-col gap-2">
                 <Controller
-                  name={`berita_acara_general.${index}.goods_id`}
+                  name={`berita_acara_uraian.${index}.goods_id`}
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     const selectedGoods =
@@ -123,7 +123,7 @@ export default function PlanAlokasiForm() {
                         getOptionKey={(option) => option.id}
                         getOptionLabel={(option) => option.name}
                         placeholder="Pilih Jenis Barang/Jasa*"
-                        error={!!errors.berita_acara_general?.[index]?.goods_id}
+                        error={!!errors.berita_acara_uraian?.[index]?.goods_id}
                       />
                     );
                   }}
@@ -138,7 +138,7 @@ export default function PlanAlokasiForm() {
                     dataGoods?.data?.find(
                       (item) =>
                         item.id ===
-                        watch(`berita_acara_general.${index}.goods_id`)
+                        watch(`berita_acara_uraian.${index}.goods_id`)
                     )?.code || ""
                   }
                   placeholder="Code backcharge"
@@ -148,7 +148,7 @@ export default function PlanAlokasiForm() {
               {/* Right Column */}
               <div className="w-full flex flex-col gap-2">
                 <Controller
-                  name={`berita_acara_general.${index}.quantity`}
+                  name={`berita_acara_uraian.${index}.quantity`}
                   control={control}
                   render={({ field: { onChange, value, ...rest } }) => (
                     <CInput
@@ -166,13 +166,13 @@ export default function PlanAlokasiForm() {
                         );
                         onChange(onlyNumbers);
                       }}
-                      error={!!errors.berita_acara_general?.[index]?.quantity}
+                      error={!!errors.berita_acara_uraian?.[index]?.quantity}
                     />
                   )}
                 />
 
                 <Controller
-                  name={`berita_acara_general.${index}.satuan`}
+                  name={`berita_acara_uraian.${index}.satuan`}
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <CAutoComplete
@@ -190,7 +190,7 @@ export default function PlanAlokasiForm() {
                       getOptionKey={(option) => option.name}
                       getOptionLabel={(option) => option.name}
                       placeholder="Pilih Satuan*"
-                      error={!!errors.berita_acara_general?.[index]?.satuan}
+                      error={!!errors.berita_acara_uraian?.[index]?.satuan}
                     />
                   )}
                 />

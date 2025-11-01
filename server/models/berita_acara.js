@@ -19,9 +19,9 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       });
-      Berita_Acara.hasMany(models.Berita_Acara_General, {
+      Berita_Acara.hasMany(models.Berita_Acara_Uraian, {
         foreignKey: "berita_acara_id",
-        as: "berita_acara_general",
+        as: "berita_acara_uraian",
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       });
@@ -154,6 +154,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "PIC is required" },
         },
       },
+      signers: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Signer is required" },
+          notEmpty: { msg: "Signer is required" },
+        },
+      },
       status: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -177,6 +185,9 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "Nilai ditagihkan is required" },
           notEmpty: { msg: "Nilai ditagihkan is required" },
         },
+      },
+      link_doc: {
+        type: DataTypes.STRING,
       },
     },
     {

@@ -6,6 +6,9 @@ import useGlobal from "@/app/(private)/hooks";
 import FakturSkeleton from "./components/LoadingSkeleton";
 import useFaktur from "./hooks";
 import CardHeader from "./components/CardHeader";
+import { Button } from "@mui/material";
+import ModalAcceptedFaktur from "./components/ModalAcceptedFaktur";
+import ModalTransactionFaktur from "./components/ModalTransactionFaktur";
 
 export default function Page() {
   const {
@@ -15,6 +18,12 @@ export default function Page() {
     setFilter,
     isLoadingDataFakturList,
     isLoadingDeleteFaktur,
+    setOpenModalAccepted,
+    selectedFakturId,
+    openModalAccepted,
+    statusFaktur,
+    setOpenModalTransaction,
+    openModalTransaction,
   } = useFaktur();
   const { dataCustomer, globalLoading } = useGlobal();
   return (
@@ -74,7 +83,44 @@ export default function Page() {
                 loading={isLoadingDataFakturList || isLoadingDeleteFaktur}
               />
             </div>
+
+            <div className="w-full gap-2 flex justify-end items-center px-4 pb-3 -mt-4">
+              <Button
+                onClick={() => {
+                  setOpenModalAccepted(true);
+                }}
+                variant="contained"
+                disabled={
+                  !selectedFakturId ||
+                  selectedFakturId === "" ||
+                  statusFaktur === "Faktur Accepted" ||
+                  statusFaktur === "Done"
+                }
+                color="secondary"
+                className="!bg-secondary !text-white !text-xs"
+              >
+                Accept
+              </Button>
+              <Button
+                onClick={() => {
+                  setOpenModalTransaction(true);
+                }}
+                variant="contained"
+                disabled={
+                  !selectedFakturId ||
+                  selectedFakturId === "" ||
+                  statusFaktur === "Done" || 
+                  statusFaktur === "Submitted Faktur"
+                }
+                color="primary"
+                className="!bg-secondary !text-white !text-xs"
+              >
+                Done
+              </Button>
+            </div>
           </div>
+          {openModalAccepted && <ModalAcceptedFaktur />}
+          {openModalTransaction && <ModalTransactionFaktur />}
         </div>
       )}
     </>

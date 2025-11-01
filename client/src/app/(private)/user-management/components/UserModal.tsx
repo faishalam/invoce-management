@@ -142,7 +142,6 @@ export default function UserModal() {
                         control={control}
                         render={({ field: { onChange, value } }) => {
                           const options = dataDepartment?.data ?? [];
-                          console.log(options, "<<");
                           return (
                             <CAutoComplete
                               error={!!errors.department_id}

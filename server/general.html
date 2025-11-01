@@ -68,8 +68,11 @@
       .info-section {
         margin: 20px 0;
       }
-      .signature-table {
+     .signature-table {
         margin-top: 30px;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* menjaga lebar kolom tetap sama */
       }
       .signature-table td {
         vertical-align: bottom;
@@ -159,15 +162,15 @@
       <tbody>
         <tr>
           <td></td>
-          <td>{{pic}}<d>
-          <td>HCGS FAT IT Dept</td>
-          <td>Plant & SM Dept</td>
+          <td>{{signer_2_dept}}<d>
+          <td>{{signer_3_dept}}<d>
+          <td>{{signer_4_dept}}<d>
         </tr>
         <tr class="table-body">
-          <td>..................................</td>
-          <td>..................................</td>
-          <td>..................................</td>
-          <td>..................................</td>
+          <td>{{signer_1_name}}</td>
+          <td>{{signer_2_name}}</td>
+          <td>{{signer_3_name}}</td>
+          <td>{{signer_4_name}}</td>
         </tr>
       </tbody>
     </table>

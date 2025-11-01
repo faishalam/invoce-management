@@ -19,11 +19,6 @@ export default function BackchargeForm() {
     name: "plan_alokasi_periode",
   });
 
-  const formatCurrency = (value: string) => {
-    const numericValue = value.replace(/[^\d]/g, "");
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  };
-
   const parseCurrency = (value: string) => {
     return Number(value?.replace(/\D/g, "") || 0);
   };
@@ -73,7 +68,7 @@ export default function BackchargeForm() {
       if (currentNilai !== nilaiBackcharge) {
         setValue(
           `plan_alokasi_periode.${index}.nilai_backcharge`,
-          formatCurrency(nilaiBackcharge.toString())
+          nilaiBackcharge.toString()
         );
       }
     });
@@ -243,24 +238,30 @@ export default function BackchargeForm() {
               <Controller
                 name={`plan_alokasi_periode.${index}.harga_per_liter`}
                 control={control}
-                render={({ field: { value, onChange } }) => (
-                  <CInput
-                    label="Harga per Liter*"
-                    className="w-full"
-                    type="text"
-                    icon="Rp"
-                    value={value}
-                    disabled={mode === "view"}
-                    onChange={(e) => {
-                      const formatted = formatCurrency(e.target.value);
-                      onChange(formatted);
-                    }}
-                    placeholder="0"
-                    error={
-                      !!errors.plan_alokasi_periode?.[index]?.harga_per_liter
-                    }
-                  />
-                )}
+                render={({ field: { value, onChange } }) => {
+                  const displayValue =
+                    value && !isNaN(Number(value))
+                      ? new Intl.NumberFormat("id-ID").format(Number(value))
+                      : "";
+                  return (
+                    <CInput
+                      label="Harga per Liter*"
+                      className="w-full"
+                      type="text"
+                      icon="Rp"
+                      value={displayValue}
+                      disabled={mode === "view"}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        onChange(raw);
+                      }}
+                      placeholder="0"
+                      error={
+                        !!errors.plan_alokasi_periode?.[index]?.harga_per_liter
+                      }
+                    />
+                  );
+                }}
               />
 
               <Controller
@@ -334,22 +335,31 @@ export default function BackchargeForm() {
               <Controller
                 name={`plan_alokasi_periode.${index}.harga_per_liter`}
                 control={control}
-                render={({ field: { value } }) => (
-                  <CInput
-                    label="Harga per Liter*"
-                    className="w-full"
-                    type="text"
-                    icon="Rp"
-                    disabled
-                    value={value}
-                    placeholder="0"
-                    error={
-                      !!errors.plan_alokasi_periode?.[index]?.harga_per_liter
-                    }
-                  />
-                )}
+                render={({ field: { value, onChange } }) => {
+                  const displayValue =
+                    value && !isNaN(Number(value))
+                      ? new Intl.NumberFormat("id-ID").format(Number(value))
+                      : "";
+                  return (
+                    <CInput
+                      label="Harga per Liter*"
+                      className="w-full"
+                      type="text"
+                      icon="Rp"
+                      value={displayValue}
+                      disabled
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        onChange(raw);
+                      }}
+                      placeholder="0"
+                      error={
+                        !!errors.plan_alokasi_periode?.[index]?.harga_per_liter
+                      }
+                    />
+                  );
+                }}
               />
-
               <Controller
                 name={`plan_alokasi_periode.${index}.alokasi_backcharge`}
                 control={control}
@@ -362,9 +372,8 @@ export default function BackchargeForm() {
                     value={value}
                     disabled={mode === "view"}
                     onChange={(e) => {
-                      const numericValue = e.target.value.replace(/\D/g, "");
-                      const formatted = formatCurrency(numericValue);
-                      onChange(formatted);
+                      const numeric = e.target.value.replace(/[^\d]/g, ""); // hanya angka
+                      onChange(numeric); // simpan sebagai string angka murni
                     }}
                     placeholder="0"
                     error={
@@ -377,20 +386,31 @@ export default function BackchargeForm() {
               <Controller
                 name={`plan_alokasi_periode.${index}.nilai_backcharge`}
                 control={control}
-                render={({ field: { value } }) => (
-                  <CInput
-                    label="Nilai Backcharge*"
-                    className="w-full"
-                    type="text"
-                    icon="Rp"
-                    value={value}
-                    disabled
-                    placeholder="0"
-                    error={
-                      !!errors.plan_alokasi_periode?.[index]?.nilai_backcharge
-                    }
-                  />
-                )}
+                render={({ field: { value, onChange } }) => {
+                  const displayValue =
+                    value && !isNaN(Number(value))
+                      ? new Intl.NumberFormat("id-ID").format(Number(value))
+                      : "";
+
+                  return (
+                    <CInput
+                      label="Nilai Backcharge*"
+                      className="w-full"
+                      type="text"
+                      icon="Rp"
+                      value={displayValue}
+                      disabled
+                      placeholder="0"
+                      onChange={(e) => {
+                        const rawValue = e.target.value.replace(/\D/g, "");
+                        onChange(rawValue);
+                      }}
+                      error={
+                        !!errors.plan_alokasi_periode?.[index]?.nilai_backcharge
+                      }
+                    />
+                  );
+                }}
               />
             </div>
           </div>

@@ -11,7 +11,7 @@ import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 import Image from "next/image";
 import useGlobal from "@/app/(private)/hooks";
 import useFakturList from "@/service/faktur/useFakturList";
-import { TFakturList, TUraian } from "@/service/faktur/types";
+import { TFakturList } from "@/service/faktur/types";
 import useDeleteFaktur from "@/service/faktur/useDeleteFaktur";
 import {
   FieldErrors,
@@ -19,12 +19,22 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import { fakturSchema, TFakturForm } from "./validator";
+import {
+  fakturSchema,
+  fakturSchemaAccepted,
+  fakturTransaction,
+  TFakturForm,
+  TFakturFormAccepted,
+  TFakturFormTransaction,
+} from "./validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useDebitNoteById from "@/service/debit-note/useDebitNoteById";
 import useCreateFaktur from "@/service/faktur/useCreateFaktur";
 import useUpdateFaktur from "@/service/faktur/useUpdateFaktur";
 import useFakturById from "@/service/faktur/useFakturById";
+import { Radio } from "@mui/material";
+import useAcceptedFaktur from "@/service/faktur/useAcceptedFaktur";
+import useTransactionFaktur from "@/service/faktur/useTransactionFaktur";
 
 const useFakturManagement = () => {
   const pathName = usePathname();
@@ -33,12 +43,17 @@ const useFakturManagement = () => {
     if (lastPath === "faktur-management") return null;
     return lastPath;
   }, [pathName]);
+  const [statusFaktur, setStatusFaktur] = useState<string>("");
+  const [openModalAccepted, setOpenModalAccepted] = useState<boolean>(false);
+  const [openModalTransaction, setOpenModalTransaction] =
+    useState<boolean>(false);
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
   const modalWarningInfo = useModalWarningInfo();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { dataCustomer } = useGlobal();
+  const [selectedFakturId, setSelectedFakturId] = useState<string>("");
+  const { dataCustomer, dataUserProfile } = useGlobal();
   const {
     control,
     handleSubmit,
@@ -66,6 +81,33 @@ const useFakturManagement = () => {
       kode_objek: "",
       uraian: [],
       ppn_of: "",
+    },
+    mode: "onChange",
+  });
+
+  const {
+    control: controlAccepted,
+    handleSubmit: handleSubmitAccepted,
+    formState: { errors: errorsAccepted },
+    reset: resetAccepted,
+  } = useForm<TFakturFormAccepted>({
+    resolver: zodResolver(fakturSchemaAccepted),
+    defaultValues: {
+      nomor_seri_faktur: "",
+      kode_objek: "",
+    },
+    mode: "onChange",
+  });
+
+  const {
+    control: controlTransaction,
+    handleSubmit: handleSubmitTransaction,
+    formState: { errors: errorsTransaction },
+    reset: resetTransaction,
+  } = useForm<TFakturFormTransaction>({
+    resolver: zodResolver(fakturTransaction),
+    defaultValues: {
+      transaction_id: "",
     },
     mode: "onChange",
   });
@@ -106,19 +148,28 @@ const useFakturManagement = () => {
     useCreateFaktur({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["useFakturList"],
+          queryKey: ["useDebitNoteList"],
         });
         queryClient.invalidateQueries({
-          queryKey: ["useDebitNoteList"],
+          queryKey: ["useDebitNoteById"],
         });
         queryClient.invalidateQueries({
           queryKey: ["useBeritaAcaraList"],
         });
         queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturList"],
+        });
+        queryClient.invalidateQueries({
           queryKey: ["useTotalList"],
         });
         router.push("/faktur-management");
-        toast.success("Debit Note Berhasil Ditambahkan");
+        toast.success("Faktur Berhasil Ditambahkan");
       },
       onError: (error) => {
         toast.error(error as string);
@@ -129,10 +180,25 @@ const useFakturManagement = () => {
     useUpdateFaktur({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["useFakturList"],
+          queryKey: ["useDebitNoteList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraById"],
         });
         queryClient.invalidateQueries({
           queryKey: ["useFakturById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useTotalList"],
         });
         router.push("/faktur-management");
         toast.success("Faktur Berhasil Diperbarui");
@@ -141,6 +207,76 @@ const useFakturManagement = () => {
         toast.error(error as string);
       },
     });
+
+  const { mutate: mutateAcceptedFaktur, isPending: isLoadingAcceptedFaktur } =
+    useAcceptedFaktur({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useTotalList"],
+        });
+        setSelectedFakturId("");
+        resetAccepted();
+        setOpenModalAccepted(false);
+        toast.success("Faktur Berhasil Diterima!");
+      },
+      onError: (error) => {
+        toast.error(error as string);
+      },
+    });
+
+  const {
+    mutate: mutateTransactionFaktur,
+    isPending: isLoadingTransactionFaktur,
+  } = useTransactionFaktur({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["useDebitNoteList"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useDebitNoteById"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraList"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraById"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useFakturById"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useFakturList"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useTotalList"],
+      });
+      setSelectedFakturId("");
+      resetTransaction();
+      setOpenModalTransaction(false);
+      toast.success("Faktur Berhasil Diterima!");
+    },
+    onError: (error) => {
+      toast.error(error as string);
+    },
+  });
 
   const onSubmit: SubmitHandler<TFakturForm> = (data) => {
     if (mode === "create") {
@@ -176,6 +312,70 @@ const useFakturManagement = () => {
   };
 
   const onInvalid = (errors: FieldErrors) => {
+    const showErrors = (errs: FieldErrors) => {
+      Object.values(errs).forEach((error) => {
+        if (!error) return;
+        if (error.message) {
+          toast.error(error.message as string);
+        }
+        if (error && typeof error === "object") {
+          if ("types" in error || "_errors" in error) return;
+          showErrors(error as FieldErrors);
+        }
+      });
+    };
+    showErrors(errors);
+  };
+
+  const onSubmitAccepted: SubmitHandler<TFakturFormAccepted> = (data) => {
+    modalWarningInfo.open({
+      title: "Konfirmasi",
+      message: (
+        <div>
+          <p>
+            Apakah anda yakin ingin telah menerima kembali Faktur ini dari HO?
+          </p>
+        </div>
+      ),
+      onConfirm: () => {
+        mutateAcceptedFaktur({ id: selectedFakturId, payload: data });
+      },
+    });
+  };
+
+  const onInvalidAccepted = (errors: FieldErrors) => {
+    const showErrors = (errs: FieldErrors) => {
+      Object.values(errs).forEach((error) => {
+        if (!error) return;
+        if (error.message) {
+          toast.error(error.message as string);
+        }
+        if (error && typeof error === "object") {
+          if ("types" in error || "_errors" in error) return;
+          showErrors(error as FieldErrors);
+        }
+      });
+    };
+    showErrors(errors);
+  };
+
+  const onSubmitTransaction: SubmitHandler<TFakturFormTransaction> = (data) => {
+    modalWarningInfo.open({
+      title: "Konfirmasi",
+      message: (
+        <div>
+          <p>
+            Apakah anda yakin ingin telah mendapatkan transaction id Faktur ini?
+          </p>
+        </div>
+      ),
+      onConfirm: () => {
+        mutateTransactionFaktur({ id: selectedFakturId, payload: data });
+      },
+    });
+  };
+
+  const onInvalidTransaction = (errors: FieldErrors) => {
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -243,6 +443,31 @@ const useFakturManagement = () => {
 
   const fakturColumnDefs = useMemo<ColDef<TFakturList>[]>(() => {
     return [
+      {
+        width: 80,
+        pinned: "left",
+        hide: dataUserProfile?.data?.department !== "FAT",
+        cellRenderer: (params: ICellRendererParams<TFakturList>) => {
+          const idRow = params?.data?.id;
+          const isSelected = selectedFakturId === idRow;
+          return (
+            <Radio
+              disabled={params?.data?.berita_acara?.status === "Done"}
+              checked={isSelected}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isSelected) {
+                  setSelectedFakturId("");
+                  setStatusFaktur("");
+                } else if (idRow) {
+                  setSelectedFakturId(idRow);
+                  setStatusFaktur(params?.data?.berita_acara?.status ?? "");
+                }
+              }}
+            />
+          );
+        },
+      },
       {
         width: 70,
         headerName: "No",
@@ -329,6 +554,48 @@ const useFakturManagement = () => {
         },
       },
       {
+        field: "range_periode",
+        headerName: "Range",
+        width: 150,
+        cellRenderer: (params: ICellRendererParams<TFakturList>) => {
+          return <span>{params?.data?.range_periode || "-"} Hari</span>;
+        },
+      },
+      {
+        field: "berita_acara.status",
+        headerName: "BA Status",
+        pinned: "right",
+        width: 190,
+        cellRenderer: (params: ICellRendererParams<TFakturList>) => {
+          const status = params?.data?.berita_acara?.status || "-";
+          const getBadgeColor = (status: string) => {
+            switch (status) {
+              case "Waiting Signed":
+                return "bg-blue-100 text-blue-700 rounded-xl text-xs";
+              case "Signed":
+                return "bg-green-100 text-green-700 rounded-xl text-xs";
+              case "Submitted Debit Note":
+                return "bg-yellow-100 text-yellow-700 rounded-xl text-xs";
+              case "Submitted Faktur":
+                return "bg-purple-100 text-purple-700 rounded-xl text-xs";
+              case "Faktur Accepted":
+                return "bg-orange-100 text-orange-700 rounded-xl text-xs";
+              default:
+                return "bg-gray-100 text-gray-600 rounded-xl text-xs";
+            }
+          };
+          return (
+            <span
+              className={`px-3 py-1 text-sm font-medium ${getBadgeColor(
+                status
+              )}`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
+      {
         headerName: "Actions",
         width: 130,
         sortable: false,
@@ -388,13 +655,15 @@ const useFakturManagement = () => {
         },
       },
     ];
-  }, [dataGridList, dataCustomer]);
+  }, [dataGridList, dataCustomer, selectedFakturId]);
 
   useEffect(() => {
     if (id && dataFakturById) {
       reset({
         ...dataFakturById?.data,
-        uraian: dataFakturById?.data?.debit_note?.uraian,
+        uraian: dataFakturById?.data?.berita_acara
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ?.berita_acara_uraian as any[],
       });
     }
   }, [dataFakturById, mode, id]);
@@ -403,7 +672,11 @@ const useFakturManagement = () => {
     if (mode === "create" && dataDebitNoteById?.data) {
       setValue("debit_note_id", dataDebitNoteById?.data?.id);
       setValue("berita_acara_id", dataDebitNoteById?.data?.berita_acara?.id);
-      setValue("uraian", dataDebitNoteById?.data?.uraian as TUraian[]);
+      setValue(
+        "uraian",
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataDebitNoteById?.data?.berita_acara?.berita_acara_uraian as any[]
+      );
       setValue(
         "customer_id",
         dataDebitNoteById?.data?.berita_acara?.customer_id
@@ -411,7 +684,6 @@ const useFakturManagement = () => {
     }
   }, [mode, dataDebitNoteById, id]);
 
-  console.log(getValues());
   return {
     isLoadingDataFakturList,
     isLoadingDeleteFaktur,
@@ -440,6 +712,27 @@ const useFakturManagement = () => {
     dataFakturById,
     fields,
     append,
+    selectedFakturId,
+    setSelectedFakturId,
+    openModalAccepted,
+    setOpenModalAccepted,
+    isLoadingAcceptedFaktur,
+    onSubmitAccepted,
+    handleSubmitAccepted,
+    onInvalidAccepted,
+    controlAccepted,
+    errorsAccepted,
+    statusFaktur,
+    setOpenModalTransaction,
+    openModalTransaction,
+    setStatusFaktur,
+    handleSubmitTransaction,
+    controlTransaction,
+    resetTransaction,
+    onSubmitTransaction,
+    errorsTransaction,
+    onInvalidTransaction,
+    isLoadingTransactionFaktur,
   };
 };
 

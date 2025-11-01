@@ -2,31 +2,31 @@ import { useMutation } from "@tanstack/react-query";
 import { NetworkAPIError, TResponseType } from "@/utils/response-type";
 import { AxiosError } from "axios";
 import { HeroServices } from "../HeroService";
-import { TBeritaAcaraList } from "./types";
-import { TAcceptedForm } from "@/app/(private)/ba-management/validator";
+import { TFakturList } from "./types";
+import { TFakturFormTransaction } from "@/app/(private)/faktur-management/validator";
 
-type TUseApprovedBeritraAcara = {
-  onSuccess?: (data: TBeritaAcaraList) => void;
+type TUseTransactionFakturProps = {
+  onSuccess?: (data: TFakturList) => void;
   onError?: (error: unknown) => void;
 };
 
-const useApprovedBeritaAcara = (props?: TUseApprovedBeritraAcara) => {
-  const useApprovedBeritaAcaraFn = async ({
+const useTransactionFaktur = (props?: TUseTransactionFakturProps) => {
+  const useTransactionFakturFn = async ({
     id,
     payload,
   }: {
     id: string;
-    payload: TAcceptedForm;
+    payload: TFakturFormTransaction;
   }) => {
     try {
-      const updateBeritaAcaraRes = await HeroServices.put<
-        TResponseType<TBeritaAcaraList>
-      >(`/berita-acara-approved/${id}`, payload);
+      const updateDebitNote = await HeroServices.put<
+        TResponseType<TFakturList>
+      >(`/faktur-transaction/${id}`, payload);
 
-      const { status } = updateBeritaAcaraRes;
+      const { status } = updateDebitNote;
       if (status !== 200) return;
 
-      return updateBeritaAcaraRes.data?.data;
+      return updateDebitNote.data?.data;
     } catch (error) {
       const err = error as AxiosError<NetworkAPIError>;
       throw err?.response?.data?.message || "Unknown error";
@@ -34,8 +34,8 @@ const useApprovedBeritaAcara = (props?: TUseApprovedBeritraAcara) => {
   };
 
   const mutation = useMutation({
-    mutationKey: ["useApprovedBeritaAcara"],
-    mutationFn: useApprovedBeritaAcaraFn,
+    mutationKey: ["useTransactionFaktur"],
+    mutationFn: useTransactionFakturFn,
     onSuccess: (data) => {
       if (data) {
         props?.onSuccess?.(data);
@@ -51,4 +51,4 @@ const useApprovedBeritaAcara = (props?: TUseApprovedBeritraAcara) => {
   return { ...mutation };
 };
 
-export default useApprovedBeritaAcara;
+export default useTransactionFaktur;

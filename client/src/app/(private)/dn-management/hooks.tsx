@@ -43,7 +43,7 @@ const useDebitNoteHooks = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [openModalDocument, setOpenModalDocument] = useState<boolean>(false);
-  const { dataCustomer } = useGlobal();
+  const { dataCustomer, dataUserProfile } = useGlobal();
   const {
     control,
     handleSubmit,
@@ -57,16 +57,9 @@ const useDebitNoteHooks = () => {
   } = useForm<TDebitNoteForm>({
     resolver: zodResolver(debitNoteSchema),
     defaultValues: {
+      harga_terbilang: "",
       berita_acara_id: "",
-      uraian: [
-        {
-          uraian: "",
-          satuan: "",
-          volume: "",
-          harga: "",
-          jumlah: "",
-        },
-      ],
+      uraian: [],
       sub_total: "",
       ppn: "",
       total: "",
@@ -94,7 +87,19 @@ const useDebitNoteHooks = () => {
           queryKey: ["useDebitNoteList"],
         });
         queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteById"],
+        });
+        queryClient.invalidateQueries({
           queryKey: ["useBeritaAcaraList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturList"],
         });
         queryClient.invalidateQueries({
           queryKey: ["useTotalList"],
@@ -114,10 +119,22 @@ const useDebitNoteHooks = () => {
           queryKey: ["useDebitNoteList"],
         });
         queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraById"],
+        });
+        queryClient.invalidateQueries({
           queryKey: ["useFakturById"],
         });
         queryClient.invalidateQueries({
-          queryKey: ["useDebitNoteById"],
+          queryKey: ["useFakturList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useTotalList"],
         });
         router.push("/dn-management");
         toast.success("Debit Notes Berhasil Diperbarui");
@@ -180,6 +197,7 @@ const useDebitNoteHooks = () => {
   };
 
   const onInvalid = (errors: FieldErrors) => {
+    console.log(errors);
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -242,6 +260,7 @@ const useDebitNoteHooks = () => {
       {
         width: 80,
         pinned: "left",
+        hide: dataUserProfile?.data?.department !== "FAT",
         cellRenderer: (params: ICellRendererParams<TDebitNoteList>) => {
           const idRow = params?.data?.id;
           const isSelected = selectedDnId === idRow;
@@ -327,7 +346,40 @@ const useDebitNoteHooks = () => {
           return <span>{findName?.alamat}</span>;
         },
       },
-
+      {
+        field: "berita_acara.status",
+        headerName: "BA Status",
+        pinned: "right",
+        width: 190,
+        cellRenderer: (params: ICellRendererParams<TDebitNoteList>) => {
+          const status = params?.data?.berita_acara?.status || "-";
+          const getBadgeColor = (status: string) => {
+            switch (status) {
+              case "Waiting Signed":
+                return "bg-blue-100 text-blue-700 rounded-xl text-xs";
+              case "Signed":
+                return "bg-green-100 text-green-700 rounded-xl text-xs";
+              case "Submitted Debit Note":
+                return "bg-yellow-100 text-yellow-700 rounded-xl text-xs";
+              case "Submitted Faktur":
+                return "bg-purple-100 text-purple-700 rounded-xl text-xs";
+              case "Faktur Accepted":
+                return "bg-orange-100 text-orange-700 rounded-xl text-xs";
+              default:
+                return "bg-gray-100 text-gray-600 rounded-xl text-xs";
+            }
+          };
+          return (
+            <span
+              className={`px-3 py-1 text-sm font-medium ${getBadgeColor(
+                status
+              )}`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
       {
         headerName: "Actions",
         width: 130,
@@ -389,14 +441,18 @@ const useDebitNoteHooks = () => {
   }, [mutateDeleteDebitNote, dataGridList, dataCustomer, selectedDnId]);
 
   useEffect(() => {
-    if (id && dataDebitNoteById) {
-      reset(dataDebitNoteById?.data);
+    if (id && dataDebitNoteById?.data) {
+      reset({
+        ...dataDebitNoteById.data,
+        uraian: dataDebitNoteById.data.berita_acara?.berita_acara_uraian || [],
+      });
     }
-  }, [dataDebitNoteById, mode]);
+  }, [dataDebitNoteById, id, mode, reset]);
 
   useEffect(() => {
     if (mode === "create" && dataBeritaAcaraById) {
       setValue("berita_acara_id", dataBeritaAcaraById?.data?.id);
+      setValue("uraian", dataBeritaAcaraById?.data?.berita_acara_uraian);
     }
   }, [mode, dataBeritaAcaraById]);
 

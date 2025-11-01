@@ -10,7 +10,7 @@ import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import BeritaAcaraPageSkeleton from "./components/LoadingSkeleton";
 import CardHeaderTotal from "./components/CardHeaderTotal";
-import { useModalWarningInfo } from "@/components/atoms/modal-warning";
+import ModalAcceptBa from "./components/ModalAccept";
 
 export default function BeritaAcaraPage() {
   const {
@@ -19,15 +19,16 @@ export default function BeritaAcaraPage() {
     filter,
     setFilter,
     isLoadingBeritaAcaraList,
+    setOpenModalAccept,
+    openModalAccept,
+    setSelectedBaId,
     isLoadingDeleteBeritaAcara,
     selectedBaId,
     reset,
     setActiveTabs,
     isLoadingApprovedBeritaAcara,
-    mutateApprovedBeritaAcara,
     activeTabs,
   } = useBeritaAcara();
-  const modalWarningInfo = useModalWarningInfo();
   const { dataTypeOfWork, globalLoading, dataUserProfile } = useGlobal();
   const router = useRouter();
 
@@ -84,7 +85,7 @@ export default function BeritaAcaraPage() {
                       total_kelebihan: null,
                     },
                   ],
-                  berita_acara_general: [
+                  berita_acara_uraian: [
                     {
                       goods_id: null,
                       satuan: null,
@@ -109,7 +110,10 @@ export default function BeritaAcaraPage() {
               {dataUserProfile?.data?.department === "FAT" && (
                 <>
                   <Button
-                    onClick={() => setActiveTabs("berita-acara-waiting")}
+                    onClick={() => {
+                      setActiveTabs("berita-acara-waiting");
+                      setSelectedBaId("");
+                    }}
                     variant={
                       activeTabs === "berita-acara-waiting"
                         ? "contained"
@@ -130,7 +134,10 @@ export default function BeritaAcaraPage() {
                   </Button>
 
                   <Button
-                    onClick={() => setActiveTabs("berita-acara-all")}
+                    onClick={() => {
+                      setActiveTabs("berita-acara-all");
+                      setSelectedBaId("");
+                    }}
                     variant={
                       activeTabs === "berita-acara-all"
                         ? "contained"
@@ -262,22 +269,10 @@ export default function BeritaAcaraPage() {
             />
           </div>
           {activeTabs === "berita-acara-waiting" && (
-            <div className="w-full flex justify-end items-center px-4 pb-4">
+            <div className="w-full flex justify-end items-center px-4 pb-3 -mt-4">
               <Button
                 onClick={() => {
-                  modalWarningInfo.open({
-                    title: "Konfirmasi",
-                    message: (
-                      <div>
-                        <p>
-                          Apakah anda yakin sudah menerima Berita Acara ini?
-                        </p>
-                      </div>
-                    ),
-                    onConfirm: () => {
-                      mutateApprovedBeritaAcara({ id: selectedBaId });
-                    },
-                  });
+                  setOpenModalAccept(true);
                 }}
                 variant="contained"
                 disabled={!selectedBaId}
@@ -289,6 +284,7 @@ export default function BeritaAcaraPage() {
             </div>
           )}
         </div>
+        {openModalAccept && <ModalAcceptBa />}
       </div>
     </>
   );

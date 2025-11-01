@@ -2,5 +2,9 @@
     {
         "name": "Terminal Battery",
         "code": "22806"
+    },
+    {
+        "name" : "Backcharge Fuel",
+        "code" : "22222"
     }
 ]
