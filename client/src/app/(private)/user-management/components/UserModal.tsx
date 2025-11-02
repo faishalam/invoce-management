@@ -11,7 +11,6 @@ import CAutoComplete from "@/components/atoms/auto-complete";
 import UserFormSkeleton from "./LoadingSkeleton";
 import useGlobal from "@/app/(private)/hooks";
 
-
 export default function UserModal() {
   const {
     openModalUser,
@@ -172,7 +171,6 @@ export default function UserModal() {
                         render={({ field: { onChange, value } }) => {
                           const options = [
                             { label: "Admin", value: "admin" },
-                            { label: "Superadmin", value: "superadmin" },
                             { label: "User", value: "user" },
                           ];
                           return (

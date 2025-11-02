@@ -16,6 +16,7 @@ export default function DataManagementPage() {
     dataGridCustomer,
     dataGridDepartment,
     customerColumnDef,
+    setFilterCustomer,
     filterCustomer,
     departmentColumnDef,
     filterTypeOfWork,
@@ -118,7 +119,7 @@ export default function DataManagementPage() {
                   value={filterCustomer.search}
                   className="w-full"
                   onChange={(e) =>
-                    setFilterDepartment({
+                    setFilterCustomer({
                       ...filterCustomer,
                       search: e.target.value,
                     })
@@ -200,7 +201,7 @@ export default function DataManagementPage() {
             <div className="flex justify-between items-center w-full">
               <div className="w-1/3">
                 <CInput
-                  value={filterCustomer.search}
+                  value={filterTypeOfWork.search}
                   className="w-full"
                   onChange={(e) =>
                     setFilterTypeOfWork({

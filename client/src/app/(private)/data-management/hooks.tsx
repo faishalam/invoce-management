@@ -609,7 +609,7 @@ const useDataManagementHooks = () => {
     const dataFilter = dataSatuan?.data?.filter((x: { name: string }) => {
       const search1 = x.name
         .toLowerCase()
-        .includes(filterDepartment.search.toLowerCase());
+        .includes(filterSatuan.search.toLowerCase());
 
       const search = search1;
       return search;
@@ -679,10 +679,10 @@ const useDataManagementHooks = () => {
       (x: { id: string; name: string; type: string }) => {
         const search1 = x.name
           .toLowerCase()
-          .includes(filterDepartment.search.toLowerCase());
+          .includes(filterTypeOfWork?.search.toLowerCase());
         const search2 = x.type
           .toLowerCase()
-          .includes(filterDepartment.search.toLowerCase());
+          .includes(filterTypeOfWork?.search.toLowerCase());
 
         const search = search1 || search2;
         return search;
@@ -866,7 +866,7 @@ const useDataManagementHooks = () => {
     const dataFilter = dataGoods?.data?.filter((x: { name: string }) => {
       const search1 = x.name
         .toLowerCase()
-        .includes(filterDepartment.search.toLowerCase());
+        .includes(filterGoods.search.toLowerCase());
 
       const search = search1;
       return search;
