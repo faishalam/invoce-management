@@ -86,7 +86,7 @@ const Sidebar: React.FC = () => {
                 selected={pathname.startsWith("/faktur-management")}
                 href="/faktur-management"
               />
-              {dataUserProfile?.data?.role === "superadmin" && (
+              {dataUserProfile?.data?.department === "FAT" && (
                 <>
                   <MenuItems
                     Icon={PersonIcon}
