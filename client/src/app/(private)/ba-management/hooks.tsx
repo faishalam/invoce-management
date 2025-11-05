@@ -13,8 +13,10 @@ import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 import Image from "next/image";
 import {
   acceptedSchema,
+  revisedSchema,
   TAcceptedForm,
   TBeritaAcaraForm,
+  TRevisedForm,
   validateBeritaAcara,
 } from "./validator";
 import { TBeritaAcaraList } from "@/service/berita-acara/types";
@@ -26,6 +28,7 @@ import { Radio } from "@mui/material";
 import useGlobal from "@/app/(private)/hooks";
 import useApprovedBeritaAcara from "@/service/berita-acara/useApprovedBeritaAcara";
 import { zodResolver } from "@hookform/resolvers/zod";
+import useUpdateStatus from "@/service/berita-acara/useUpdateStatus";
 
 const useBeritaAcaraManagementHooks = () => {
   const pathName = usePathname();
@@ -41,6 +44,7 @@ const useBeritaAcaraManagementHooks = () => {
   }, [pathName]);
   const searchParams = useSearchParams();
   const [openModalAccept, setOpenModalAccept] = useState<boolean>(false);
+  const [openModalRevised, setOpenModalRevised] = useState<boolean>(false);
   const mode = searchParams.get("mode");
   const modalWarningInfo = useModalWarningInfo();
   const [selectedBaId, setSelectedBaId] = useState<string>("");
@@ -121,6 +125,24 @@ const useBeritaAcaraManagementHooks = () => {
     resolver: zodResolver(acceptedSchema),
     defaultValues: {
       link_doc: "",
+    },
+    mode: "onChange",
+  });
+
+  const {
+    control: controlRevised,
+    handleSubmit: handleSubmitRevised,
+    watch: watchRevised,
+    formState: { errors: errorsRevised },
+    reset: resetRevised,
+    setValue: setValueRevised,
+  } = useForm<TRevisedForm>({
+    resolver: zodResolver(revisedSchema),
+    defaultValues: {
+      revised: {
+        status: "Revised",
+        reason: null,
+      },
     },
     mode: "onChange",
   });
@@ -212,7 +234,6 @@ const useBeritaAcaraManagementHooks = () => {
       queryClient.invalidateQueries({
         queryKey: ["useBeritaAcaraById"],
       });
-      reset();
       setSelectedBaId("");
       setOpenModalAccept(false);
       resetAccepted();
@@ -222,6 +243,36 @@ const useBeritaAcaraManagementHooks = () => {
       toast.error(error as string);
     },
   });
+
+  const { mutate: mutateUpdateStatus, isPending: isLoadingUpdateStatus } =
+    useUpdateStatus({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useBeritaAcaraById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useDebitNoteById"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturList"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["useFakturById"],
+        });
+        resetRevised();
+        setOpenModalRevised(false);
+        toast.success("Berhasil Revisi Berita Acara");
+      },
+      onError: (error) => {
+        toast.error(error as string);
+      },
+    });
 
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
   function extractAllMessages(errors: any): string[] {
@@ -318,6 +369,38 @@ const useBeritaAcaraManagementHooks = () => {
   };
 
   const onInvalidAccepted = (errors: FieldErrors) => {
+    const showErrors = (errs: FieldErrors) => {
+      Object.values(errs).forEach((error) => {
+        if (!error) return;
+        if (error.message) {
+          toast.error(error.message as string);
+        }
+        if (error && typeof error === "object") {
+          if ("types" in error || "_errors" in error) return;
+          showErrors(error as FieldErrors);
+        }
+      });
+    };
+
+    showErrors(errors);
+  };
+
+  const onSubmitRevised: SubmitHandler<TRevisedForm> = (data) => {
+    modalWarningInfo.open({
+      title: "Konfirmasi",
+      message: (
+        <div>
+          <p>Apakah anda yakin akan merevisi Berita Acara ini?</p>
+        </div>
+      ),
+      onConfirm: () => {
+        if (!id) return;
+        mutateUpdateStatus({ id, payload: data });
+      },
+    });
+  };
+
+  const onInvalidRevised = (errors: FieldErrors) => {
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -439,8 +522,10 @@ const useBeritaAcaraManagementHooks = () => {
           return (
             <Radio
               disabled={
-                activeTabs === "berita-acara-all" &&
-                params?.data?.status !== "Signed"
+                (activeTabs === "berita-acara-all" &&
+                  params?.data?.status !== "Signed") ||
+                (activeTabs === "beria-acara-all" &&
+                  params?.data?.nill_ditagihkan === "nill")
               }
               checked={isSelected}
               onClick={(e) => {
@@ -595,7 +680,10 @@ const useBeritaAcaraManagementHooks = () => {
         pinned: "right",
         width: 190,
         cellRenderer: (params: ICellRendererParams<TBeritaAcaraList>) => {
-          const status = params?.data?.status || "-";
+          // const status = params?.data?.status || "-";
+          const status = params?.data?.revised
+            ? params?.data?.revised?.status
+            : params?.data?.status || "-";
           const getBadgeColor = (status: string) => {
             switch (status) {
               case "Waiting Signed":
@@ -608,6 +696,10 @@ const useBeritaAcaraManagementHooks = () => {
                 return "bg-purple-100 text-purple-700 rounded-xl text-xs";
               case "Faktur Accepted":
                 return "bg-orange-100 text-orange-700 rounded-xl text-xs";
+              case "Revised":
+                return "bg-yellow-100 text-yellow-700 rounded-xl text-xs";
+              case "Cancelled":
+                return "bg-red-100 text-red-700 rounded-xl text-xs";
               default:
                 return "bg-gray-100 text-gray-600 rounded-xl text-xs";
             }
@@ -628,7 +720,7 @@ const useBeritaAcaraManagementHooks = () => {
         width: 130,
         sortable: false,
         pinned: "right",
-        cellRenderer: (params: ICellRendererParams<TBeritaAcaraForm>) => {
+        cellRenderer: (params: ICellRendererParams<TBeritaAcaraList>) => {
           return (
             <div className="flex gap-1 py-1 items-center justify-center">
               <div
@@ -641,39 +733,51 @@ const useBeritaAcaraManagementHooks = () => {
               >
                 <Image src={EyeIcon} alt="view" />
               </div>
-              <div
-                onClick={() => {
-                  if (params?.data?.id) {
-                    router.push(`/ba-management/${params.data.id}?mode=edit`);
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                <Image src={IconPencil} alt="edit" />
-              </div>
-              <div
-                onClick={() => {
-                  if (params?.data?.id) {
-                    modalWarningInfo.open({
-                      title: "Konfirmasi",
-                      message: (
-                        <div>
-                          <p>
-                            Apakah anda yakin ingin menghapus Berita Acara ini?
-                          </p>
-                        </div>
-                      ),
-                      onConfirm: () => {
-                        if (params?.data?.id)
-                          mutateDeleteBeritaAcara(params?.data?.id);
-                      },
-                    });
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                <Image src={DeleteIcon} alt="delete" />
-              </div>
+
+              {params?.data?.revised?.status === "Revised" && (
+                <div
+                  onClick={() => {
+                    if (params?.data?.id) {
+                      router.push(`/ba-management/${params.data.id}?mode=edit`);
+                    }
+                  }}
+                  className="cursor-pointer"
+                >
+                  <Image src={IconPencil} alt="edit" />
+                </div>
+              )}
+              {dataUserProfile?.data?.department === "FAT" &&
+                params?.data?.status !== "Cancelled" && (
+                  <div
+                    onClick={() => {
+                      if (params?.data?.id) {
+                        modalWarningInfo.open({
+                          title: "Konfirmasi",
+                          message: (
+                            <div>
+                              <p>
+                                Apakah anda yakin ingin Cancel Berita Acara ini?
+                              </p>
+                            </div>
+                          ),
+                          onConfirm: () => {
+                            if (params?.data?.id)
+                              // mutateDeleteBeritaAcara(params?.data?.id);
+                              mutateUpdateStatus({
+                                id: params?.data?.id,
+                                payload: {
+                                  status: "Cancelled",
+                                },
+                              });
+                          },
+                        });
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <Image src={DeleteIcon} alt="delete" />
+                  </div>
+                )}
             </div>
           );
         },
@@ -738,6 +842,18 @@ const useBeritaAcaraManagementHooks = () => {
     errorsAccepted,
     watchAccepted,
     setValueAccepted,
+    setOpenModalRevised,
+    openModalRevised,
+    controlRevised,
+    handleSubmitRevised,
+    watchRevised,
+    errorsRevised,
+    resetRevised,
+    setValueRevised,
+    mutateUpdateStatus,
+    isLoadingUpdateStatus,
+    onSubmitRevised,
+    onInvalidRevised,
   };
 };
 

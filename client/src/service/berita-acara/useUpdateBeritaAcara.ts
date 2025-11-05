@@ -35,6 +35,14 @@ const useUpdateBeritaAcara = (props?: TUseUpdateBeritaAcaraProps) => {
 
       if (updateTemplateBeritaAcaraRes.status !== 200) return;
 
+      const updateStatusRevised = await HeroServices.patch<
+        TResponseType<TBeritaAcaraList>
+      >(`/berita-acara-status/${id}`, {
+        revised: null,
+      });
+
+      if (updateStatusRevised.status !== 200) return;
+
       if (updateBeritaAcaraRes?.data?.data.debit_note?.id) {
         await HeroServices.put<TResponseType<{ id: string }>>(
           `/template-debit-note/${updateBeritaAcaraRes?.data?.data.debit_note?.id}`

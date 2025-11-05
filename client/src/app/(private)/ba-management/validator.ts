@@ -212,4 +212,12 @@ export const acceptedSchema = z.object({
   link_doc: z.string().min(1, { message: "Link Dokumen wajib diisi" }),
 });
 
+export const revisedSchema = z.object({
+  revised: z.object({
+    status: z.string().min(1, { message: "Status wajib diisi" }),
+    reason: z.string().min(1, { message: "Alasan wajib diisi" }).nullable(),
+  }),
+});
+
+export type TRevisedForm = z.infer<typeof revisedSchema>;
 export type TAcceptedForm = z.infer<typeof acceptedSchema>;

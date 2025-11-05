@@ -351,7 +351,9 @@ const useDebitNoteHooks = () => {
         pinned: "right",
         width: 190,
         cellRenderer: (params: ICellRendererParams<TDebitNoteList>) => {
-          const status = params?.data?.berita_acara?.status || "-";
+          const status = params?.data?.berita_acara?.revised
+            ? params?.data?.berita_acara?.revised?.status
+            : params?.data?.berita_acara?.status || "-";
           const getBadgeColor = (status: string) => {
             switch (status) {
               case "Waiting Signed":
@@ -364,6 +366,10 @@ const useDebitNoteHooks = () => {
                 return "bg-purple-100 text-purple-700 rounded-xl text-xs";
               case "Faktur Accepted":
                 return "bg-orange-100 text-orange-700 rounded-xl text-xs";
+              case "Revised":
+                return "bg-yellow-100 text-yellow-700 rounded-xl text-xs";
+              case "Cancelled":
+                return "bg-red-100 text-red-700 rounded-xl text-xs";
               default:
                 return "bg-gray-100 text-gray-600 rounded-xl text-xs";
             }
@@ -384,7 +390,7 @@ const useDebitNoteHooks = () => {
         width: 130,
         sortable: false,
         pinned: "right",
-        cellRenderer: (params: ICellRendererParams<TBeritaAcaraList>) => {
+        cellRenderer: (params: ICellRendererParams<TDebitNoteList>) => {
           return (
             <div className="flex gap-1 py-1 items-center justify-center">
               <div
@@ -397,41 +403,48 @@ const useDebitNoteHooks = () => {
               >
                 <Image src={EyeIcon} alt="view" />
               </div>
+              {dataUserProfile?.data?.department === "FAT" &&
+                params?.data?.berita_acara?.status !== "Cancelled" && (
+                  <>
+                    <div
+                      onClick={() => {
+                        if (params?.data?.id) {
+                          router.push(
+                            `/dn-management/${params.data.id}?mode=edit`
+                          );
+                        }
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Image src={IconPencil} alt="edit" />
+                    </div>
 
-              <div
-                onClick={() => {
-                  if (params?.data?.id) {
-                    router.push(`/dn-management/${params.data.id}?mode=edit`);
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                <Image src={IconPencil} alt="edit" />
-              </div>
-
-              <div
-                onClick={() => {
-                  if (params?.data?.id) {
-                    modalWarningInfo.open({
-                      title: "Konfirmasi",
-                      message: (
-                        <div>
-                          <p>
-                            Apakah anda yakin ingin menghapus Debit Note ini?
-                          </p>
-                        </div>
-                      ),
-                      onConfirm: () => {
-                        if (params?.data?.id)
-                          mutateDeleteDebitNote(params?.data?.id);
-                      },
-                    });
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                <Image src={DeleteIcon} alt="delete" />
-              </div>
+                    <div
+                      onClick={() => {
+                        if (params?.data?.id) {
+                          modalWarningInfo.open({
+                            title: "Konfirmasi",
+                            message: (
+                              <div>
+                                <p>
+                                  Apakah anda yakin ingin menghapus Debit Note
+                                  ini?
+                                </p>
+                              </div>
+                            ),
+                            onConfirm: () => {
+                              if (params?.data?.id)
+                                mutateDeleteDebitNote(params?.data?.id);
+                            },
+                          });
+                        }
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Image src={DeleteIcon} alt="delete" />
+                    </div>
+                  </>
+                )}
             </div>
           );
         },

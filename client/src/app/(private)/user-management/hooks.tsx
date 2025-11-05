@@ -43,16 +43,14 @@ const useUserManagementHooks = () => {
       name: "",
       password: "",
       is_active: true,
-      role: "",
       department_id: "",
     },
     mode: "onChange",
   });
   const [filter, setFilter] = useState<{
     search: string;
-    role: string | null;
     department_id: string | null;
-  }>({ search: "", role: null, department_id: null });
+  }>({ search: "", department_id: null });
   const { data: dataUser, isPending: isLoadingDataUser } = useUserList();
 
   const { data: dataUserById, isPending: isLoadingDataUserById } = useUserById({
@@ -142,12 +140,7 @@ const useUserManagementHooks = () => {
       const search1 = x.name
         .toLowerCase()
         .includes(filter.search.toLowerCase());
-      const search2 = x.email
-        .toLowerCase()
-        .includes(filter.search.toLowerCase());
-      const search3 = x.role
-        .toLowerCase()
-        .includes(filter.search.toLowerCase());
+      const search2 = x.email.toLowerCase();
 
       const departmentName =
         dataDepartment?.data
@@ -157,13 +150,12 @@ const useUserManagementHooks = () => {
         .toLowerCase()
         .includes(filter.search.toLowerCase());
 
-      const search = search1 || search2 || search3 || search4;
+      const search = search1 || search2 || search4;
 
-      const byRoles = filter.role ? x.role === filter.role : true;
       const byDepartment = filter?.department_id
         ? x.department_id === filter?.department_id
         : true;
-      return search && byRoles && byDepartment;
+      return search && byDepartment;
     });
     return dataFilter;
   }, [dataUser, filter]);
@@ -188,7 +180,6 @@ const useUserManagementHooks = () => {
         headerName: "Name",
         flex: 2,
       },
-      { field: "role", headerName: "Role", flex: 1 },
       {
         field: "is_active",
         headerName: "Active",
@@ -287,7 +278,6 @@ const useUserManagementHooks = () => {
           email: dataUserById.data.email,
           password: dataUserById.data.password ?? "",
           department_id: dataUserById.data.department_id,
-          role: dataUserById.data.role,
           name: dataUserById.data.name,
           is_active: dataUserById.data.is_active,
         };
@@ -298,7 +288,6 @@ const useUserManagementHooks = () => {
         email: "",
         name: "",
         password: "",
-        role: "",
         is_active: true,
         department_id: "",
       });

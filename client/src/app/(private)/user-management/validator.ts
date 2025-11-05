@@ -4,7 +4,6 @@ export const userSchema = z.object({
   id: z.string().optional(),
   email: z.string().min(1, "Email").email("Format email tidak valid"),
   department_id: z.string().min(1, "Department wajib diisi"),
-  role: z.string().min(1, "Role wajib diisi"),
   name: z.string().min(1, "Name wajib diisi"),
   is_active: z.boolean({
     required_error: "Status wajib diisi",
@@ -26,7 +25,6 @@ export type TUserForm = {
   email: string;
   password?: string;
   department_id: string;
-  role: string;
   name: string;
   is_active: boolean;
 };

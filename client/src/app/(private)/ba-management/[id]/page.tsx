@@ -10,6 +10,8 @@ import ModalViewDocument from "./components/ModalVIewDocument";
 import BeritaAcaraSkeleton from "./components/loadingSkeleton";
 import { BlockingLoader } from "@/components/atoms/loader";
 import Signer from "./components/Signer";
+import ModalRevised from "./components/ModalRevised";
+import useGlobal from "../../hooks";
 
 export default function Page() {
   const {
@@ -17,6 +19,7 @@ export default function Page() {
     watch,
     setValue,
     onSubmit,
+    setOpenModalRevised,
     onInvalid,
     mode,
     setOpenModalDocument,
@@ -25,9 +28,11 @@ export default function Page() {
     isLoadingCreateBeritaAcara,
     isLoadingUpdateBeritaAcara,
     dataBeritaAcaraById,
+    openModalRevised,
   } = useBeritaAcara();
   const tipeTransaksi = watch("tipe_transaksi");
   const jenisBeritaAcara = watch("jenis_berita_acara");
+  const { dataUserProfile } = useGlobal();
 
   useEffect(() => {
     if (tipeTransaksi === "nontrade") {
@@ -58,6 +63,21 @@ export default function Page() {
         {mode === "view" && (
           <>
             <div className="flex gap-2">
+              <Button
+                color="secondary"
+                variant="contained"
+                className="!bg-yellow-500 hover:!bg-yellow-600"
+                disabled={
+                  dataBeritaAcaraById?.data?.revised !== null ||
+                  dataUserProfile?.data?.department !== "FAT"
+                }
+                onClick={() => {
+                  setOpenModalRevised(true);
+                }}
+              >
+                Revised
+              </Button>
+
               <Button
                 color="secondary"
                 variant="contained"
@@ -140,6 +160,7 @@ export default function Page() {
         )}
       </form>
       {openModalDocument && <ModalViewDocument />}
+      {openModalRevised && <ModalRevised />}
     </div>
   );
 }

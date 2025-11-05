@@ -166,38 +166,6 @@ export default function UserModal() {
                     )}
                     {mode !== "edit" && (
                       <Controller
-                        name="role"
-                        control={control}
-                        render={({ field: { onChange, value } }) => {
-                          const options = [
-                            { label: "Admin", value: "admin" },
-                            { label: "User", value: "user" },
-                          ];
-                          return (
-                            <CAutoComplete
-                              error={!!errors.role}
-                              label="Role*"
-                              options={options}
-                              disabled={mode === "view"}
-                              className="w-full"
-                              placeholder="Masukkan role pengguna"
-                              value={
-                                options.find((opt) => opt.value === value) ?? ""
-                              }
-                              onChange={(_, newValue) =>
-                                onChange(newValue?.value ?? "")
-                              }
-                              getOptionLabel={(option) => option?.label ?? ""}
-                              isOptionEqualToValue={(option, val) =>
-                                option.value === val?.value
-                              }
-                            />
-                          );
-                        }}
-                      />
-                    )}
-                    {mode !== "edit" && (
-                      <Controller
                         name="is_active"
                         control={control}
                         render={({ field: { onChange, value } }) => {

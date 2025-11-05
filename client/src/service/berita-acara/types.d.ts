@@ -48,5 +48,9 @@ export interface TBeritaAcaraList {
   plan_alokasi_periode: TBeritaAcaraPeriode[];
   template_berita_acara: TTemplates;
   debit_note: { id: string };
+  revised: {
+    status: string;
+    reason: string;
+  };
   berita_acara_uraian: TBeritaAcaraUraian[];
 }

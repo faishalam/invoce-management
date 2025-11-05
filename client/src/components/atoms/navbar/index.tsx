@@ -76,7 +76,7 @@ const Navbar: React.FC<TProps> = ({ showRightMenu = true }) => {
                       {dataUserProfile?.data?.name}
                     </div>
                     <small className="text-gray-500 text-xs">
-                      {dataUserProfile?.data?.role}
+                      {dataUserProfile?.data?.department}
                     </small>
                   </div>
                 </DropdownButton>
@@ -95,7 +95,6 @@ function ProfileDropdownSkeleton() {
       {/* Avatar */}
       <Skeleton variant="circular" width={30} height={30} />
 
-      {/* Name + Role */}
       <div className="grid text-sm justify-items-start ml-2">
         <Skeleton variant="text" width={80} height={18} />
         <Skeleton variant="text" width={50} height={14} />

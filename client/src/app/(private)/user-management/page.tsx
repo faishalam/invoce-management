@@ -46,24 +46,6 @@ export default function UserManagementPage() {
             </div>
             <div className="w-full flex gap-3">
               <CAutoComplete
-                options={[
-                  { label: "User", value: "user" },
-                  { label: "Admin", value: "admin" },
-                ]}
-                className="w-full"
-                getOptionKey={(option) => option.value}
-                renderOption={(props, option) => (
-                  <li {...props} key={option.value}>
-                    {option.label}
-                  </li>
-                )}
-                onChange={(_, value) => {
-                  setFilter({ ...filter, role: value?.value });
-                }}
-                getOptionLabel={(option) => option.label}
-                placeholder="Roles"
-              />
-              <CAutoComplete
                 options={dataDepartment?.data || []}
                 className="w-full"
                 getOptionKey={(option) => option.id}

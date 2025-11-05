@@ -1,5 +1,4 @@
 import { Box, Button, IconButton, Modal } from "@mui/material";
-import useDataManagement from "../hooks";
 import CloseIcon from "@mui/icons-material/Close";
 import { Controller } from "react-hook-form";
 import { CInput } from "@/components/atoms";
@@ -8,6 +7,7 @@ import ScannerIcon from "@mui/icons-material/Scanner";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LinkIcon from "@mui/icons-material/Link";
+import useBeritaAcara from "../hooks";
 
 export default function ModalAcceptBa() {
   const {
@@ -19,7 +19,7 @@ export default function ModalAcceptBa() {
     onSubmitAccepted,
     onInvalidAccepted,
     isLoadingApprovedBeritaAcara,
-  } = useDataManagement();
+  } = useBeritaAcara();
 
   const handleClose = () => {
     setOpenModalAccept(false);
@@ -137,10 +137,7 @@ export default function ModalAcceptBa() {
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button
-                variant="outlined"
-                onClick={handleClose}
-              >
+              <Button variant="outlined" onClick={handleClose}>
                 Batal
               </Button>
 

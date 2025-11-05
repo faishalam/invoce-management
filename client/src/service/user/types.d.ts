@@ -3,7 +3,6 @@ export type TUserListResponse = {
   name: string;
   email: string;
   password?: string;
-  role: string;
   is_active: boolean;
   department: string;
   department_id: string;
@@ -12,7 +11,6 @@ export type TUserListResponse = {
 export type TUserForm = {
   name?: string;
   email?: string;
-  role?: string;
   is_active?: boolean;
   department_id?: string;
 };

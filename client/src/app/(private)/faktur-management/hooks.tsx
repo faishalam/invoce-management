@@ -567,7 +567,9 @@ const useFakturManagement = () => {
         pinned: "right",
         width: 190,
         cellRenderer: (params: ICellRendererParams<TFakturList>) => {
-          const status = params?.data?.berita_acara?.status || "-";
+          const status = params?.data?.berita_acara?.revised
+            ? params?.data?.berita_acara?.revised?.status
+            : params?.data?.berita_acara?.status || "-";
           const getBadgeColor = (status: string) => {
             switch (status) {
               case "Waiting Signed":
@@ -580,6 +582,10 @@ const useFakturManagement = () => {
                 return "bg-purple-100 text-purple-700 rounded-xl text-xs";
               case "Faktur Accepted":
                 return "bg-orange-100 text-orange-700 rounded-xl text-xs";
+              case "Revised":
+                return "bg-yellow-100 text-yellow-700 rounded-xl text-xs";
+              case "Cancelled":
+                return "bg-red-100 text-red-700 rounded-xl text-xs";
               default:
                 return "bg-gray-100 text-gray-600 rounded-xl text-xs";
             }
@@ -615,41 +621,47 @@ const useFakturManagement = () => {
               >
                 <Image src={EyeIcon} alt="view" />
               </div>
+              {dataUserProfile?.data?.department === "FAT" &&
+                params?.data?.status !== "Cancelled" && (
+                  <>
+                    <div
+                      onClick={() => {
+                        if (params?.data?.id) {
+                          router.push(
+                            `/faktur-management/${params.data.id}?mode=edit`
+                          );
+                        }
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Image src={IconPencil} alt="edit" />
+                    </div>
 
-              <div
-                onClick={() => {
-                  if (params?.data?.id) {
-                    router.push(
-                      `/faktur-management/${params.data.id}?mode=edit`
-                    );
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                <Image src={IconPencil} alt="edit" />
-              </div>
-
-              <div
-                onClick={() => {
-                  if (params?.data?.id) {
-                    modalWarningInfo.open({
-                      title: "Konfirmasi",
-                      message: (
-                        <div>
-                          <p>Apakah anda yakin ingin menghapus Faktur ini?</p>
-                        </div>
-                      ),
-                      onConfirm: () => {
-                        if (params?.data?.id)
-                          mutateDeleteFaktur(params?.data?.id);
-                      },
-                    });
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                <Image src={DeleteIcon} alt="delete" />
-              </div>
+                    <div
+                      onClick={() => {
+                        if (params?.data?.id) {
+                          modalWarningInfo.open({
+                            title: "Konfirmasi",
+                            message: (
+                              <div>
+                                <p>
+                                  Apakah anda yakin ingin menghapus Faktur ini?
+                                </p>
+                              </div>
+                            ),
+                            onConfirm: () => {
+                              if (params?.data?.id)
+                                mutateDeleteFaktur(params?.data?.id);
+                            },
+                          });
+                        }
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Image src={DeleteIcon} alt="delete" />
+                    </div>
+                  </>
+                )}
             </div>
           );
         },
@@ -661,8 +673,8 @@ const useFakturManagement = () => {
     if (id && dataFakturById) {
       reset({
         ...dataFakturById?.data,
-        uraian: dataFakturById?.data?.berita_acara
         //eslint-disable-next-line @typescript-eslint/no-explicit-any
+        uraian: dataFakturById?.data?.berita_acara
           ?.berita_acara_uraian as any[],
       });
     }
