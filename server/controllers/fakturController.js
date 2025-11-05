@@ -108,7 +108,7 @@ class FakturController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number", "status"],
+            attributes: ["customer_id", "number", "status", "revised"],
             include: [
               {
                 model: Berita_Acara_Uraian,

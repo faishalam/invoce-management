@@ -3,7 +3,6 @@
         "name": "Faishal Abdul Majid",
         "password": "P@ssw0rdadmin",
         "email": "admin@gmail.com",
-        "role": "superadmin",
         "department_id": "1",
         "is_active": true
     },
@@ -11,7 +10,6 @@
         "name": "Yudha Ari",
         "password": "P@ssw0rdadmin",
         "email": "ari.pratama@kppmining.com",
-        "role": "superadmin",
         "department_id": "1",
         "is_active": true
     },
@@ -19,7 +17,6 @@
         "name": "Admin Production",
         "password": "P@ssw0rdadmin",
         "email": "eko.prayetno@kppmining.com",
-        "role": "user",
         "department_id": "1",
         "is_active": true
     },
@@ -27,7 +24,6 @@
         "name": "Admin SHE",
         "password": "P@ssw0rdadmin",
         "email": "amiruddin.azuhdi@kppmining.com",
-        "role": "user",
         "department_id": "1",
         "is_active": true
     },
@@ -35,7 +31,6 @@
         "name": "Admin HCGS",
         "password": "P@ssw0rdadmin",
         "email": "rizal.galang@kppmining.com",
-        "role": "user",
         "department_id": "1",
         "is_active": true
     },
@@ -43,7 +38,6 @@
         "name": "Admin PLANT",
         "password": "P@ssw0rdadmin",
         "email": "yuga.ardiansyah@kppmining.com",
-        "role": "user",
         "department_id": "1",
         "is_active": true
     }

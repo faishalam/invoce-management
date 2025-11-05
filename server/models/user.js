@@ -49,15 +49,6 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "password is required" },
         },
       },
-      role: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: "user",
-        validate: {
-          notEmpty: { msg: "role is required" },
-          notNull: { msg: "role is required" },
-        },
-      },
       department_id: {
         type: DataTypes.UUID,
       },

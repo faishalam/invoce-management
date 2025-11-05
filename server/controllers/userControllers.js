@@ -6,7 +6,7 @@ const { User, Department } = require("../models");
 class UserController {
   static async createUser(req, res) {
     try {
-      const { name, email, password, role, department_id } = req.body;
+      const { name, email, password, department_id } = req.body;
 
       // 1. validate unique email
       const validateEmail = await User.findOne({ where: { email } });
@@ -32,7 +32,6 @@ class UserController {
         name,
         email,
         password,
-        role,
         department_id,
       });
 
@@ -41,7 +40,6 @@ class UserController {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
-        role: newUser.role,
         department_id: newUser.department_id,
       };
 
@@ -106,7 +104,6 @@ class UserController {
       const access_token = signToken({
         id: findUser.id,
         email: findUser.email,
-        role: findUser.role,
       });
 
       return res.status(200).json({
@@ -114,7 +111,6 @@ class UserController {
         message: "Login successful",
         data: {
           access_token,
-          role: findUser.role,
         },
       });
     } catch (error) {
@@ -139,7 +135,7 @@ class UserController {
 
   static async profile(req, res) {
     try {
-      const { role, name, email, department_id } = req.user;
+      const { name, email, department_id } = req.user;
 
       const findDepartment = await Department.findByPk(department_id);
       if (!findDepartment) {
@@ -153,7 +149,7 @@ class UserController {
       return res.status(200).json({
         status: "success",
         message: "User profile fetched",
-        data: { role, name, email, department: findDepartment.name },
+        data: { name, email, department: findDepartment.name },
       });
     } catch (error) {
       return res.status(500).json({
@@ -200,20 +196,12 @@ class UserController {
     try {
       const { id } = req.params;
 
-      if (req.user.role === "superadmin") {
-        await User.destroy({ where: { id } });
-        return res.status(200).json({
-          status: "success",
-          message: "User deleted successfully",
-          data: null,
-        });
-      } else {
-        return res.status(403).json({
-          status: "error",
-          message: "Unauthorized to delete user",
-          data: null,
-        });
-      }
+      await User.destroy({ where: { id } });
+      return res.status(200).json({
+        status: "success",
+        message: "User deleted successfully",
+        data: null,
+      });
     } catch (error) {
       return res.status(500).json({
         status: "error",

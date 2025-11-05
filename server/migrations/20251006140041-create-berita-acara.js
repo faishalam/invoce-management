@@ -36,6 +36,9 @@ module.exports = {
       link_doc: {
         type: Sequelize.STRING,
       },
+      revised: {
+        type: Sequelize.JSONB,
+      },
       signers: {
         type: Sequelize.JSONB,
         allowNull: false,

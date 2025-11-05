@@ -223,7 +223,6 @@ class BeritaAcaraController {
       });
     }
   }
-
   static async createBeritaAcara(req, res) {
     const t = await sequelize.transaction();
     try {
@@ -342,7 +341,6 @@ class BeritaAcaraController {
       });
     }
   }
-
   static async getAllBeritaAcara(req, res) {
     try {
       const userId = req.user.id;
@@ -411,7 +409,6 @@ class BeritaAcaraController {
       });
     }
   }
-
   static async beritaAcaraAcepted(req, res) {
     try {
       const { id } = req.params;
@@ -516,6 +513,7 @@ class BeritaAcaraController {
         jenis_berita_acara,
         plan_alokasi_periode,
         berita_acara_uraian,
+        nill_ditagihkan,
         ...baseData
       } = req.body;
 
@@ -551,6 +549,23 @@ class BeritaAcaraController {
         { ...baseData, tipe_transaksi, jenis_berita_acara },
         { transaction: t }
       );
+      if (nill_ditagihkan === "nill") {
+        const findDebitNote = await Debit_Note.findOne({
+          where: { berita_acara_id: id },
+          transaction: t,
+        });
+        if (findDebitNote) {
+          await findDebitNote.destroy({ transaction: t });
+        }
+        const findFaktur = await Faktur.findOne({
+          where: { berita_acara_id: id },
+          transaction: t,
+        });
+        if (findFaktur) {
+          await findFaktur.destroy({ transaction: t });
+        }
+        await findBeritaAcara.update({ status: "Signed" }, { transaction: t });
+      }
 
       // 🔹 Helper untuk upsert + delete missing
       async function syncItems(model, items, allowedFields = [], foreignKey) {
@@ -718,6 +733,43 @@ class BeritaAcaraController {
     } catch (error) {
       await t.rollback();
       console.error("Error deleteBeritaAcara:", error);
+      return res.status(500).json({
+        status: "error",
+        message: error.message || "Internal server error",
+      });
+    }
+  }
+
+  static async updateStatus(req, res) {
+    try {
+      const { id } = req.params;
+      const { revised, status } = req.body;
+
+      const findBeritaAcara = await Berita_Acara.findByPk(id);
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita acara tidak ditemukan",
+        });
+      }
+
+      if (revised && !status) {
+        await findBeritaAcara.update({ revised });
+      } else {
+        await findBeritaAcara.update({ revised: null });
+      }
+
+      if (status && !revised) {
+        await findBeritaAcara.update({ status });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Status Berita Acara berhasil diubah",
+        data: findBeritaAcara,
+      });
+    } catch (error) {
+      console.error("Error updateStatus:", error);
       return res.status(500).json({
         status: "error",
         message: error.message || "Internal server error",

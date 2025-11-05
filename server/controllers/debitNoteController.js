@@ -125,7 +125,7 @@ class DebitNoteController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number", "status"],
+            attributes: ["customer_id", "number", "status", "revised"],
           },
         ],
       });

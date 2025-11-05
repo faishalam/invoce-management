@@ -186,6 +186,10 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Nilai ditagihkan is required" },
         },
       },
+      revised: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+      },
       link_doc: {
         type: DataTypes.STRING,
       },

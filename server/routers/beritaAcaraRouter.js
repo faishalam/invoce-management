@@ -35,5 +35,9 @@ beritaAcaraRouter.get(
   "/berita-acara/:id",
   BeritaAcaraController.getBeritaAcaraById
 );
+beritaAcaraRouter.patch(
+  "/berita-acara-status/:id",
+  BeritaAcaraController.updateStatus
+);
 
 module.exports = beritaAcaraRouter;

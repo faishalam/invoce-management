@@ -14,7 +14,7 @@ module.exports = {
       throw new Error("No Departments found. Please seed Departments first!");
     }
 
-    const department_id = departments[0].id; 
+    const department_id = departments[0].id;
 
     const data = [
       {
@@ -22,7 +22,6 @@ module.exports = {
         name: "Faishal Abdul Majid",
         email: "admin@gmail.com",
         password: bcrypt.hashSync("P@ssw0rdadmin", 10),
-        role: "superadmin",
         department_id: department_id, // pakai UUID dari Departments
         is_active: true,
         createdAt: new Date(),
