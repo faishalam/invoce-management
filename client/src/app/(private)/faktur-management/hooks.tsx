@@ -750,8 +750,8 @@ const useFakturManagement = () => {
       const wsOF = XLSX.utils.json_to_sheet(ofData);
       const wsFK = XLSX.utils.json_to_sheet(fkData);
 
-      XLSX.utils.book_append_sheet(wb, wsOF, "OF");
       XLSX.utils.book_append_sheet(wb, wsFK, "FK");
+      XLSX.utils.book_append_sheet(wb, wsOF, "OF");
 
       // === Export ===
       const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });

@@ -33,7 +33,21 @@ cron.schedule(
       }
       await sendReminderRutinity(emailList);
 
-      await sendReminderRutinityForFuel(emailList);
+      const department = await Department.findOne({
+        where: { name: "PLANT" },
+        attributes: ["id"],
+      });
+
+      if (!department) {
+        console.log("❌ Department PLANT tidak ditemukan");
+        return;
+      }
+
+      const findPlantUsers = await User.findAll({
+        where: { department_id: department.id },
+      });
+
+      await sendReminderRutinityForFuel(findPlantUsers);
     } catch (err) {
       console.error("❌ Gagal menjalankan cron:", err);
     }
