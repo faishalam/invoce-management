@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const uraianItemSchema = z.object({
+  id: z.string().nonempty(),
   goods_id: z.string().nonempty({ message: "uraian is required" }),
   satuan: z.string().nonempty({ message: "satuan is required" }),
   quantity: z.string().nonempty({ message: "volume is required" }),
@@ -47,7 +48,6 @@ export const fakturTransaction = z.object({
     .string()
     .min(1, { message: "Nomor Seri Faktur wajib diisi" }),
 });
-
 
 export type TFakturForm = z.infer<typeof fakturSchema>;
 export type TFakturFormAccepted = z.infer<typeof fakturSchemaAccepted>;

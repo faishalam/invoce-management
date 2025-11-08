@@ -16,6 +16,7 @@ const cron = require("node-cron");
 const {
   sendReminderRutinity,
   sendReminderWaitingBA,
+  sendReminderRutinityForFuel,
 } = require("../helpers/nodemailer");
 
 cron.schedule(
@@ -31,7 +32,8 @@ cron.schedule(
         return;
       }
       await sendReminderRutinity(emailList);
-      console.log("✅ Email reminder berhasil dikirim ke semua user.");
+
+      await sendReminderRutinityForFuel(emailList);
     } catch (err) {
       console.error("❌ Gagal menjalankan cron:", err);
     }
@@ -53,6 +55,7 @@ cron.schedule(
         return;
       }
       await sendReminderRutinity(emailList);
+      await sendReminderRutinityForFuel(emailList);
     } catch (err) {
       console.error("❌ Gagal menjalankan cron:", err);
     }
@@ -382,7 +385,7 @@ class BeritaAcaraController {
             model: Debit_Note,
             as: "debit_note",
             required: false,
-            attributes: ["id"],
+            attributes: ["id", "debit_note_number", "createdAt"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -421,6 +424,8 @@ class BeritaAcaraController {
 
       beritaAcara.status = "Signed";
       beritaAcara.link_doc = link_doc;
+      beritaAcara.accepted_at = new Date().toISOString(); // atau format lokal
+
       await beritaAcara.save();
 
       return res.status(200).json({

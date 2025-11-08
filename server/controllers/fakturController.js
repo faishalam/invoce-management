@@ -24,6 +24,7 @@ class FakturController {
         jumlah_ppn_fk,
         kode_objek,
         ppn_of,
+        uraian,
       } = req.body;
 
       const findBeritaAcara = await Berita_Acara.findByPk(berita_acara_id, {
@@ -65,13 +66,8 @@ class FakturController {
 
       // Update semua uraian terkait berita acara ini
       await Berita_Acara_Uraian.update(
-        {
-          dpp_nilai_lain_of: dpp_nilai_lain_fk,
-          jumlah_ppn_of: jumlah_ppn_fk,
-        },
-        {
-          where: { berita_acara_id },
-        }
+        { uraian: JSON.stringify(uraian) },
+        { where: { berita_acara_id } }
       );
 
       return res.status(201).json({
@@ -203,21 +199,21 @@ class FakturController {
         ppn_fk,
         jumlah_ppn_fk,
         kode_objek,
-        uraian,
         ppn_of,
       });
 
-      if (berita_acara_id) {
-        await Berita_Acara_Uraian.update(
-          {
-            dpp_nilai_lain_of: dpp_nilai_lain_fk,
-            jumlah_ppn_of: jumlah_ppn_fk,
-          },
-          {
-            where: { berita_acara_id },
-          }
-        );
-      }
+      await Promise.all(
+        uraian?.map((item) =>
+          Berita_Acara_Uraian.update(
+            {
+              ...item,
+            },
+            {
+              where: { id: item.id },
+            }
+          )
+        )
+      );
 
       return res.status(200).json({
         status: "success",

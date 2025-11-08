@@ -24,6 +24,9 @@ module.exports = {
       satuan: {
         type: Sequelize.STRING,
       },
+      periode: {
+        type: Sequelize.STRING,
+      },
       quantity: {
         type: Sequelize.STRING,
       },

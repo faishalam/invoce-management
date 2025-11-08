@@ -109,7 +109,7 @@ export default function Page() {
                 disabled={
                   !selectedFakturId ||
                   selectedFakturId === "" ||
-                  statusFaktur === "Done" || 
+                  statusFaktur === "Done" ||
                   statusFaktur === "Submitted Faktur"
                 }
                 color="primary"

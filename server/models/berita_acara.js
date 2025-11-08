@@ -170,6 +170,10 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Status is required" },
         },
       },
+      accepted_at: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       submitted_at: {
         type: DataTypes.STRING,
         allowNull: false,

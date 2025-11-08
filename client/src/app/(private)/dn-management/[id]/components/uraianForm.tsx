@@ -88,12 +88,34 @@ export default function UraianSection() {
                 key={field.id}
                 className="relative border border-gray-200 rounded-lg p-4"
               >
-                <div className="text-sm font-semibold text-gray-700 mb-4">
-                  Periode #{index + 1}
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Uraian */}
+                  <Controller
+                    name={`uraian.${index}.periode`}
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <CInput
+                        label="Periode*"
+                        className="w-full"
+                        error={!!errors.uraian?.[index]?.periode}
+                        type="month"
+                        disabled={mode === "view"}
+                        value={
+                          value
+                            ? `20${value.slice(2, 4)}-${value.slice(0, 2)}`
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const [year, month] = e.target.value.split("-");
+                          onChange(`${month}${year.slice(2)}`);
+                        }}
+                        onFocus={(e) => {
+                          const input = e.target as HTMLInputElement;
+                          if (input.showPicker) input.showPicker();
+                        }}
+                      />
+                    )}
+                  />
                   <CInput
                     label="Uraian*"
                     placeholder="Deskripsi uraian"

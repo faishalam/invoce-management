@@ -98,16 +98,38 @@ class TemplateBeritaAcaraController {
           }
         ),
         harga_terbilang: findDebitNote.harga_terbilang,
+
         uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
-          (item, i) => ({
-            no: i + 1,
-            nama_uraian: goodsMap[item.goods_id] || "-",
-            satuan: item.satuan,
-            volume: item.quantity,
-            harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
-            jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
-          })
+          (item, i) => {
+            let periodeFormatted = "-";
+            if (item.periode) {
+              const periodeStr = item.periode.toString().padStart(4, "0");
+              const month = parseInt(periodeStr.slice(0, 2), 10);
+              const year = parseInt("20" + periodeStr.slice(2), 10);
+              const monthName = new Date(year, month - 1).toLocaleString(
+                "id-ID",
+                {
+                  month: "long",
+                }
+              );
+              periodeFormatted =
+                monthName.charAt(0).toUpperCase() +
+                monthName.slice(1) +
+                ` ${year}`;
+            }
+
+            return {
+              no: i + 1,
+              nama_uraian: goodsMap[item.goods_id] || "-",
+              satuan: item.satuan,
+              volume: item.quantity,
+              harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
+              jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
+              periode: periodeFormatted,
+            };
+          }
         ),
+
         sub_total: `Rp ${Number(findDebitNote.sub_total).toLocaleString(
           "id-ID"
         )}`,
@@ -146,7 +168,7 @@ class TemplateBeritaAcaraController {
 
   static async updateTemplateDebitNote(req, res) {
     try {
-      const { id } = req.params; 
+      const { id } = req.params;
 
       const findDebitNote = await Debit_Note.findOne({
         where: { id },

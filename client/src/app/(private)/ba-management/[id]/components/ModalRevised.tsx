@@ -13,10 +13,7 @@ export default function ModalRevised() {
     openModalRevised,
     controlRevised,
     handleSubmitRevised,
-    watchRevised,
     errorsRevised,
-    resetRevised,
-    setValueRevised,
     onSubmitRevised,
     isLoadingUpdateStatus,
     onInvalidRevised,
@@ -72,7 +69,7 @@ export default function ModalRevised() {
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2">
                     <span className="text-orange-600">•</span>
-                    <span>Dokumen akan dikembalikan ke status "Revisi"</span>
+                    <span>Dokumen akan dikembalikan ke status Revisi</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-orange-600">•</span>

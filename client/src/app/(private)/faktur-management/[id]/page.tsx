@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
 import InfoIcon from "@mui/icons-material/Info";
 import { CAutoComplete, CInput } from "@/components/atoms";
 import { TextArea } from "@/components/atoms/Input-text-area";
@@ -75,6 +76,7 @@ export default function Page() {
     setValue,
     isLoadingUpdateFaktur,
     isLoadingCreateFaktur,
+    onDownloadFaktur,
   } = useFaktur();
   const { fields } = useFieldArray({
     control,
@@ -159,6 +161,17 @@ export default function Page() {
           <p className="text-2xl font-bold">Faktur</p>
           <p className="text-sm text-gray-600">Kelola Data Faktur</p>
         </div>
+
+        <Button
+          onClick={() => {
+            onDownloadFaktur();
+          }}
+          className=""
+          color="primary"
+          variant="contained"
+        >
+          <span>{<DownloadIcon />}</span>
+        </Button>
       </div>
 
       <form
@@ -454,6 +467,24 @@ export default function Page() {
                 <h3 className="font-semibold text-gray-700">
                   Item {index + 1}
                 </h3>
+
+                <Controller
+                  name={`uraian.${index}.id`}
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      className="hidden"
+                      placeholder="Nama Object"
+                      disabled
+                      value={
+                        dataGoods?.data?.find((item) => item.id === field.value)
+                          ?.name
+                      }
+                      error={!!errors.uraian?.[index]?.goods_id}
+                    />
+                  )}
+                />
 
                 <Controller
                   name={`uraian.${index}.goods_id`}

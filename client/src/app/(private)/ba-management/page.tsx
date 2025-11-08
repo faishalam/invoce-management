@@ -1,4 +1,5 @@
 "use client";
+import DownloadIcon from "@mui/icons-material/Download";
 import AddIcon from "@mui/icons-material/Add";
 import DataGrid from "@/components/molecules/datagrid";
 import useBeritaAcara from "./hooks";
@@ -28,6 +29,7 @@ export default function BeritaAcaraPage() {
     setActiveTabs,
     isLoadingApprovedBeritaAcara,
     activeTabs,
+    onDownloadBeritaAcara,
   } = useBeritaAcara();
   const { dataTypeOfWork, globalLoading, dataUserProfile } = useGlobal();
   const router = useRouter();
@@ -255,6 +257,16 @@ export default function BeritaAcaraPage() {
                 getOptionLabel={(option) => option.name}
                 placeholder="Jenis Pekerjaan"
               />
+              <Button
+                onClick={() => {
+                  onDownloadBeritaAcara();
+                }}
+                className=""
+                color="primary"
+                variant="contained"
+              >
+                <span>{<DownloadIcon />}</span>
+              </Button>
             </div>
           </div>
           <div className="w-full h-[34vh] overflow-y-scroll">

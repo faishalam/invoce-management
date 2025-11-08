@@ -1,4 +1,6 @@
 "use client";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import EyeIcon from "@/assets/svg/eye-icon.svg";
 import { toast } from "sonner";
 import IconPencil from "@/assets/svg/icon-pencil.svg";
@@ -792,6 +794,108 @@ const useBeritaAcaraManagementHooks = () => {
     router,
   ]);
 
+  const onDownloadBeritaAcara = () => {
+    try {
+      if (dataBeritaAcaraList?.length === 0) {
+        toast.error("Tidak ada data Berita Acara");
+        return;
+      }
+
+      function formatPeriode(mmyy: string) {
+        const month = parseInt(mmyy.slice(0, 2), 10);
+        const year = 2000 + parseInt(mmyy.slice(2), 10);
+        const monthNames = [
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember",
+        ];
+        return `${monthNames[month - 1]} ${year}`;
+      }
+
+      const d = dataBeritaAcaraList?.map((ba, index) => {
+        const findCustomer = dataCustomer?.data?.find(
+          (item) => item?.id === ba.customer_id
+        )?.name;
+        const findTypeOfWork = dataTypeOfWork?.data?.find(
+          (item) => item?.id === ba?.type_of_work_id
+        )?.name;
+        return {
+          no: `${index + 1}`,
+          Site: ba.site,
+          "Nama Customer": findCustomer,
+          Periode: formatPeriode(ba?.periode),
+          "Tanggal Cut-Off": ba?.cut_off,
+          "Tipe Customer": ba?.tipe_customer,
+          "Tipe Transaksi": ba?.tipe_transaksi,
+          "Nomor BA": ba?.number,
+          "Jenis Pekerjaan": findTypeOfWork,
+          Reguler: ba?.reguler,
+          "Nama PIC User": ba?.pic,
+          "Tanggal No BA Diminta": new Date(ba?.createdAt).toLocaleDateString(
+            "id-ID",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }
+          ),
+          "Tanggal BA Signed Diterima": (() => {
+            const date = new Date(ba?.accepted_at);
+            return isNaN(date.getTime())
+              ? ""
+              : date.toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                });
+          })(),
+          "Tanggal Email BA Trade ke HO": "",
+          "Tanggal Kirim BA Trade ke HO": "",
+          "Nill/Ditagihkan": ba?.nill_ditagihkan,
+          "Invoiced Oleh": "",
+          "No Debit Note": ba?.debit_note?.debit_note_number,
+          "Tanggal Debit Note":
+            ba?.debit_note?.createdAt &&
+            !isNaN(new Date(ba.debit_note.createdAt).getTime())
+              ? new Date(ba.debit_note.createdAt).toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })
+              : "",
+          Currency: "",
+          DPP: "",
+          VAT: "",
+          Amount: "",
+          "Tanggal Upload DMS": "",
+          Remarks: "",
+          Status: ba?.status,
+        };
+      });
+      //eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ws = XLSX.utils.json_to_sheet(d as any);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Data");
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const data = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+      saveAs(data, `Berita-Acara-Data.xlsx`);
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message);
+    }
+  };
+
   useEffect(() => {
     if (id && dataBeritaAcaraById?.data && mode !== "create") {
       reset(dataBeritaAcaraById?.data);
@@ -810,6 +914,7 @@ const useBeritaAcaraManagementHooks = () => {
     handleSubmit,
     onSubmit,
     onInvalid,
+    onDownloadBeritaAcara,
     control,
     clearErrors,
     getValues,

@@ -22,12 +22,14 @@ export interface TBeritaAcaraUraian {
   total: string;
   dpp_nilai_lain_of?: null;
   jumlah_ppn_of?: null;
+  periode?: null;
 }
 
 export interface TBeritaAcaraList {
   id: string;
   link_doc?: string;
   tipe_transaksi: string;
+  accepted_at: string;
   jenis_berita_acara: string;
   number: string;
   site: string;
@@ -47,7 +49,7 @@ export interface TBeritaAcaraList {
   type_of_work_id: string;
   plan_alokasi_periode: TBeritaAcaraPeriode[];
   template_berita_acara: TTemplates;
-  debit_note: { id: string };
+  debit_note: { id: string; createdAt: string; debit_note_number: string };
   revised: {
     status: string;
     reason: string;

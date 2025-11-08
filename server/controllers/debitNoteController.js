@@ -24,6 +24,7 @@ class DebitNoteController {
         total,
         uraian,
         harga_terbilang,
+        periode,
       } = req.body;
 
       if (!berita_acara_id) {
@@ -65,6 +66,7 @@ class DebitNoteController {
           ppn,
           harga_terbilang,
           total,
+          periode,
         },
         { transaction: t }
       );
@@ -197,6 +199,7 @@ class DebitNoteController {
         total,
         uraian,
         harga_terbilang,
+        periode,
       } = req.body;
 
       // --- Cek data Debit Note ---
@@ -269,6 +272,7 @@ class DebitNoteController {
           total: total ?? findDebitNote.total,
           batas_akhir: batasAkhir,
           harga_terbilang: harga_terbilang ?? findDebitNote.harga_terbilang,
+          periode: periode ?? findDebitNote.periode,
         },
         { transaction: t }
       );

@@ -1,5 +1,7 @@
 "use client";
 import EyeIcon from "@/assets/svg/eye-icon.svg";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { toast } from "sonner";
 import IconPencil from "@/assets/svg/icon-pencil.svg";
 import DeleteIcon from "@/assets/svg/delete-icon.svg";
@@ -53,7 +55,7 @@ const useFakturManagement = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [selectedFakturId, setSelectedFakturId] = useState<string>("");
-  const { dataCustomer, dataUserProfile } = useGlobal();
+  const { dataCustomer, dataUserProfile, dataGoods } = useGlobal();
   const {
     control,
     handleSubmit,
@@ -622,7 +624,7 @@ const useFakturManagement = () => {
                 <Image src={EyeIcon} alt="view" />
               </div>
               {dataUserProfile?.data?.department === "FAT" &&
-                params?.data?.status !== "Cancelled" && (
+                params?.data?.berita_acara?.status !== "Cancelled" && (
                   <>
                     <div
                       onClick={() => {
@@ -669,12 +671,109 @@ const useFakturManagement = () => {
     ];
   }, [dataGridList, dataCustomer, selectedFakturId]);
 
+  const onDownloadFaktur = () => {
+    try {
+      if (!dataFakturById) {
+        toast.error("Tidak ada data Faktur");
+        return;
+      }
+
+      const formatRupiah = (value: string | number) => {
+        if (value == null || value === "") return "";
+        const number = Number(value);
+        if (isNaN(number)) return value;
+        return `Rp ${number.toLocaleString("id-ID")}`;
+      };
+
+      // === Sheet 1: Data Faktur Uraian (OF) ===
+      const ofData =
+        dataFakturById?.data?.berita_acara?.berita_acara_uraian?.map(
+          (item, index) => {
+            const found = dataGoods?.data?.find((g) => g.id === item.goods_id);
+            return {
+              "Nomor Seri Faktur":
+                index === 0
+                  ? dataFakturById?.data?.nomor_seri_faktur ?? ""
+                  : "",
+              "Kode Objek":
+                index === 0 ? dataFakturById?.data?.kode_objek ?? "" : "",
+              "Nama Objek": found?.name || "-",
+              "Harga Satuan": formatRupiah(item?.harga),
+              "Jumlah Barang": item?.quantity ?? "",
+              "Harga Total": formatRupiah(item?.total),
+              Diskon: "",
+              "DPP Nilai Lain":
+                item?.dpp_nilai_lain_of &&
+                formatRupiah(item?.dpp_nilai_lain_of),
+              PPN: item?.jumlah_ppn_of && formatRupiah(item?.jumlah_ppn_of),
+              "Tarif PPNBM": "",
+              PPNBM: "",
+            };
+          }
+        ) ?? [];
+
+      if (!ofData.length) {
+        toast.error("Data faktur tidak memiliki uraian.");
+        return;
+      }
+
+      // === Sheet 2: Data Faktur FK ===
+      const cust = dataCustomer?.data?.find(
+        (item) => item?.id === dataFakturById?.data?.customer_id
+      );
+
+      const fkData = [
+        {
+          "Nomor Seri Faktur": dataFakturById?.data?.nomor_seri_faktur ?? "",
+          "Masa Pajak": dataFakturById?.data?.masa_pajak ?? "",
+          Tahun: dataFakturById?.data?.tahun ?? "",
+          NPWP: dataFakturById?.data?.npwp ?? "",
+          Nama: cust?.name ?? "",
+          "Alamat Lengkap": cust?.alamat ?? "",
+          "Sub Total": formatRupiah(dataFakturById?.data?.sub_total),
+          "DPP Nilai Lain": formatRupiah(
+            dataFakturById?.data?.dpp_nilai_lain_fk
+          ),
+          "Jumlah PPN": formatRupiah(dataFakturById?.data?.jumlah_ppn_fk),
+          "Jumlah PPNBM": "",
+          "ID Keterangan Tambahan": "",
+          "FG Uang Muka": "",
+          "Uang Muka DPP": "",
+          "Uang Muka PPN": "",
+          "Uang Muka PPNBM": "",
+          Referensi: dataFakturById?.data?.debit_note?.debit_note_number ?? "",
+        },
+      ];
+
+      // === Gabungkan ke 1 file Excel ===
+      const wb = XLSX.utils.book_new();
+      const wsOF = XLSX.utils.json_to_sheet(ofData);
+      const wsFK = XLSX.utils.json_to_sheet(fkData);
+
+      XLSX.utils.book_append_sheet(wb, wsOF, "OF");
+      XLSX.utils.book_append_sheet(wb, wsFK, "FK");
+
+      // === Export ===
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+
+      saveAs(blob, `Data Faktur.xlsx`);
+      toast.success("Berhasil mengunduh file Faktur (2 sheet)");
+    } catch (error) {
+      const err =
+        error instanceof Error ? error : new Error("Terjadi kesalahan");
+      toast.error(err.message);
+    }
+  };
+
   useEffect(() => {
     if (id && dataFakturById) {
       reset({
         ...dataFakturById?.data,
-        //eslint-disable-next-line @typescript-eslint/no-explicit-any
         uraian: dataFakturById?.data?.berita_acara
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
           ?.berita_acara_uraian as any[],
       });
     }
@@ -745,6 +844,7 @@ const useFakturManagement = () => {
     errorsTransaction,
     onInvalidTransaction,
     isLoadingTransactionFaktur,
+    onDownloadFaktur,
   };
 };
 

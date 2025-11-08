@@ -62,6 +62,9 @@ module.exports = {
       pic: {
         type: Sequelize.STRING,
       },
+      accepted_at: {
+        type: Sequelize.STRING,
+      },
       submitted_at: {
         type: Sequelize.STRING,
       },

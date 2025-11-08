@@ -10,6 +10,7 @@ export const uraianItemSchema = z.object({
   total: z.string().optional(),
   dpp_nilai_lain_of: z.string().optional().nullable(),
   jumlah_ppn_of: z.string().optional().nullable(),
+  periode: z.string().optional().nullable(),
 });
 
 export const debitNoteSchema = z.object({
