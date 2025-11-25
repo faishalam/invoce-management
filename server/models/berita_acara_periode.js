@@ -37,6 +37,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Plan Alokasi Periode is required" },
         },
       },
+      start_date: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      end_date: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       harga_per_liter: {
         type: DataTypes.STRING,
         allowNull: false,

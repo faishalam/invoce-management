@@ -21,41 +21,6 @@ const parseCurrency = (value: string): number => {
   return Number(value?.replace(/\D/g, "") || 0);
 };
 
-const formatNPWP = (value: string): string => {
-  const rawValue = value.replace(/\D/g, "");
-  let formattedValue = rawValue;
-
-  if (rawValue.length > 2) {
-    formattedValue = rawValue.replace(/^(\d{2})(\d+)/, "$1.$2");
-  }
-  if (rawValue.length > 5) {
-    formattedValue = formattedValue.replace(
-      /^(\d{2})\.(\d{3})(\d+)/,
-      "$1.$2.$3"
-    );
-  }
-  if (rawValue.length > 8) {
-    formattedValue = formattedValue.replace(
-      /^(\d{2})\.(\d{3})\.(\d{3})(\d+)/,
-      "$1.$2.$3.$4"
-    );
-  }
-  if (rawValue.length > 9) {
-    formattedValue = formattedValue.replace(
-      /^(\d{2})\.(\d{3})\.(\d{3})\.(\d{1})(\d+)/,
-      "$1.$2.$3.$4-$5"
-    );
-  }
-  if (rawValue.length > 12) {
-    formattedValue = formattedValue.replace(
-      /^(\d{2})\.(\d{3})\.(\d{3})\.(\d{1})-(\d{3})(\d+)/,
-      "$1.$2.$3.$4-$5.$6"
-    );
-  }
-
-  return formattedValue;
-};
-
 const MASA_PAJAK_OPTIONS = Array.from({ length: 12 }, (_, i) => ({
   value: String(i + 1),
   label: `Masa ${i + 1}`,
@@ -118,27 +83,6 @@ export default function Page() {
       }
     });
   }, [ppnOf, uraian, setValue]);
-
-  const subTotal = useWatch({ control, name: "sub_total" });
-  const dppNilaiLain = useWatch({ control, name: "dpp_nilai_lain_fk" });
-  const ppnFk = useWatch({ control, name: "ppn_fk" });
-
-  useEffect(() => {
-    const total = Number(subTotal) || 0;
-    const dpp = (total * 11) / 12;
-
-    if (Math.round(dpp) !== Math.round(Number(dppNilaiLain))) {
-      setValue("dpp_nilai_lain_fk", Math.round(dpp).toString());
-    }
-  }, [subTotal, dppNilaiLain, setValue]);
-
-  useEffect(() => {
-    const dpp = Number(dppNilaiLain) || 0;
-    const persen = Number(ppnFk) || 0;
-    const jumlahPpn = (dpp * persen) / 100;
-
-    setValue("jumlah_ppn_fk", Math.round(jumlahPpn).toString());
-  }, [dppNilaiLain, ppnFk, setValue]);
 
   const customer = useMemo(() => {
     const customerData =
@@ -319,11 +263,7 @@ export default function Page() {
                   type="text"
                   placeholder="00.000.000.0-000.000"
                   error={!!errors.npwp}
-                  disabled={isViewMode}
-                  onChange={(e) => {
-                    const formatted = formatNPWP(e.target.value);
-                    field.onChange(formatted);
-                  }}
+                  disabled
                   value={field.value || ""}
                   inputProps={{ maxLength: 20 }}
                 />
@@ -344,7 +284,7 @@ export default function Page() {
                     onChange(raw.toString());
                   }}
                   placeholder="0"
-                  disabled={isViewMode}
+                  disabled
                   error={!!errors.sub_total}
                 />
               )}
@@ -377,10 +317,11 @@ export default function Page() {
                   onChange={(e) => {
                     const raw = e.target.value.replace(/[^0-9.]/g, "");
                     onChange(raw);
+                    setValue("ppn_of", raw);
                   }}
                   placeholder="0"
                   icon="%"
-                  disabled={isViewMode}
+                  disabled
                   error={!!errors.ppn_fk}
                 />
               )}
@@ -450,7 +391,7 @@ export default function Page() {
                   const numericValue = e.target.value.replace(/[^\d.]/g, "");
                   onChange(numericValue);
                 }}
-                disabled={isViewMode}
+                disabled
                 placeholder="11"
                 className="w-1/2"
                 icon="%"
@@ -465,7 +406,7 @@ export default function Page() {
                 className="flex flex-col gap-4 p-4 border rounded-md"
               >
                 <h3 className="font-semibold text-gray-700">
-                  Item {index + 1}
+                  Periode {index + 1}
                 </h3>
 
                 <Controller
@@ -485,6 +426,51 @@ export default function Page() {
                     />
                   )}
                 />
+
+                {(dataDebitNoteById?.data?.berita_acara?.jenis_berita_acara ===
+                  "fuel" &&
+                  mode === "create") ||
+                  ((mode === "view" || mode === "edit") &&
+                    dataFakturById?.data?.berita_acara?.jenis_berita_acara ===
+                      "fuel" && (
+                      <div className="flex gap-2">
+                        <Controller
+                          name={`uraian.${index}.start_date`}
+                          control={control}
+                          render={({ field }) => (
+                            <CInput
+                              {...field}
+                              label="Start Date*"
+                              className="w-full"
+                              type="date"
+                              disabled
+                              error={!!errors.uraian?.[index]?.start_date}
+                              helperText={
+                                errors.uraian?.[index]?.start_date?.message
+                              }
+                            />
+                          )}
+                        />
+
+                        <Controller
+                          name={`uraian.${index}.end_date`}
+                          control={control}
+                          render={({ field }) => (
+                            <CInput
+                              {...field}
+                              label="End Date*"
+                              className="w-full"
+                              type="date"
+                              disabled
+                              error={!!errors.uraian?.[index]?.end_date}
+                              helperText={
+                                errors.uraian?.[index]?.end_date?.message
+                              }
+                            />
+                          )}
+                        />
+                      </div>
+                    ))}
 
                 <Controller
                   name={`uraian.${index}.goods_id`}

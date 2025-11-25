@@ -77,8 +77,13 @@
       .signature-table td {
         vertical-align: bottom;
       }
-      .table-body {
-          height: 100px;
+   .sign-space {
+        height: 100px; /* ruang tanda tangan */
+      }
+      .sign-header {
+        text-align: right;
+        font-weight: bold;
+        margin-bottom: 5px;
       }
       .signature-table th {
           font-weight: normal;
@@ -143,7 +148,7 @@
         <tr>
           <td>Perusahaan</td>
           <td>:</td>
-          <td>({{customer}})</td>
+          <td>{{customer}}</td>
         </tr>
       </table>
     </div>
@@ -153,6 +158,7 @@
     </p>
 
     <table class="signature-table">
+        <div class="sign-header">Lameruru, {{tanggal}}</div>
       <thead>
         <tr>
           <th colspan="1">{{customer}}</th>
@@ -160,17 +166,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td></td>
-          <td>{{signer_2_dept}}<d>
-          <td>{{signer_3_dept}}<d>
-          <td>{{signer_4_dept}}<d>
-        </tr>
+        <tr class="sign-space">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         <tr class="table-body">
           <td>{{signer_1_name}}</td>
           <td>{{signer_2_name}}</td>
           <td>{{signer_3_name}}</td>
           <td>{{signer_4_name}}</td>
+        </tr>
+          <tr>
+          <td>{{signer_1_position}}<d>
+          <td>{{signer_2_position}}<d>
+          <td>{{signer_3_position}}<d>
+          <td>{{signer_4_position}}<d>
         </tr>
       </tbody>
     </table>

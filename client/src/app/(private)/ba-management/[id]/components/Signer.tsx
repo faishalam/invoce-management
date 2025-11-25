@@ -1,16 +1,14 @@
-import { CAutoComplete, CInput } from "@/components/atoms";
+import { CInput } from "@/components/atoms";
 import GroupIcon from "@mui/icons-material/Group";
 import { Controller } from "react-hook-form";
 import useBeritaAcara from "../../hooks";
-import useGlobal from "@/app/(private)/hooks";
 import { useEffect } from "react";
 
 export default function Signer() {
   const { control, errors, mode, setValue } = useBeritaAcara();
-  const { dataDepartment } = useGlobal();
 
   useEffect(() => {
-    setValue("signers.0.dept", "vendor");
+    setValue("signers.0.position", "vendor");
   }, []);
   return (
     <>
@@ -20,7 +18,7 @@ export default function Signer() {
       </div>
       <div className="-mx-6 border-t border-gray-200" />
       <div className="flex gap-6">
-        <div className="w-full ">
+        <div className="w-full flex flex-col gap-2">
           <Controller
             name="signers.0.name"
             control={control}
@@ -32,6 +30,21 @@ export default function Signer() {
                 type="text"
                 placeholder="Masukkan nama"
                 error={!!errors?.signers?.[0]?.name}
+                disabled={mode === "view"}
+              />
+            )}
+          />
+          <Controller
+            name="signers.0.position"
+            control={control}
+            render={({ field }) => (
+              <CInput
+                {...field}
+                label="Jabatan Signer Vendor*"
+                className="w-full"
+                type="text"
+                placeholder="Masukkan jabatan"
+                error={!!errors?.signers?.[0]?.position}
                 disabled={mode === "view"}
               />
             )}
@@ -54,27 +67,19 @@ export default function Signer() {
             )}
           />
           <Controller
-            name="signers.1.dept"
+            name="signers.1.position"
             control={control}
-            render={({ field: { onChange, value } }) => {
-              const options = dataDepartment?.data ?? [];
-              return (
-                <CAutoComplete
-                  error={!!errors.signers?.[1]?.dept}
-                  label="Department Signer 1"
-                  options={options}
-                  className="w-full"
-                  disabled={mode === "view"}
-                  placeholder="Masukkan Dept Signer"
-                  value={options.find((opt) => opt.name === value) ?? null}
-                  onChange={(_, newValue) => onChange(newValue?.name ?? "")}
-                  getOptionLabel={(option) => option?.name ?? ""}
-                  isOptionEqualToValue={(option, val) =>
-                    option.name === val?.name
-                  }
-                />
-              );
-            }}
+            render={({ field }) => (
+              <CInput
+                {...field}
+                label="Jabatan Signer 1*"
+                className="w-full"
+                type="text"
+                placeholder="Masukkan jabatan"
+                error={!!errors?.signers?.[1]?.position}
+                disabled={mode === "view"}
+              />
+            )}
           />
         </div>
       </div>
@@ -96,27 +101,19 @@ export default function Signer() {
             )}
           />
           <Controller
-            name="signers.2.dept"
+            name="signers.2.position"
             control={control}
-            render={({ field: { onChange, value } }) => {
-              const options = dataDepartment?.data ?? [];
-              return (
-                <CAutoComplete
-                  error={!!errors.signers?.[2]?.dept}
-                  label="Department Signer 2*"
-                  options={options}
-                  className="w-full"
-                  disabled={mode === "view"}
-                  placeholder="Masukkan Dept Signer"
-                  value={options.find((opt) => opt.name === value) ?? null}
-                  onChange={(_, newValue) => onChange(newValue?.name ?? "")}
-                  getOptionLabel={(option) => option?.name ?? ""}
-                  isOptionEqualToValue={(option, val) =>
-                    option.name === val?.name
-                  }
-                />
-              );
-            }}
+            render={({ field }) => (
+              <CInput
+                {...field}
+                label="Jabatan Signer 2*"
+                className="w-full"
+                type="text"
+                placeholder="Masukkan jabatan"
+                error={!!errors?.signers?.[2]?.position}
+                disabled={mode === "view"}
+              />
+            )}
           />
         </div>
         <div className="w-full flex flex-col gap-2">
@@ -136,27 +133,19 @@ export default function Signer() {
             )}
           />
           <Controller
-            name="signers.3.dept"
+            name="signers.3.position"
             control={control}
-            render={({ field: { onChange, value } }) => {
-              const options = dataDepartment?.data ?? [];
-              return (
-                <CAutoComplete
-                  error={!!errors.signers?.[3]?.dept}
-                  label="Department Signer 3*"
-                  options={options}
-                  className="w-full"
-                  disabled={mode === "view"}
-                  placeholder="Masukkan Dept Signer"
-                  value={options.find((opt) => opt.name === value) ?? null}
-                  onChange={(_, newValue) => onChange(newValue?.name ?? "")}
-                  getOptionLabel={(option) => option?.name ?? ""}
-                  isOptionEqualToValue={(option, val) =>
-                    option.name === val?.name
-                  }
-                />
-              );
-            }}
+            render={({ field }) => (
+              <CInput
+                {...field}
+                label="Jabatan Signer 3*"
+                className="w-full"
+                type="text"
+                placeholder="Masukkan jabatan"
+                error={!!errors?.signers?.[3]?.position}
+                disabled={mode === "view"}
+              />
+            )}
           />
         </div>
       </div>

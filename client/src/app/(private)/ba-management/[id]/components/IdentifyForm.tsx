@@ -39,7 +39,7 @@ export default function IdentifyForm() {
                   const val = newValue?.value || "";
                   onChange(val);
                   setValue("tipe_customer", val === "trade" ? "customer" : "");
-                  setValue("reguler", val === "trade" ? "reguler" : "");
+                  // setValue("reguler", val === "trade" ? "reguler" : "");
                 }}
                 getOptionKey={(option) => option.value}
                 getOptionLabel={(option) => option.label}

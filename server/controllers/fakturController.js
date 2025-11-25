@@ -241,7 +241,12 @@ class FakturController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number"],
+            attributes: [
+              "customer_id",
+              "number",
+              "jenis_berita_acara",
+              "customer_id",
+            ],
             include: [
               {
                 model: Berita_Acara_Uraian,

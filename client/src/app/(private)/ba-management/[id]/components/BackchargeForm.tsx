@@ -115,7 +115,7 @@ export default function BackchargeForm() {
         <div className="flex items-center gap-2">
           <TimelineIcon className="text-blue-500" />
           <h2 className="text-xl font-bold text-gray-900">
-            Plan Kontrak & Alokasi Backcharge
+            Plan Kontrak & Quantity Backcharge
           </h2>
         </div>
         <Button
@@ -127,6 +127,8 @@ export default function BackchargeForm() {
               harga_per_liter: "0",
               plan_liter: "",
               actual_liter: "",
+              start_date: "",
+              end_date: "",
               alokasi_backcharge: "0",
               nilai_backcharge: "0",
               total_kelebihan: "0",
@@ -167,7 +169,7 @@ export default function BackchargeForm() {
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Sisa Alokasi</p>
+            <p className="text-sm text-gray-600">Sisa Quantity</p>
             <p
               className={`text-lg font-bold ${
                 isExceedingLimit ? "text-red-600" : "text-blue-600"
@@ -182,13 +184,13 @@ export default function BackchargeForm() {
       {/* Alert Messages */}
       {!hasKelebihan && (
         <Alert severity="info">
-          Tidak ada kelebihan liter. Alokasi backcharge tidak dapat diisi.
+          Tidak ada kelebihan liter. Quantity backcharge tidak dapat diisi.
         </Alert>
       )}
 
       {isExceedingLimit && (
         <Alert severity="error">
-          Total alokasi backcharge (
+          Total quantity backcharge (
           {totalAlokasiBackcharge.toLocaleString("id-ID")}) melebihi total
           kelebihan ({totalKelebihan.toLocaleString("id-ID")})!
         </Alert>
@@ -234,6 +236,37 @@ export default function BackchargeForm() {
                   />
                 )}
               />
+
+              <div className="flex gap-2">
+                <Controller
+                  name={`plan_alokasi_periode.${index}.start_date`}
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      label="Start Date*"
+                      className="w-full"
+                      type="date"
+                      disabled={mode === "view"}
+                      error={!!errors.plan_alokasi_periode?.[index]?.start_date}
+                    />
+                  )}
+                />
+                <Controller
+                  name={`plan_alokasi_periode.${index}.end_date`}
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      label="End Date*"
+                      className="w-full"
+                      type="date"
+                      disabled={mode === "view"}
+                      error={!!errors.plan_alokasi_periode?.[index]?.end_date}
+                    />
+                  )}
+                />
+              </div>
 
               <Controller
                 name={`plan_alokasi_periode.${index}.harga_per_liter`}
@@ -310,7 +343,7 @@ export default function BackchargeForm() {
             {/* Alokasi Backcharge */}
             <div className="w-full flex flex-col gap-2">
               <h2 className="text-md font-bold text-gray-900">
-                Alokasi Backcharge
+                Quantity Backcharge
               </h2>
 
               <Controller
@@ -331,6 +364,37 @@ export default function BackchargeForm() {
                   />
                 )}
               />
+
+              <div className="flex gap-2">
+                <Controller
+                  name={`plan_alokasi_periode.${index}.start_date`}
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      label="Start Date*"
+                      className="w-full"
+                      type="date"
+                      disabled
+                      error={!!errors.plan_alokasi_periode?.[index]?.start_date}
+                    />
+                  )}
+                />
+                <Controller
+                  name={`plan_alokasi_periode.${index}.end_date`}
+                  control={control}
+                  render={({ field }) => (
+                    <CInput
+                      {...field}
+                      label="End Date*"
+                      className="w-full"
+                      type="date"
+                      disabled
+                      error={!!errors.plan_alokasi_periode?.[index]?.end_date}
+                    />
+                  )}
+                />
+              </div>
 
               <Controller
                 name={`plan_alokasi_periode.${index}.harga_per_liter`}
@@ -365,7 +429,7 @@ export default function BackchargeForm() {
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <CInput
-                    label="Alokasi Backcharge*"
+                    label="Quantity Backcharge*"
                     className="w-full"
                     type="text"
                     icon="Ltr"

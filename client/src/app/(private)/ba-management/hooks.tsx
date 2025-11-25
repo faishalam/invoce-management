@@ -15,9 +15,13 @@ import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 import Image from "next/image";
 import {
   acceptedSchema,
+  cancelledSchema,
+  deliverySchema,
   revisedSchema,
   TAcceptedForm,
   TBeritaAcaraForm,
+  TCancelledForm,
+  TDeliveryForm,
   TRevisedForm,
   validateBeritaAcara,
 } from "./validator";
@@ -31,6 +35,8 @@ import useGlobal from "@/app/(private)/hooks";
 import useApprovedBeritaAcara from "@/service/berita-acara/useApprovedBeritaAcara";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useUpdateStatus from "@/service/berita-acara/useUpdateStatus";
+import useCancelledBeritaAcara from "@/service/berita-acara/useCancelledBeritaAcara";
+import useDeliveryBeritaAcara from "@/service/berita-acara/useDeliveryBeritaAcara";
 
 const useBeritaAcaraManagementHooks = () => {
   const pathName = usePathname();
@@ -47,6 +53,8 @@ const useBeritaAcaraManagementHooks = () => {
   const searchParams = useSearchParams();
   const [openModalAccept, setOpenModalAccept] = useState<boolean>(false);
   const [openModalRevised, setOpenModalRevised] = useState<boolean>(false);
+  const [openModalCancelled, setOpenModalCancelled] = useState<boolean>(false);
+  const [openModalDelivery, setOpenModalDelivery] = useState<boolean>(false);
   const mode = searchParams.get("mode");
   const modalWarningInfo = useModalWarningInfo();
   const [selectedBaId, setSelectedBaId] = useState<string>("");
@@ -78,19 +86,19 @@ const useBeritaAcaraManagementHooks = () => {
       signers: [
         {
           name: "",
-          dept: "",
+          position: "",
         },
         {
           name: "",
-          dept: "",
+          position: "",
         },
         {
           name: "",
-          dept: "",
+          position: "",
         },
         {
           name: "",
-          dept: "",
+          position: "",
         },
       ],
       submitted_at: new Date().toISOString().split("T")[0],
@@ -132,6 +140,25 @@ const useBeritaAcaraManagementHooks = () => {
   });
 
   const {
+    control: controlDelivery,
+    handleSubmit: handleSubmitDelivery,
+    watch: watchDelivery,
+    formState: { errors: errorsDelivery },
+    reset: resetDelivery,
+    setValue: setValueDelivery,
+  } = useForm<TDeliveryForm>({
+    resolver: zodResolver(deliverySchema),
+    defaultValues: {
+      delivery: {
+        metode: "",
+        resi: "",
+        nama_pengirim: "",
+      },
+    },
+    mode: "onChange",
+  });
+
+  const {
     control: controlRevised,
     handleSubmit: handleSubmitRevised,
     watch: watchRevised,
@@ -143,7 +170,21 @@ const useBeritaAcaraManagementHooks = () => {
     defaultValues: {
       revised: {
         status: "Revised",
-        reason: null,
+        reason: "",
+      },
+    },
+    mode: "onChange",
+  });
+
+  const {
+    control: controlCancelled,
+    handleSubmit: handleSubmitCancelled,
+    formState: { errors: errorsCancelled },
+  } = useForm<TCancelledForm>({
+    resolver: zodResolver(cancelledSchema),
+    defaultValues: {
+      cancelled: {
+        reason: "",
       },
     },
     mode: "onChange",
@@ -246,6 +287,45 @@ const useBeritaAcaraManagementHooks = () => {
     },
   });
 
+  const {
+    mutate: mutateCancelledBeritaAcara,
+    isPending: isLoadingCancelledBeritaAcara,
+  } = useCancelledBeritaAcara({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraList"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraById"],
+      });
+      setOpenModalCancelled(false);
+      setSelectedBaId("");
+      toast.success("Berhasil Cancel Berita Acara");
+    },
+    onError: (error) => {
+      toast.error(error as string);
+    },
+  });
+
+  const {
+    mutate: mutateDeliveryBeritaAcara,
+    isPending: isLoadingDeliveryBeritaAcara,
+  } = useDeliveryBeritaAcara({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraList"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["useBeritaAcaraById"],
+      });
+      setOpenModalDelivery(false);
+      toast.success("Berhasil Menambah Delivery Berita Acara");
+    },
+    onError: (error) => {
+      toast.error(error as string);
+    },
+  });
+
   const { mutate: mutateUpdateStatus, isPending: isLoadingUpdateStatus } =
     useUpdateStatus({
       onSuccess: () => {
@@ -340,6 +420,7 @@ const useBeritaAcaraManagementHooks = () => {
   };
 
   const onInvalid = (errors: FieldErrors) => {
+    console.log(errors);
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -387,6 +468,40 @@ const useBeritaAcaraManagementHooks = () => {
     showErrors(errors);
   };
 
+  const onSubmitDelivery: SubmitHandler<TDeliveryForm> = (data) => {
+    modalWarningInfo.open({
+      title: "Konfirmasi",
+      message: (
+        <div>
+          <p>
+            Apakah anda yakin ingin menambah Informasi Delivery Berita Acara
+            ini?
+          </p>
+        </div>
+      ),
+      onConfirm: () => {
+        mutateDeliveryBeritaAcara({ id: id ?? "", payload: data });
+      },
+    });
+  };
+
+  const onInvalidDelivery = (errors: FieldErrors) => {
+    const showErrors = (errs: FieldErrors) => {
+      Object.values(errs).forEach((error) => {
+        if (!error) return;
+        if (error.message) {
+          toast.error(error.message as string);
+        }
+        if (error && typeof error === "object") {
+          if ("types" in error || "_errors" in error) return;
+          showErrors(error as FieldErrors);
+        }
+      });
+    };
+
+    showErrors(errors);
+  };
+
   const onSubmitRevised: SubmitHandler<TRevisedForm> = (data) => {
     modalWarningInfo.open({
       title: "Konfirmasi",
@@ -403,6 +518,37 @@ const useBeritaAcaraManagementHooks = () => {
   };
 
   const onInvalidRevised = (errors: FieldErrors) => {
+    const showErrors = (errs: FieldErrors) => {
+      Object.values(errs).forEach((error) => {
+        if (!error) return;
+        if (error.message) {
+          toast.error(error.message as string);
+        }
+        if (error && typeof error === "object") {
+          if ("types" in error || "_errors" in error) return;
+          showErrors(error as FieldErrors);
+        }
+      });
+    };
+
+    showErrors(errors);
+  };
+
+  const onSubmitCancelled: SubmitHandler<TCancelledForm> = (data) => {
+    modalWarningInfo.open({
+      title: "Konfirmasi",
+      message: (
+        <div>
+          <p>Apakah anda yakin akan Cancel Berita Acara ini?</p>
+        </div>
+      ),
+      onConfirm: () => {
+        mutateCancelledBeritaAcara({ id: selectedBaId, payload: data });
+      },
+    });
+  };
+
+  const onInvalidCancelled = (errors: FieldErrors) => {
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -752,28 +898,9 @@ const useBeritaAcaraManagementHooks = () => {
                 params?.data?.status !== "Cancelled" && (
                   <div
                     onClick={() => {
-                      if (params?.data?.id) {
-                        modalWarningInfo.open({
-                          title: "Konfirmasi",
-                          message: (
-                            <div>
-                              <p>
-                                Apakah anda yakin ingin Cancel Berita Acara ini?
-                              </p>
-                            </div>
-                          ),
-                          onConfirm: () => {
-                            if (params?.data?.id)
-                              // mutateDeleteBeritaAcara(params?.data?.id);
-                              mutateUpdateStatus({
-                                id: params?.data?.id,
-                                payload: {
-                                  status: "Cancelled",
-                                },
-                              });
-                          },
-                        });
-                      }
+                      if (!params?.data?.id) return;
+                      setSelectedBaId(params?.data.id);
+                      setOpenModalCancelled(true);
                     }}
                     className="cursor-pointer"
                   >
@@ -902,6 +1029,15 @@ const useBeritaAcaraManagementHooks = () => {
     }
   }, [dataBeritaAcaraById?.data, mode, id]);
 
+  useEffect(() => {
+    if (openModalDelivery && dataBeritaAcaraById?.data?.delivery) {
+      resetDelivery({
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delivery: dataBeritaAcaraById.data.delivery as any,
+      });
+    }
+  }, [openModalDelivery, dataBeritaAcaraById]);
+
   return {
     selectedBaId,
     beritaAcaraColumnDef,
@@ -959,6 +1095,26 @@ const useBeritaAcaraManagementHooks = () => {
     isLoadingUpdateStatus,
     onSubmitRevised,
     onInvalidRevised,
+    openModalCancelled,
+    setOpenModalCancelled,
+    controlCancelled,
+    handleSubmitCancelled,
+    errorsCancelled,
+    onSubmitCancelled,
+    onInvalidCancelled,
+    isLoadingCancelledBeritaAcara,
+    controlDelivery,
+    handleSubmitDelivery,
+    watchDelivery,
+    errorsDelivery,
+    resetDelivery,
+    setValueDelivery,
+    mutateDeliveryBeritaAcara,
+    isLoadingDeliveryBeritaAcara,
+    onSubmitDelivery,
+    onInvalidDelivery,
+    openModalDelivery,
+    setOpenModalDelivery,
   };
 };
 

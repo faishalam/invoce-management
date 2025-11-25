@@ -33,6 +33,12 @@ module.exports = {
       harga: {
         type: Sequelize.STRING,
       },
+      start_date: {
+        type: Sequelize.STRING,
+      },
+      end_date: {
+        type: Sequelize.STRING,
+      },
       total: {
         type: Sequelize.STRING,
       },

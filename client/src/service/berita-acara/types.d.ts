@@ -1,3 +1,5 @@
+import { TDeliveryForm } from "@/app/(private)/ba-management/validator";
+
 export interface TBeritaAcaraPeriode {
   plan_alokasi_periode: string | null;
   total_kelebihan: string | null;
@@ -20,6 +22,8 @@ export interface TBeritaAcaraUraian {
   quantity: string;
   harga: string;
   total: string;
+  start_date: string;
+  end_date: string;
   dpp_nilai_lain_of?: null;
   jumlah_ppn_of?: null;
   periode?: null;
@@ -54,5 +58,9 @@ export interface TBeritaAcaraList {
     status: string;
     reason: string;
   };
+  cancelled: {
+    reason: string;
+  };
   berita_acara_uraian: TBeritaAcaraUraian[];
+  delivery: TDeliveryForm;
 }

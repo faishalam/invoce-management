@@ -15,6 +15,7 @@ const useCustomerList = () => {
             code: string;
             phone: string;
             alamat: string;
+            npwp: string;
           }[]
         >
       >(`/customer`);

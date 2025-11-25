@@ -17,6 +17,7 @@ export default function UraianSection() {
     fields,
     watch,
     dataBeritaAcaraById,
+    dataDebitNoteById,
   } = useDebitNote();
   const { dataSatuan, dataGoods } = useGlobal();
 
@@ -48,14 +49,17 @@ export default function UraianSection() {
   }, [uraian]);
 
   const ppnPersen = parseFloat(ppn) || 0;
-  const nilaiPpn = Math.round(subTotal * (ppnPersen / 100));
+  const dppNilaiLain = (11 / 12) * subTotal;
+  const nilaiPpn = Math.round(dppNilaiLain * (ppnPersen / 100));
   const total = subTotal + nilaiPpn;
 
   useEffect(() => {
     setValue("sub_total", subTotal.toString());
     setValue("total", total.toString());
+    setValue("dpp_nilai_lain_fk", dppNilaiLain.toString());
   }, [subTotal, total, setValue]);
 
+  console.log(dataDebitNoteById?.data?.berita_acara);
   return (
     <div className="w-full bg-white rounded-md shadow flex flex-col p-6 gap-4">
       {/* Header */}
@@ -116,6 +120,50 @@ export default function UraianSection() {
                       />
                     )}
                   />
+                  {((dataBeritaAcaraById?.data?.jenis_berita_acara === "fuel" &&
+                    mode === "create") ||
+                    ((mode === "edit" || mode === "view") &&
+                      dataDebitNoteById?.data?.berita_acara
+                        ?.jenis_berita_acara === "fuel")) && (
+                    <div className="flex gap-2">
+                      <Controller
+                        name={`uraian.${index}.start_date`}
+                        control={control}
+                        render={({ field }) => (
+                          <CInput
+                            {...field}
+                            label="Start Date*"
+                            className="w-full"
+                            type="date"
+                            disabled
+                            error={!!errors.uraian?.[index]?.start_date}
+                            helperText={
+                              errors.uraian?.[index]?.start_date?.message
+                            }
+                          />
+                        )}
+                      />
+
+                      <Controller
+                        name={`uraian.${index}.end_date`}
+                        control={control}
+                        render={({ field }) => (
+                          <CInput
+                            {...field}
+                            label="End Date*"
+                            className="w-full"
+                            type="date"
+                            disabled
+                            error={!!errors.uraian?.[index]?.end_date}
+                            helperText={
+                              errors.uraian?.[index]?.end_date?.message
+                            }
+                          />
+                        )}
+                      />
+                    </div>
+                  )}
+
                   <CInput
                     label="Uraian*"
                     placeholder="Deskripsi uraian"
@@ -217,6 +265,14 @@ export default function UraianSection() {
           </div>
 
           {/* Input PPN Persen */}
+
+          <div className="flex justify-between items-center pb-3 border-b border-blue-200">
+            <span className="text-gray-700 font-medium">DPP Nilai Lain:</span>
+            <span className="text-lg font-semibold text-blue-600">
+              Rp {dppNilaiLain.toLocaleString("id-ID")}
+            </span>
+          </div>
+
           <div className="flex justify-between items-center pb-3 border-b border-blue-200">
             <span className="text-gray-700 font-medium">PPN (%):</span>
             <div className="w-32">
@@ -247,7 +303,7 @@ export default function UraianSection() {
           </div>
 
           <div className="flex justify-between items-center pt-2">
-            <span className="text-gray-900 font-bold text-lg">Total:</span>
+            <span className="text-gray-900 font-bold text-lg">Total (Sub Total + Nilai PPN):</span>
             <span className="text-2xl font-bold text-green-600">
               Rp {total.toLocaleString("id-ID")}
             </span>

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import BeritaAcaraPageSkeleton from "./components/LoadingSkeleton";
 import CardHeaderTotal from "./components/CardHeaderTotal";
 import ModalAcceptBa from "./components/ModalAccept";
+import ModalCancelled from "./[id]/components/ModalCancelled";
 
 export default function BeritaAcaraPage() {
   const {
@@ -30,6 +31,7 @@ export default function BeritaAcaraPage() {
     isLoadingApprovedBeritaAcara,
     activeTabs,
     onDownloadBeritaAcara,
+    openModalCancelled,
   } = useBeritaAcara();
   const { dataTypeOfWork, globalLoading, dataUserProfile } = useGlobal();
   const router = useRouter();
@@ -297,6 +299,7 @@ export default function BeritaAcaraPage() {
           )}
         </div>
         {openModalAccept && <ModalAcceptBa />}
+        {openModalCancelled && <ModalCancelled />}
       </div>
     </>
   );

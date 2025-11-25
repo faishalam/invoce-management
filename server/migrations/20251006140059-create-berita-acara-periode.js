@@ -33,6 +33,12 @@ module.exports = {
       total_kelebihan: {
         type: Sequelize.STRING,
       },
+      start_date: {
+        type: Sequelize.STRING,
+      },
+      end_date: {
+        type: Sequelize.STRING,
+      },
       alokasi_backcharge: {
         type: Sequelize.STRING,
       },

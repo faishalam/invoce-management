@@ -314,6 +314,7 @@ const useFakturManagement = () => {
   };
 
   const onInvalid = (errors: FieldErrors) => {
+    console.log(errors, "<<");
     const showErrors = (errs: FieldErrors) => {
       Object.values(errs).forEach((error) => {
         if (!error) return;
@@ -719,7 +720,7 @@ const useFakturManagement = () => {
 
       // === Sheet 2: Data Faktur FK ===
       const cust = dataCustomer?.data?.find(
-        (item) => item?.id === dataFakturById?.data?.customer_id
+        (item) => item?.id === dataFakturById?.data?.berita_acara?.customer_id
       );
 
       const fkData = [
@@ -783,10 +784,27 @@ const useFakturManagement = () => {
     if (mode === "create" && dataDebitNoteById?.data) {
       setValue("debit_note_id", dataDebitNoteById?.data?.id);
       setValue("berita_acara_id", dataDebitNoteById?.data?.berita_acara?.id);
+      setValue("dpp_nilai_lain_fk", dataDebitNoteById?.data?.dpp_nilai_lain_fk);
+      setValue("sub_total", dataDebitNoteById?.data?.sub_total);
+      setValue("ppn_fk", dataDebitNoteById?.data?.ppn);
+      setValue("ppn_of", dataDebitNoteById?.data?.ppn);
+      const dpp = Number(dataDebitNoteById?.data?.dpp_nilai_lain_fk ?? 0);
+      const ppn = Number(dataDebitNoteById?.data?.ppn ?? 0);
+
+      const jumlahPpn = dpp * (ppn / 100);
+      setValue("jumlah_ppn_fk", String(jumlahPpn));
+
       setValue(
         "uraian",
         //eslint-disable-next-line @typescript-eslint/no-explicit-any
         dataDebitNoteById?.data?.berita_acara?.berita_acara_uraian as any[]
+      );
+      setValue(
+        "npwp",
+        dataCustomer?.data?.find(
+          (item) =>
+            item?.id === dataDebitNoteById?.data?.berita_acara?.customer_id
+        )?.npwp ?? ""
       );
       setValue(
         "customer_id",

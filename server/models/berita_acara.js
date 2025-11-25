@@ -156,11 +156,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       signers: {
         type: DataTypes.JSONB,
-        allowNull: false,
-        validate: {
-          notNull: { msg: "Signer is required" },
-          notEmpty: { msg: "Signer is required" },
-        },
+        allowNull: true,
       },
       status: {
         type: DataTypes.STRING,
@@ -190,12 +186,20 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Nilai ditagihkan is required" },
         },
       },
+      cancelled: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+      },
       revised: {
         type: DataTypes.JSONB,
         allowNull: true,
       },
       link_doc: {
         type: DataTypes.STRING,
+      },
+      delivery: {
+        type: DataTypes.JSONB,
+        allowNull: true,
       },
     },
     {

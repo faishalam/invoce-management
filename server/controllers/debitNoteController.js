@@ -25,6 +25,7 @@ class DebitNoteController {
         uraian,
         harga_terbilang,
         periode,
+        dpp_nilai_lain_fk,
       } = req.body;
 
       if (!berita_acara_id) {
@@ -66,6 +67,7 @@ class DebitNoteController {
           ppn,
           harga_terbilang,
           total,
+          dpp_nilai_lain_fk,
           periode,
         },
         { transaction: t }
@@ -154,7 +156,7 @@ class DebitNoteController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["number", "customer_id", "id"],
+            attributes: ["number", "customer_id", "id", "jenis_berita_acara"],
             include: [
               {
                 model: Berita_Acara_Uraian,
@@ -200,6 +202,7 @@ class DebitNoteController {
         uraian,
         harga_terbilang,
         periode,
+        dpp_nila_lain_fk,
       } = req.body;
 
       // --- Cek data Debit Note ---
@@ -273,6 +276,7 @@ class DebitNoteController {
           batas_akhir: batasAkhir,
           harga_terbilang: harga_terbilang ?? findDebitNote.harga_terbilang,
           periode: periode ?? findDebitNote.periode,
+          dpp_nila_lain_fk: dpp_nila_lain_fk ?? findDebitNote.dpp_nila_lain_fk,
         },
         { transaction: t }
       );

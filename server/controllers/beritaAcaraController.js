@@ -10,178 +10,357 @@ const {
   Department,
   Goods,
   Satuan,
+  Customer,
 } = require("../models");
 const { generateNoBA } = require("../helpers/generateNoBA");
 const cron = require("node-cron");
+const { Op } = require("sequelize"); 
+
 const {
-  sendReminderRutinity,
-  sendReminderWaitingBA,
-  sendReminderRutinityForFuel,
+  sendEmailCaseOne,
+  sendEmailCaseThree,
+  sendEmailCaseTwo,
+  sendEmailCaseFour,
+  sendEmailCaseFive,
+  sendEmailCaseSix,
 } = require("../helpers/nodemailer");
 
-cron.schedule(
-  "0 9 26 * *",
-  async () => {
-    try {
-      const users = await User.findAll({
-        attributes: ["email"],
-      });
-      const emailList = users.map((u) => u.email).filter(Boolean);
-      if (emailList.length === 0) {
-        console.log("❌ Tidak ada email user ditemukan.");
-        return;
-      }
-      await sendReminderRutinity(emailList);
-
-      const department = await Department.findOne({
-        where: { name: "PLANT" },
-        attributes: ["id"],
-      });
-
-      if (!department) {
-        console.log("❌ Department PLANT tidak ditemukan");
-        return;
-      }
-
-      const findPlantUsers = await User.findAll({
-        where: { department_id: department.id },
-      });
-
-      await sendReminderRutinityForFuel(findPlantUsers);
-    } catch (err) {
-      console.error("❌ Gagal menjalankan cron:", err);
-    }
-  },
-  {
-    timezone: "Asia/Jakarta",
+const getCCByDepartment = (departmentName) => {
+  switch (departmentName) {
+    case "HCGS":
+      return [
+        "roni.wardana@kppmining.com",
+        "muhammad.luthfi@kppmining.com",
+        "a.rafik@kppmining.com",
+        "fredy.wijaya@kppmining.com",
+        "cholis.tanthowi@kppmining.com",
+        "andi.naufal@kppmining.com",
+        "ari.pratama@kppmining.com",
+      ];
+    case "SHE":
+      return [
+        "adiyanto.putera@kppmining.com",
+        "adam.hanafi@kppmining.com",
+        "yogi.aditya@kppmining.com",
+        "cholis.tanthowi@kppmining.com",
+        "andi.naufal@kppmining.com",
+        "ari.pratama@kppmining.com",
+      ];
+    case "PLANT":
+      return [
+        "muhammad.hijaz@kppmining.com",
+        "reza.sukendi@kppmining.com",
+        "yunus.hanung@kppmining.com",
+        "toto.suryanto@kppmining.com",
+        "cholis.tanthowi@kppmining.com",
+        "andi.naufal@kppmining.com",
+        "ari.pratama@kppmining.com",
+      ];
+    case "PROD":
+      return [
+        "canda.parawansyah@kppmining.com",
+        "ignatius.indriyanto@kppmining.com",
+        "feri.istiono@kppmining.com",
+        "imam.himawan@kppmining.com",
+        "cholis.tanthowi@kppmining.com",
+        "andi.naufal@kppmining.com",
+        "ari.pratama@kppmining.com",
+      ];
+    default:
+      return [];
   }
-);
+};
 
-cron.schedule(
-  "0 9 30 * *",
-  async () => {
-    try {
-      const users = await User.findAll({
-        attributes: ["email"],
-      });
-      const emailList = users.map((u) => u.email).filter(Boolean);
-      if (emailList.length === 0) {
-        return;
-      }
-      await sendReminderRutinity(emailList);
-      await sendReminderRutinityForFuel(emailList);
-    } catch (err) {
-      console.error("❌ Gagal menjalankan cron:", err);
-    }
-  },
-  {
-    timezone: "Asia/Jakarta",
-  }
-);
-
+//fix reminder
+//case 1
 cron.schedule(
   "0 9 * * *",
   async () => {
     try {
-      const waitingBAList = await Berita_Acara.findAll({
-        where: { status: "Waiting Signed" },
+      const today = new Date();
+      const day = today.getDate();
+      const month = today.getMonth();
+      const year = today.getFullYear();
+
+      // periode reminder: tanggal 26 bulan ini → tanggal 25 bulan depan
+      const periodStart = new Date(year, month, 26); // yyyy-mm-26
+      const periodEnd = new Date(year, month + 1, 25, 23, 59); // yyyy-(mm+1)-25
+
+      // cek apakah hari ini masuk periode
+      if (today < periodStart || today > periodEnd) {
+        return; // belum atau sudah lewat periode reminder
+      }
+
+      //const id plant
+      const findPlantDept = await Department.findOne({
+        where: { name: "PLANT" },
+      });
+
+      // find user plant
+      const findUserPlant = await User.findOne({
+        where: { department_id: findPlantDept?.id },
         include: [
           {
-            model: User,
-            as: "User",
-            attributes: ["id", "name", "email"],
-            include: [
-              {
-                model: Department,
-                as: "department",
-                attributes: ["name"],
-              },
-            ],
+            model: Department,
+            as: "department",
           },
         ],
       });
 
-      if (!waitingBAList.length) {
-        console.log("Tidak ada Berita Acara yang masih Waiting Signed.");
+      if (!findUserPlant) return;
+
+      // customer reguler
+      const regulerCustomers = await Customer.findAll({
+        where: { reguler: "reguler" },
+      });
+
+      const regulerIds = regulerCustomers.map((c) => c.id);
+
+      const existingBA = await Berita_Acara.findOne({
+        where: {
+          user_id: findUserPlant.id,
+          customer_id: regulerIds,
+          createdAt: {
+            [Op.between]: [periodStart, periodEnd],
+          },
+        },
+      });
+
+      if (existingBA) {
+        console.log(
+          "✔️ BA reguler sudah dibuat dalam periode ini. Reminder berhenti."
+        );
         return;
       }
 
-      const groupedByUser = {};
-      for (const ba of waitingBAList) {
-        const email = ba.User?.email;
-        if (!email) continue;
+      const findCustomerReguler = await Customer.findAll({
+        where: { reguler: "reguler" },
+      });
 
-        if (!groupedByUser[email]) {
-          groupedByUser[email] = {
-            name: ba.User.name,
-            email,
-            department: ba.User?.department?.name,
-            baList: [],
-          };
-        }
+      // kirim reminder
+      const cc = getCCByDepartment(findUserPlant.department?.name);
+      await sendEmailCaseOne(findUserPlant.email, findCustomerReguler, cc);
 
-        groupedByUser[email].baList.push(ba);
-      }
-
-      for (const email in groupedByUser) {
-        const userData = groupedByUser[email];
-        let cc = [];
-        switch (userData.department) {
-          case "HCGS":
-            cc = [
-              "roni.wardana@kppmining.com",
-              "muhammad.luthfi@kppmining.com",
-              "a.rafik@kppmining.com",
-              "fredy.wijaya@kppmining.com",
-              "cholis.tanthowi@kppmining.com",
-              "andi.naufal@kppmining.com",
-              "ari.pratama@kppmining.com",
-            ];
-            break;
-          case "SHE":
-            cc = [
-              "adiyanto.putera@kppmining.com",
-              "adam.hanafi@kppmining.com",
-              "yogi.aditya@kppmining.com",
-              "cholis.tanthowi@kppmining.com",
-              "andi.naufal@kppmining.com",
-              "ari.pratama@kppmining.com",
-            ];
-            break;
-          case "PLANT":
-            cc = [
-              "muhammad.hijaz@kppmining.com",
-              "reza.sukendi@kppmining.com",
-              "yunus.hanung@kppmining.com",
-              "toto.suryanto@kppmining.com",
-              "cholis.tanthowi@kppmining.com",
-              "andi.naufal@kppmining.com",
-              "ari.pratama@kppmining.com",
-            ];
-            break;
-          case "PROD":
-            cc = [
-              "canda.parawansyah@kppmining.com",
-              "ignatius.indriyanto@kppmining.com",
-              "feri.istiono@kppmining.com",
-              "imam.himawan@kppmining.com",
-              "cholis.tanthowi@kppmining.com",
-              "andi.naufal@kppmining.com",
-              "ari.pratama@kppmining.com",
-            ];
-            break;
-          default:
-            cc = [];
-        }
-        await sendReminderWaitingBA(userData.email, userData.baList, cc);
-      }
-    } catch (error) {
-      console.error("[CRON ERROR Waiting Signed Reminder]:", error);
+      console.log("📨 Reminder PLANT SM dikirim.");
+    } catch (err) {
+      console.error("❌ Error cron reminder:", err);
     }
   },
-  {
-    timezone: "Asia/Jakarta",
-  }
+  { timezone: "Asia/Jakarta" }
+);
+
+//case2
+cron.schedule(
+  "0 9 * * *",
+  async () => {
+    try {
+      const findPlantDept = await Department.findOne({
+        where: { name: "PLANT" },
+      });
+
+      const findUserPlant = await User.findOne({
+        where: { department_id: findPlantDept?.id },
+        include: [
+          {
+            model: Department,
+            as: "department",
+          },
+        ],
+      });
+
+      const regulerCustomers = await Customer.findAll({
+        where: { reguler: "reguler" },
+      });
+
+      const regulerIds = regulerCustomers.map((c) => c.id);
+
+      const findBeritaAcara = await Berita_Acara.findAll({
+        where: {
+          status: "Waiting Signed",
+          user_id: findUserPlant?.id,
+          customer_id: { [Op.in]: regulerIds },
+        },
+      });
+
+      if (findBeritaAcara.length > 0) {
+        const cc = getCCByDepartment(findUserPlant.department?.name);
+        await sendEmailCaseTwo(findUserPlant.email, findBeritaAcara, cc);
+      }
+    } catch (err) {
+      console.error("❌ Error cron reminder:", err);
+    }
+  },
+  { timezone: "Asia/Jakarta" }
+);
+
+//case 3 (done)
+cron.schedule(
+  "0 9 * * *", // setiap hari jam 09:00
+  async () => {
+    try {
+      const today = new Date();
+      const month = today.getMonth();
+      const year = today.getFullYear();
+
+      // periode reminder: tgl 26 (bulan ini) → 25 (bulan depan)
+      const periodStart = new Date(year, month, 26);
+      const periodEnd = new Date(year, month + 1, 25, 23, 59);
+
+      // cek apakah hari ini masuk dalam periode 26 -> 25
+      if (today < periodStart || today > periodEnd) {
+        return;
+      }
+
+      // cek reminder weekly → hanya kirim jika selisih hari kelipatan 7
+      const diffDays = Math.floor(
+        (today - periodStart) / (1000 * 60 * 60 * 24)
+      );
+
+      if (diffDays % 7 !== 0) {
+        return; // bukan hari reminder
+      }
+
+      // ambil semua user
+      const users = await User.findAll({
+        include: [
+          {
+            model: Department,
+            as: "department",
+          },
+        ],
+      });
+
+      if (!users.length) return;
+
+      // kirim reminder ke semua user
+      for (const user of users) {
+        const cc = getCCByDepartment(user.department?.name);
+        await sendEmailCaseThree(user.email, cc);
+      }
+
+      console.log("📨 Reminder untuk semua user dikirim (weekly).");
+    } catch (err) {
+      console.error("❌ Error cron reminder:", err);
+    }
+  },
+  { timezone: "Asia/Jakarta" }
+);
+
+//case 4
+cron.schedule(
+  "0 9 * * *",
+  async () => {
+    try {
+      const regulerCustomers = await Customer.findAll({
+        where: { reguler: "reguler" },
+      });
+
+      const regulerIds = regulerCustomers.map((c) => c.id);
+
+      const waitingBA = await Berita_Acara.findAll({
+        where: {
+          status: "Waiting Signed",
+          customer_id: { [Op.in]: regulerIds },
+        },
+        include: [
+          {
+            model: User,
+            attributes: ["email"],
+            include: [
+              {
+                model: Department,
+                as: "department",
+              },
+            ],
+          },
+        ],
+        raw: true,
+      });
+
+      if (waitingBA.length === 0) return;
+
+      // kirim reminder ke user pemilik BA
+      for (const ba of waitingBA) {
+        const cc = getCCByDepartment(ba.User?.department?.name);
+        await sendEmailCaseFour(ba.User?.email, ba?.number, cc);
+      }
+
+      console.log("📨 Reminder BA Waiting Signed dikirim.");
+    } catch (err) {
+      console.error("❌ Error cron reminder:", err);
+    }
+  },
+  { timezone: "Asia/Jakarta" }
+);
+
+//case 5
+cron.schedule(
+  "0 9 * * *",
+  async () => {
+    try {
+      const customers = await Customer.findAll();
+      const today = new Date().getDate();
+
+      const allUsers = await User.findAll({
+        include: [
+          {
+            model: Department,
+            as: "department",
+          },
+        ],
+      });
+
+      for (const cus of customers) {
+        if (Number(cus.cut_off) === today) {
+          for (const user of allUsers) {
+            const cc = getCCByDepartment(user.department?.name);
+            await sendEmailCaseFive(user.email, customers, cc);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("❌ Error cron reminder cut_off:", err);
+    }
+  },
+  { timezone: "Asia/Jakarta" }
+);
+
+//case 6
+cron.schedule(
+  "0 9 * * *",
+  async () => {
+    try {
+      const waitingBA = await Berita_Acara.findAll({
+        where: {
+          status: "Signed",
+        },
+        raw: true,
+      });
+
+      if (waitingBA.length === 0) return;
+
+      const findFinanceDept = await Department.findOne({
+        where: { name: "FAT" },
+      });
+
+      const findUserFinance = await User.findOne({
+        where: { department_id: findFinanceDept?.id },
+        include: [
+          {
+            model: Department,
+            as: "department",
+          },
+        ],
+      });
+
+      const cc = getCCByDepartment(findUserFinance.department?.name);
+
+      await sendEmailCaseSix(findUserFinance?.email, waitingBA, cc);
+    } catch (err) {
+      console.error("❌ Error cron reminder:", err);
+    }
+  },
+  { timezone: "Asia/Jakarta" }
 );
 
 class BeritaAcaraController {
@@ -332,6 +511,8 @@ class BeritaAcaraController {
             satuan: findSatuan?.name,
             quantity: p.alokasi_backcharge,
             harga: p.harga_per_liter,
+            start_date: p.start_date,
+            end_date: p.end_date,
             total: p.nilai_backcharge,
           }));
 
@@ -350,7 +531,6 @@ class BeritaAcaraController {
         data: beritaAcara,
       });
     } catch (error) {
-      console.log(error, "shibal");
       if (t) await t.rollback();
       return res.status(500).json({
         status: "error",
@@ -436,9 +616,37 @@ class BeritaAcaraController {
         return res.status(404).json({ message: "Berita Acara not found" });
       }
 
+      if (beritaAcara?.tipe_transaksi === "trade") {
+        beritaAcara.status = "Done";
+        beritaAcara.link_doc = link_doc;
+        beritaAcara.accepted_at = new Date().toISOString();
+
+        await beritaAcara.save();
+
+        return res.status(200).json({
+          status: "success",
+          message: "Berita Acara updated successfully",
+          data: beritaAcara,
+        });
+      }
+
+      if (beritaAcara?.nill_ditagihkan === "nill") {
+        beritaAcara.status = "Done";
+        beritaAcara.link_doc = link_doc;
+        beritaAcara.accepted_at = new Date().toISOString();
+
+        await beritaAcara.save();
+
+        return res.status(200).json({
+          status: "success",
+          message: "Berita Acara updated successfully",
+          data: beritaAcara,
+        });
+      }
+
       beritaAcara.status = "Signed";
       beritaAcara.link_doc = link_doc;
-      beritaAcara.accepted_at = new Date().toISOString(); // atau format lokal
+      beritaAcara.accepted_at = new Date().toISOString();
 
       await beritaAcara.save();
 
@@ -645,6 +853,8 @@ class BeritaAcaraController {
             "alokasi_backcharge",
             "harga_per_liter",
             "nilai_backcharge",
+            "start_date",
+            "end_date",
           ],
           "berita_acara_id"
         );
@@ -668,12 +878,23 @@ class BeritaAcaraController {
             total: periode.nilai_backcharge,
             satuan: findSatuan?.name,
             keterangan: periode.plan_alokasi_periode,
+            start_date: periode.start_date,
+            end_date: periode.end_date,
           }));
 
           await syncItems(
             Berita_Acara_Uraian,
             uraianData,
-            ["goods_id", "quantity", "harga", "total", "satuan"],
+            [
+              "goods_id",
+              "quantity",
+              "harga",
+              "total",
+              "satuan",
+              "keterangan",
+              "start_date",
+              "end_date",
+            ],
             "berita_acara_id"
           );
         }
@@ -786,6 +1007,67 @@ class BeritaAcaraController {
         status: "success",
         message: "Status Berita Acara berhasil diubah",
         data: findBeritaAcara,
+      });
+    } catch (error) {
+      console.error("Error updateStatus:", error);
+      return res.status(500).json({
+        status: "error",
+        message: error.message || "Internal server error",
+      });
+    }
+  }
+
+  static async cancelledBeritaAcara(req, res) {
+    try {
+      const { id } = req.params;
+      const { cancelled } = req.body;
+
+      const findBeritaAcara = await Berita_Acara.findByPk(id);
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita acara tidak ditemukan",
+        });
+      }
+
+      await findBeritaAcara.update({
+        status: "Cancelled",
+        cancelled,
+        revised: null,
+      });
+
+      return res.status(200).json({
+        status: "success",
+        message: "Status Berita Acara berhasil diubah",
+      });
+    } catch (error) {
+      console.error("Error updateStatus:", error);
+      return res.status(500).json({
+        status: "error",
+        message: error.message || "Internal server error",
+      });
+    }
+  }
+  static async deliveryBeritaAcara(req, res) {
+    try {
+      const { id } = req.params;
+      const { delivery } = req.body;
+
+      const findBeritaAcara = await Berita_Acara.findByPk(id);
+      if (!findBeritaAcara) {
+        return res.status(404).json({
+          status: "error",
+          message: "Berita acara tidak ditemukan",
+        });
+      }
+
+      await findBeritaAcara.update({
+        delivery,
+      });
+
+      return res.status(200).json({
+        status: "success",
+        message: "Berhasil menambah delivery information",
       });
     } catch (error) {
       console.error("Error updateStatus:", error);

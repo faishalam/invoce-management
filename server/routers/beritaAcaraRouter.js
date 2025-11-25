@@ -39,5 +39,13 @@ beritaAcaraRouter.patch(
   "/berita-acara-status/:id",
   BeritaAcaraController.updateStatus
 );
+beritaAcaraRouter.patch(
+  "/berita-acara-cancelled/:id",
+  BeritaAcaraController.cancelledBeritaAcara
+);
+beritaAcaraRouter.patch(
+  "/berita-acara-delivery/:id",
+  BeritaAcaraController.deliveryBeritaAcara
+);
 
 module.exports = beritaAcaraRouter;

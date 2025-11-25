@@ -18,7 +18,7 @@ import {
   useForm,
 } from "react-hook-form";
 import useBeritaAcaraById from "@/service/berita-acara/useBeritaAcaraById";
-import { debitNoteSchema, TDebitNoteForm } from "./validator";
+import { createDebitNoteSchema, TDebitNoteForm } from "./validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useCreateDebitNote from "@/service/debit-note/useCreateDebitNote";
 import useUpdateDebitNote from "@/service/debit-note/useUpdateDebitNote";
@@ -44,6 +44,14 @@ const useDebitNoteHooks = () => {
   const queryClient = useQueryClient();
   const [openModalDocument, setOpenModalDocument] = useState<boolean>(false);
   const { dataCustomer, dataUserProfile } = useGlobal();
+
+  const { data: dataBeritaAcaraById, isPending: isLoadingDataBeritaAcaraById } =
+    useBeritaAcaraById({
+      params: {
+        id: id ?? "",
+        enabled: mode === "create",
+      },
+    });
   const {
     control,
     handleSubmit,
@@ -55,7 +63,9 @@ const useDebitNoteHooks = () => {
     getValues,
     clearErrors,
   } = useForm<TDebitNoteForm>({
-    resolver: zodResolver(debitNoteSchema),
+    resolver: zodResolver(
+      createDebitNoteSchema(dataBeritaAcaraById?.data?.jenis_berita_acara || "")
+    ),
     defaultValues: {
       harga_terbilang: "",
       berita_acara_id: "",
@@ -63,6 +73,7 @@ const useDebitNoteHooks = () => {
       sub_total: "",
       ppn: "",
       total: "",
+      dpp_nilai_lain_fk: "",
     },
     mode: "onChange",
   });
@@ -141,14 +152,6 @@ const useDebitNoteHooks = () => {
       },
       onError: (error) => {
         toast.error(error as string);
-      },
-    });
-
-  const { data: dataBeritaAcaraById, isPending: isLoadingDataBeritaAcaraById } =
-    useBeritaAcaraById({
-      params: {
-        id: id ?? "",
-        enabled: mode === "create",
       },
     });
 
@@ -467,6 +470,7 @@ const useDebitNoteHooks = () => {
       setValue("uraian", dataBeritaAcaraById?.data?.berita_acara_uraian);
     }
   }, [mode, dataBeritaAcaraById]);
+
 
   return {
     selectedDnId,

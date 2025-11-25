@@ -40,6 +40,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      dpp_nilai_lain_fk: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       total: {
         type: Sequelize.STRING,
         allowNull: false,

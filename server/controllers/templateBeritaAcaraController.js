@@ -127,13 +127,15 @@ class TemplateBeritaAcaraController {
               qty_liter: item.quantity,
             };
           }),
+          tanggal: `${day} ${monthName} ${year}`,
           signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_1_position: findBeritaAcara?.signers[0]?.position,
           signer_2_name: findBeritaAcara?.signers[1]?.name,
-          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_2_position: findBeritaAcara?.signers[1]?.position,
           signer_3_name: findBeritaAcara?.signers[2]?.name,
-          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_3_position: findBeritaAcara?.signers[2]?.position,
           signer_4_name: findBeritaAcara?.signers[3]?.name,
-          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
+          signer_4_position: findBeritaAcara?.signers[3]?.position,
         };
       }
 
@@ -155,17 +157,47 @@ class TemplateBeritaAcaraController {
           number: findBeritaAcara?.number,
           customer: find_customer?.name || "-",
           plan_kontrak: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1}`,
-            harga_per_liter: item?.harga_per_liter,
+            periode: `Periode ${index + 1} - ${
+              item?.start_date
+                ? `${new Date(item.start_date).getDate()} ${
+                    monthNames[new Date(item.start_date).getMonth()]
+                  } ${new Date(item.start_date).getFullYear()}`
+                : "-"
+            } - ${
+              item?.end_date
+                ? `${new Date(item.end_date).getDate()} ${
+                    monthNames[new Date(item.end_date).getMonth()]
+                  } ${new Date(item.end_date).getFullYear()}`
+                : "-"
+            }`,
+            harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
+              "id-ID"
+            ),
             plan: item.plan_liter,
             actual: item.actual_liter,
           })),
           total_kelebihan: planAlokasi?.[0]?.total_kelebihan || 0,
           alokasi_backcharge: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1}`,
-            harga_per_liter: item?.harga_per_liter,
+            periode: `Periode ${index + 1} - ${
+              item?.start_date
+                ? `${new Date(item.start_date).getDate()} ${
+                    monthNames[new Date(item.start_date).getMonth()]
+                  } ${new Date(item.start_date).getFullYear()}`
+                : "-"
+            } - ${
+              item?.end_date
+                ? `${new Date(item.end_date).getDate()} ${
+                    monthNames[new Date(item.end_date).getMonth()]
+                  } ${new Date(item.end_date).getFullYear()}`
+                : "-"
+            }`,
+            harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
+              "id-ID"
+            ),
             alokasi_liter: item.alokasi_backcharge,
-            nilai_backcharge: item.nilai_backcharge,
+            nilai_backcharge: Number(
+              item?.nilai_backcharge ?? 0
+            ).toLocaleString("id-ID"),
           })),
           total_plan: planAlokasi.reduce(
             (t, i) => t + Number(i.plan_liter || 0),
@@ -188,12 +220,13 @@ class TemplateBeritaAcaraController {
 
           tanggal: `${day} ${monthName} ${year}`,
           signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_1_position: findBeritaAcara?.signers[0]?.position,
           signer_2_name: findBeritaAcara?.signers[1]?.name,
-          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_2_position: findBeritaAcara?.signers[1]?.position,
           signer_3_name: findBeritaAcara?.signers[2]?.name,
-          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_3_position: findBeritaAcara?.signers[2]?.position,
           signer_4_name: findBeritaAcara?.signers[3]?.name,
-          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
+          signer_4_position: findBeritaAcara?.signers[3]?.position,
         };
       }
 
@@ -353,13 +386,15 @@ class TemplateBeritaAcaraController {
               qty_liter: item.quantity,
             };
           }),
+          tanggal: `${day} ${monthName} ${year}`,
           signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_1_position: findBeritaAcara?.signers[0]?.position,
           signer_2_name: findBeritaAcara?.signers[1]?.name,
-          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_2_position: findBeritaAcara?.signers[1]?.position,
           signer_3_name: findBeritaAcara?.signers[2]?.name,
-          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_3_position: findBeritaAcara?.signers[2]?.position,
           signer_4_name: findBeritaAcara?.signers[3]?.name,
-          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
+          signer_4_position: findBeritaAcara?.signers[3]?.position,
         };
       }
 
@@ -382,17 +417,47 @@ class TemplateBeritaAcaraController {
           number: findBeritaAcara?.number,
           customer: find_customer?.name || "-",
           plan_kontrak: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1}`,
-            harga_per_liter: item?.harga_per_liter,
+            periode: `Periode ${index + 1} - ${
+              item?.start_date
+                ? `${new Date(item.start_date).getDate()} ${
+                    monthNames[new Date(item.start_date).getMonth()]
+                  } ${new Date(item.start_date).getFullYear()}`
+                : "-"
+            } - ${
+              item?.end_date
+                ? `${new Date(item.end_date).getDate()} ${
+                    monthNames[new Date(item.end_date).getMonth()]
+                  } ${new Date(item.end_date).getFullYear()}`
+                : "-"
+            }`,
+            harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
+              "id-ID"
+            ),
             plan: item.plan_liter,
             actual: item.actual_liter,
           })),
           total_kelebihan: planAlokasi?.[0]?.total_kelebihan || 0,
           alokasi_backcharge: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1}`,
-            harga_per_liter: item?.harga_per_liter,
+            periode: `Periode ${index + 1} - ${
+              item?.start_date
+                ? `${new Date(item.start_date).getDate()} ${
+                    monthNames[new Date(item.start_date).getMonth()]
+                  } ${new Date(item.start_date).getFullYear()}`
+                : "-"
+            } - ${
+              item?.end_date
+                ? `${new Date(item.end_date).getDate()} ${
+                    monthNames[new Date(item.end_date).getMonth()]
+                  } ${new Date(item.end_date).getFullYear()}`
+                : "-"
+            }`,
+            harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
+              "id-ID"
+            ),
             alokasi_liter: item.alokasi_backcharge,
-            nilai_backcharge: item.nilai_backcharge,
+            nilai_backcharge: Number(
+              item?.nilai_backcharge ?? 0
+            ).toLocaleString("id-ID"),
           })),
           total_plan: planAlokasi.reduce(
             (t, i) => t + Number(i.plan_liter || 0),
@@ -414,12 +479,13 @@ class TemplateBeritaAcaraController {
             .toLocaleString("id-ID")}`,
           tanggal: `${day} ${monthName} ${year}`,
           signer_1_name: findBeritaAcara?.signers[0]?.name,
+          signer_1_position: findBeritaAcara?.signers[0]?.position,
           signer_2_name: findBeritaAcara?.signers[1]?.name,
-          signer_2_dept: findBeritaAcara?.signers[1]?.dept,
+          signer_2_position: findBeritaAcara?.signers[1]?.position,
           signer_3_name: findBeritaAcara?.signers[2]?.name,
-          signer_3_dept: findBeritaAcara?.signers[2]?.dept,
+          signer_3_position: findBeritaAcara?.signers[2]?.position,
           signer_4_name: findBeritaAcara?.signers[3]?.name,
-          signer_4_dept: findBeritaAcara?.signers[3]?.dept,
+          signer_4_position: findBeritaAcara?.signers[3]?.position,
         };
       }
 

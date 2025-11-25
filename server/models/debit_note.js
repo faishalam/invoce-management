@@ -79,6 +79,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: "Total amount is required" },
         },
       },
+      dpp_nilai_lain_fk: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "DPP Nilai Lain is required" },
+          notEmpty: { msg: "DPP Nilai Lain is required" },
+        },
+      },
       harga_terbilang: {
         type: DataTypes.STRING,
         allowNull: false,

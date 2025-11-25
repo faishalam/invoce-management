@@ -11,6 +11,8 @@ const uraianItemSchema = z.object({
     .string()
     .nonempty({ message: "dpp_nilai_lain_of is required" }),
   jumlah_ppn_of: z.string().nonempty({ message: "jumlah_ppn_of is required" }),
+  start_date: z.string().optional().nullable(),
+  end_date: z.string().optional().nullable(),
 });
 
 export const fakturSchema = z.object({

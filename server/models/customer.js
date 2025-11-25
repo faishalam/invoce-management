@@ -32,6 +32,15 @@ module.exports = (sequelize, DataTypes) => {
       phone: {
         type: DataTypes.STRING,
       },
+      cut_off: {
+        type: DataTypes.STRING,
+      },
+      npwp: {
+        type: DataTypes.STRING,
+      },
+      reguler: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

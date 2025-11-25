@@ -103,13 +103,24 @@ const useDataManagementHooks = () => {
     reset: resetCustomer,
     control: controlCustomer,
     formState: { errors: errorsCustomer },
-  } = useForm<{ name: string; code: string; alamat: string; phone: string }>({
+  } = useForm<{
+    name: string;
+    code: string;
+    alamat: string;
+    phone: string;
+    cut_off: string;
+    reguler: string;
+    npwp: string;
+  }>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: "",
       code: "",
       alamat: "",
       phone: "",
+      cut_off: "",
+      reguler: "",
+      npwp: "",
     },
   });
 
@@ -779,7 +790,15 @@ const useDataManagementHooks = () => {
   }, [dataCustomer, filterCustomer]);
 
   const customerColumnDef = useMemo<
-    ColDef<{ name: string; code: string; alamat: string; phone: string }>[]
+    ColDef<{
+      name: string;
+      code: string;
+      alamat: string;
+      phone: string;
+      cut_off: string;
+      reguler: string;
+      npwp: string;
+    }>[]
   >(() => {
     return [
       {
@@ -810,6 +829,24 @@ const useDataManagementHooks = () => {
         flex: 1,
       },
       {
+        field: "cut_off",
+        headerName: "Cut Off",
+        width: 100,
+        flex: 1,
+      },
+      {
+        field: "reguler",
+        headerName: "Reguler",
+        width: 100,
+        flex: 1,
+      },
+      {
+        field: "npwp",
+        headerName: "NPWP",
+        width: 100,
+        flex: 1,
+      },
+      {
         field: "phone",
         headerName: "Phone",
         width: 100,
@@ -827,6 +864,9 @@ const useDataManagementHooks = () => {
             id: string;
             code: string;
             name: string;
+            cut_off: string;
+            reguler: string;
+            npwp: string;
           }>
         ) => {
           return (
@@ -841,6 +881,9 @@ const useDataManagementHooks = () => {
                         code: params.data?.code,
                         alamat: params.data?.alamat,
                         phone: params.data?.phone,
+                        npwp: params.data?.npwp,
+                        cut_off: params.data?.cut_off,
+                        reguler: params.data?.reguler,
                       });
                       setModeCustomer("edit");
                       setOpenModalCustomer(true);

@@ -21,6 +21,8 @@ export type TBeritaAcaraForm = {
   plan_alokasi_periode?: Array<{
     plan_alokasi_periode: string | null;
     total_kelebihan: string | null;
+    start_date: string | null;
+    end_date: string | null;
     harga_per_liter: string | null;
     plan_liter: string | null;
     actual_liter: string | null;
@@ -29,7 +31,7 @@ export type TBeritaAcaraForm = {
   }>;
   signers?: Array<{
     name: string | null;
-    dept: string | null;
+    position: string | null;
   }>;
 };
 
@@ -148,6 +150,14 @@ export const validateBeritaAcara = (
           itemErrors.plan_liter = "Plan Liter wajib diisi";
         }
 
+        if (!periode?.start_date) {
+          itemErrors.plan_liter = "Start Date wajib diisi";
+        }
+
+        if (!periode?.end_date) {
+          itemErrors.plan_liter = "End Date wajib diisi";
+        }
+
         if (!periode?.actual_liter) {
           itemErrors.actual_liter = "Actual Liter wajib diisi";
         }
@@ -186,8 +196,8 @@ export const validateBeritaAcara = (
           itemErrors.name = "Nama signer wajib diisi";
         }
 
-        if (!signer?.dept) {
-          itemErrors.dept = "Departemen signer wajib diisi";
+        if (!signer?.position) {
+          itemErrors.position = "Positi signer wajib diisi";
         }
 
         if (Object.keys(itemErrors).length > 0) {
@@ -219,5 +229,24 @@ export const revisedSchema = z.object({
   }),
 });
 
+export const cancelledSchema = z.object({
+  cancelled: z.object({
+    reason: z.string().min(1, { message: "Alasan wajib diisi" }).nullable(),
+  }),
+});
+
+export const deliverySchema = z.object({
+  delivery: z.object({
+    metode: z.string().min(1, { message: "Metode wajib diisi" }).nullable(),
+    nama_pengirim: z
+      .string()
+      .min(1, { message: "Pengirim wajib diisi" })
+      .nullable(),
+    resi: z.string().min(1, { message: "Metode wajib diisi" }).nullable(),
+  }),
+});
+
 export type TRevisedForm = z.infer<typeof revisedSchema>;
 export type TAcceptedForm = z.infer<typeof acceptedSchema>;
+export type TCancelledForm = z.infer<typeof cancelledSchema>;
+export type TDeliveryForm = z.infer<typeof deliverySchema>;

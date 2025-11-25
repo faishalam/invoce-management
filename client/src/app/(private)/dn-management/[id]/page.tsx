@@ -81,7 +81,7 @@ export default function Page() {
             <div className="flex items-center gap-2">
               <InfoIcon className="text-blue-500" />
               <h2 className="text-xl font-bold text-gray-900">
-                Informasi Customer
+                Informasi Berita Acara
               </h2>
             </div>
 
@@ -124,6 +124,20 @@ export default function Page() {
                   disabled
                   value={customer?.phone}
                   placeholder="Nomor Telepon"
+                />
+                <CInput
+                  label="Periode*"
+                  className="w-full"
+                  type="month"
+                  disabled
+                  value={
+                    dataBeritaAcaraById?.data?.periode
+                      ? `20${dataBeritaAcaraById?.data?.periode.slice(
+                          2,
+                          4
+                        )}-${dataBeritaAcaraById?.data?.periode.slice(0, 2)}`
+                      : ""
+                  }
                 />
               </div>
 

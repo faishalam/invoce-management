@@ -39,6 +39,12 @@ module.exports = {
       revised: {
         type: Sequelize.JSONB,
       },
+      cancelled: {
+        type: Sequelize.JSONB,
+      },
+      delivery: {
+        type: Sequelize.JSONB,
+      },
       signers: {
         type: Sequelize.JSONB,
         allowNull: false,

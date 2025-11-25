@@ -40,6 +40,9 @@ export default function InformationForm() {
                   value={selectedCustomer}
                   onChange={(_, newValue) => {
                     onChange(newValue ? newValue.id : "");
+                    setValue("cut_off", newValue?.cut_off);
+                    console.log(newValue);
+                    setValue("reguler", newValue?.reguler);
                   }}
                   disabled={mode === "view"}
                   getOptionKey={(option) => option.id}
@@ -96,7 +99,7 @@ export default function InformationForm() {
                 label="Cut Off*"
                 className="w-full"
                 type="date"
-                disabled={mode === "view"}
+                disabled={mode === "view" || tipeTransaksi === "trade"}
                 error={!!errors.cut_off}
               />
             )}
@@ -180,8 +183,6 @@ export default function InformationForm() {
             name="reguler"
             control={control}
             render={({ field: { onChange, value } }) => {
-              const isTrade = tipeTransaksi === "trade";
-              const isDisabled = !tipeTransaksi || isTrade;
               const options = [
                 { value: "reguler", label: "Reguler" },
                 { value: "nonreguler", label: "Non Reguler" },
@@ -197,7 +198,7 @@ export default function InformationForm() {
                   onChange={(_, newValue) =>
                     onChange(newValue ? newValue.value : "")
                   }
-                  disabled={isDisabled || mode === "view"}
+                  disabled
                   getOptionKey={(option) => option.value}
                   getOptionLabel={(option) => option.label}
                   placeholder="Pilih Reguler*"

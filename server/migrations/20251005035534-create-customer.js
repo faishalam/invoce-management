@@ -23,6 +23,15 @@ module.exports = {
       phone: {
         type: Sequelize.STRING,
       },
+      reguler: {
+        type: Sequelize.STRING,
+      },
+      cut_off: {
+        type: Sequelize.STRING,
+      },
+      npwp: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

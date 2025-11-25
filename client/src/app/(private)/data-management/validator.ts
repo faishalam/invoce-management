@@ -18,6 +18,9 @@ export const customerSchema = z.object({
   code: z.string().min(1, "Name wajib diisi"),
   alamat: z.string().min(1, "Alamat wajib diisi"),
   phone: z.string().min(1, "Phone wajib diisi"),
+  npwp: z.string().min(1, "NPWP wajib diisi"),
+  cut_off: z.string().min(1, "Cut Off wajib diisi"),
+  reguler: z.string().min(1, "Reguler wajib diisi"),
 });
 
 export const goodsSchema = z.object({

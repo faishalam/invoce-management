@@ -23,7 +23,7 @@ class TemplateBeritaAcaraController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number"],
+            attributes: ["customer_id", "number", "jenis_berita_acara"],
             include: [
               {
                 model: Berita_Acara_Uraian,
@@ -76,6 +76,21 @@ class TemplateBeritaAcaraController {
         return acc;
       }, {});
 
+      const monthNames = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+      ];
+
       const baseDataTemplate = {
         logo_url: "https://career.kppmining.com/logo.svg",
         number_debit_note: findDebitNote.debit_note_number,
@@ -98,7 +113,6 @@ class TemplateBeritaAcaraController {
           }
         ),
         harga_terbilang: findDebitNote.harga_terbilang,
-
         uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
           (item, i) => {
             let periodeFormatted = "-";
@@ -125,7 +139,23 @@ class TemplateBeritaAcaraController {
               volume: item.quantity,
               harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
               jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
-              periode: periodeFormatted,
+              periode: `${periodeFormatted} ${
+                findDebitNote?.berita_acara?.jenis_berita_acara === "fuel"
+                  ? ` - ${
+                      item?.start_date
+                        ? `${new Date(item.start_date).getDate()} ${
+                            monthNames[new Date(item.start_date).getMonth()]
+                          } ${new Date(item.start_date).getFullYear()}`
+                        : "-"
+                    } - ${
+                      item?.end_date
+                        ? `${new Date(item.end_date).getDate()} ${
+                            monthNames[new Date(item.end_date).getMonth()]
+                          } ${new Date(item.end_date).getFullYear()}`
+                        : "-"
+                    }`
+                  : ""
+              }`,
             };
           }
         ),
@@ -176,7 +206,7 @@ class TemplateBeritaAcaraController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number"],
+            attributes: ["customer_id", "number", "jenis_berita_acara"],
             include: [
               {
                 model: Berita_Acara_Uraian,
@@ -259,15 +289,52 @@ class TemplateBeritaAcaraController {
             year: "numeric",
           }
         ),
+        harga_terbilang: findDebitNote.harga_terbilang,
         uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
-          (item, i) => ({
-            no: i + 1,
-            nama_uraian: goodsMap[item.goods_id] || "-",
-            satuan: item.satuan,
-            volume: item.quantity,
-            harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
-            jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
-          })
+          (item, i) => {
+            let periodeFormatted = "-";
+            if (item.periode) {
+              const periodeStr = item.periode.toString().padStart(4, "0");
+              const month = parseInt(periodeStr.slice(0, 2), 10);
+              const year = parseInt("20" + periodeStr.slice(2), 10);
+              const monthName = new Date(year, month - 1).toLocaleString(
+                "id-ID",
+                {
+                  month: "long",
+                }
+              );
+              periodeFormatted =
+                monthName.charAt(0).toUpperCase() +
+                monthName.slice(1) +
+                ` ${year}`;
+            }
+
+            return {
+              no: i + 1,
+              nama_uraian: goodsMap[item.goods_id] || "-",
+              satuan: item.satuan,
+              volume: item.quantity,
+              harga: `Rp ${Number(item.harga).toLocaleString("id-ID")}`,
+              jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
+              periode: `${periodeFormatted} ${
+                findDebitNote?.berita_acara?.jenis_berita_acara === "fuel"
+                  ? ` - ${
+                      item?.start_date
+                        ? `${new Date(item.start_date).getDate()} ${
+                            monthNames[new Date(item.start_date).getMonth()]
+                          } ${new Date(item.start_date).getFullYear()}`
+                        : "-"
+                    } - ${
+                      item?.end_date
+                        ? `${new Date(item.end_date).getDate()} ${
+                            monthNames[new Date(item.end_date).getMonth()]
+                          } ${new Date(item.end_date).getFullYear()}`
+                        : "-"
+                    }`
+                  : ""
+              }`,
+            };
+          }
         ),
         sub_total: `Rp ${Number(findDebitNote.sub_total).toLocaleString(
           "id-ID"

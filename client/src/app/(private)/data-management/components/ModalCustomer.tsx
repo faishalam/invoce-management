@@ -2,7 +2,7 @@ import { Box, Button, IconButton, Modal } from "@mui/material";
 import useDataManagement from "../hooks";
 import CloseIcon from "@mui/icons-material/Close";
 import { Controller } from "react-hook-form";
-import { CInput } from "@/components/atoms";
+import { CAutoComplete, CInput } from "@/components/atoms";
 import { TextArea } from "@/components/atoms/Input-text-area";
 
 export default function ModalCustomer() {
@@ -82,6 +82,78 @@ export default function ModalCustomer() {
                   />
                 )}
               />
+              <Controller
+                name="cut_off"
+                control={controlCustomer}
+                render={({ field }) => (
+                  <CInput
+                    {...field}
+                    label="Cut Off*"
+                    className="w-full"
+                    type="date"
+                    placeholder="Masukkan phone"
+                    error={!!errorsCustomer.phone}
+                  />
+                )}
+              />
+
+              <Controller
+                name="reguler"
+                control={controlCustomer}
+                render={({ field: { onChange, value } }) => {
+                  return (
+                    <CAutoComplete
+                      label="Reguler*"
+                      options={[
+                        {
+                          value: "reguler",
+                          label: "Reguler",
+                        },
+                        {
+                          value: "nonreguler",
+                          label: "Non Reguler",
+                        },
+                      ]}
+                      className="w-full"
+                      value={
+                        [
+                          {
+                            value: "reguler",
+                            label: "Reguler",
+                          },
+                          {
+                            value: "nonreguler",
+                            label: "Non Reguler",
+                          },
+                        ].find((option) => option.value === value) || null
+                      }
+                      onChange={(_, newValue) =>
+                        onChange(newValue ? newValue.value : "")
+                      }
+                      getOptionKey={(option) => option.value}
+                      getOptionLabel={(option) => option.label}
+                      placeholder="Pilih Reguler*"
+                      error={!!errorsCustomer.reguler}
+                    />
+                  );
+                }}
+              />
+
+              <Controller
+                name="npwp"
+                control={controlCustomer}
+                render={({ field }) => (
+                  <CInput
+                    {...field}
+                    label="NPWP*"
+                    type="text"
+                    placeholder="00.000.000.0-000.000"
+                    error={!!errorsCustomer.npwp}
+                    value={field.value || ""}
+                  />
+                )}
+              />
+
               <Controller
                 name="alamat"
                 control={controlCustomer}
