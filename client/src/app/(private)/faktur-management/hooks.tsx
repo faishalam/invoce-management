@@ -37,6 +37,7 @@ import useFakturById from "@/service/faktur/useFakturById";
 import { Radio } from "@mui/material";
 import useAcceptedFaktur from "@/service/faktur/useAcceptedFaktur";
 import useTransactionFaktur from "@/service/faktur/useTransactionFaktur";
+import { TBeritaAcaraUraian } from "@/service/berita-acara/types";
 
 const useFakturManagement = () => {
   const pathName = usePathname();
@@ -796,8 +797,15 @@ const useFakturManagement = () => {
 
       setValue(
         "uraian",
-        //eslint-disable-next-line @typescript-eslint/no-explicit-any
-        dataDebitNoteById?.data?.berita_acara?.berita_acara_uraian as any[]
+        dataDebitNoteById?.data?.berita_acara?.berita_acara_uraian?.map(
+          (item: TBeritaAcaraUraian) => ({
+            ...item,
+            harga: item.harga ?? "",
+            dpp_nilai_lain_of: item.dpp_nilai_lain_of ?? "",
+            jumlah_ppn_of: item.jumlah_ppn_of ?? "",
+            total: item.total ?? "",
+          })
+        ) || []
       );
       setValue(
         "npwp",

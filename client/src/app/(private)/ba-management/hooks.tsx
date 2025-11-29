@@ -1006,6 +1006,9 @@ const useBeritaAcaraManagementHooks = () => {
           "Tanggal Upload DMS": "",
           Remarks: "",
           Status: ba?.status,
+          Resi: ba?.delivery?.resi,
+          "Nama Pengirim": ba?.delivery?.nama_pengirim,
+          "Metode Pengiriman": ba?.delivery?.metode,
         };
       });
       //eslint-disable-next-line @typescript-eslint/no-explicit-any

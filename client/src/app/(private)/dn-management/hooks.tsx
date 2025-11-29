@@ -10,7 +10,9 @@ import { useModalWarningInfo } from "@/components/atoms/modal-warning";
 import { ColDef, ICellRendererParams } from "@ag-grid-community/core";
 import Image from "next/image";
 import useGlobal from "@/app/(private)/hooks";
-import { TBeritaAcaraList } from "@/service/berita-acara/types";
+import {
+  TBeritaAcaraList,
+} from "@/service/berita-acara/types";
 import {
   FieldErrors,
   SubmitHandler,
@@ -459,7 +461,13 @@ const useDebitNoteHooks = () => {
     if (id && dataDebitNoteById?.data) {
       reset({
         ...dataDebitNoteById.data,
-        uraian: dataDebitNoteById.data.berita_acara?.berita_acara_uraian || [],
+        uraian: dataDebitNoteById.data.berita_acara?.berita_acara_uraian?.map(
+          (item) => ({
+            ...item,
+            total: item?.total ?? "",
+            harga: item?.harga ?? "",
+          })
+        ),
       });
     }
   }, [dataDebitNoteById, id, mode, reset]);
@@ -470,7 +478,6 @@ const useDebitNoteHooks = () => {
       setValue("uraian", dataBeritaAcaraById?.data?.berita_acara_uraian);
     }
   }, [mode, dataBeritaAcaraById]);
-
 
   return {
     selectedDnId,

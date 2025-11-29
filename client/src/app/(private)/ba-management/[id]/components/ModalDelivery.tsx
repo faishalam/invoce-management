@@ -81,7 +81,7 @@ export default function ModalDelivery() {
                 render={({ field }) => (
                   <CInput
                     {...field}
-                    label="Nama Pengiri*"
+                    label="Nama Pengirim*"
                     placeholder="Masukkan nama pengirim"
                     className="w-full"
                     disabled={dataBeritaAcaraById?.data?.delivery !== null}

@@ -5,12 +5,12 @@ const uraianItemSchema = z.object({
   goods_id: z.string().nonempty({ message: "uraian is required" }),
   satuan: z.string().nonempty({ message: "satuan is required" }),
   quantity: z.string().nonempty({ message: "volume is required" }),
-  harga: z.string().nonempty({ message: "harga is required" }),
-  total: z.string().nonempty({ message: "jumlah is required" }),
+  harga: z.string().min(1, { message: "harga is required" }),
+  total: z.string().min(1, { message: "total is required" }),
   dpp_nilai_lain_of: z
     .string()
-    .nonempty({ message: "dpp_nilai_lain_of is required" }),
-  jumlah_ppn_of: z.string().nonempty({ message: "jumlah_ppn_of is required" }),
+    .nonempty({ message: "DPP Nilai Lain is required" }),
+  jumlah_ppn_of: z.string().nonempty({ message: "Jumlah PPN is required" }),
   start_date: z.string().optional().nullable(),
   end_date: z.string().optional().nullable(),
 });
@@ -21,9 +21,9 @@ export const fakturSchema = z.object({
     .nonempty({ message: "berita_acara_id is required" }),
   debit_note_id: z.string().nonempty({ message: "debit_note_id is required" }),
   nomor_seri_faktur: z.string().optional(),
-  masa_pajak: z.string().nonempty({ message: "masa_pajak is required" }),
-  tahun: z.string().nonempty({ message: "tahun is required" }),
-  npwp: z.string().nonempty({ message: "npwp is required" }),
+  masa_pajak: z.string().nonempty({ message: "Masa Pajak is required" }),
+  tahun: z.string().nonempty({ message: "Tahun is required" }),
+  npwp: z.string().nonempty({ message: "NPWP is required" }),
   customer_id: z.string().nonempty({ message: "customer_id is required" }),
   sub_total: z.string().nonempty({ message: "sub_total is required" }),
   dpp_nilai_lain_fk: z

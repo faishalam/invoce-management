@@ -131,11 +131,21 @@ export default function Page() {
                   type="month"
                   disabled
                   value={
-                    dataBeritaAcaraById?.data?.periode
-                      ? `20${dataBeritaAcaraById?.data?.periode.slice(
+                    mode === "create"
+                      ? dataBeritaAcaraById?.data?.periode
+                        ? `20${dataBeritaAcaraById?.data?.periode.slice(
+                            2,
+                            4
+                          )}-${dataBeritaAcaraById?.data?.periode.slice(0, 2)}`
+                        : ""
+                      : dataDebitNoteById?.data?.berita_acara?.periode
+                      ? `20${dataDebitNoteById?.data?.berita_acara?.periode.slice(
                           2,
                           4
-                        )}-${dataBeritaAcaraById?.data?.periode.slice(0, 2)}`
+                        )}-${dataDebitNoteById?.data?.berita_acara?.periode.slice(
+                          0,
+                          2
+                        )}`
                       : ""
                   }
                 />
