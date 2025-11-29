@@ -435,15 +435,42 @@ class BeritaAcaraController {
         });
       }
 
-      const lastBA = await Berita_Acara.findOne({
+      const baType = tipe_transaksi === "trade" ? "BA-I" : "BA-II";
+
+      // Query last BA untuk trade
+      const lastBATrade = await Berita_Acara.findOne({
+        where: {
+          number: {
+            [Op.like]: "%BA-I%",
+          },
+        },
         order: [["createdAt", "DESC"]],
         transaction: t,
       });
 
-      const lastNumber = lastBA
-        ? parseInt(lastBA.number.split("/")[1]) || 0
-        : 0;
-      const number = generateNoBA(lastNumber, tipe_transaksi);
+      const lastBANonTrade = await Berita_Acara.findOne({
+        where: {
+          number: {
+            [Op.like]: "%BA-II%",
+          },
+        },
+        order: [["createdAt", "DESC"]],
+        transaction: t,
+      });
+
+      const lastNumberTrade = lastBATrade
+        ? parseInt(lastBATrade.number.split("/")[1]) || 0
+        : 33; // Start dari 33, sehingga +1 = 34
+
+      const lastNumberNonTrade = lastBANonTrade
+        ? parseInt(lastBANonTrade.number.split("/")[1]) || 0
+        : 45; // Start dari 45, sehingga +1 = 46
+
+      const number = generateNoBA(
+        lastNumberTrade,
+        lastNumberNonTrade,
+        tipe_transaksi
+      );
 
       const baseData = {
         ...body,
