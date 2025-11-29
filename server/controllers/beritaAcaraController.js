@@ -14,7 +14,7 @@ const {
 } = require("../models");
 const { generateNoBA } = require("../helpers/generateNoBA");
 const cron = require("node-cron");
-const { Op } = require("sequelize"); 
+const { Op } = require("sequelize");
 
 const {
   sendEmailCaseOne,

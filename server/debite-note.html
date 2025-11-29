@@ -213,7 +213,7 @@
         /* Items Header */
         .items-header {
             display: grid;
-            grid-template-columns: 7% 30% 13% 13% 17% 20%;
+            grid-template-columns: 7% 35% 13% 13% 17% 15%;
             border-bottom: 1px solid #000;
             font-weight: bold;
         }
@@ -242,7 +242,7 @@
 
         .items-row {
             display: grid;
-            grid-template-columns: 7% 30% 13% 13% 17% 20%;
+            grid-template-columns: 7% 35% 13% 13% 17% 15%;
         }
 
         .items-cell {
@@ -266,7 +266,7 @@
         .items-spacer {
             flex: 1;
             display: grid;
-            grid-template-columns: 7% 30% 13% 13% 17% 20%;
+            grid-template-columns: 7% 35% 13% 13% 17% 20%;
         }
 
         .items-spacer-cell {
@@ -375,7 +375,7 @@
 
         /* Footer */
         .footer {
-            margin-top: 40px;
+            margin-top: 35px;
             font-size: 8.5px;
             line-height: 1.4;
         }
@@ -448,7 +448,7 @@
                 <div class="info-right-full">
                     <div>Batas Akhir Pembayaran</div>
                     <div style="font-weight: bold; margin-top: 2px;">{{batas_akhir}}</div>
-                    <div style="margin-top: 2px;">BSAPID</div>
+                    <div style="margin-top: 2px;">{{customer_code}}</div>
                 </div>
             </div>
         </div>
@@ -470,14 +470,20 @@
                 <div class="items-rows">
                     <!-- Row 1 -->
                     {{#uraian}}
-                    <div class="items-row">
-                        <div class="items-cell">{{no}}</div>
-                        <div class="items-cell text-left">{{nama_uraian}}<br>{{periode}}</div>
-                        <div class="items-cell">{{satuan}}</div>
-                        <div class="items-cell text-right">{{volume}}</div>
-                        <div class="items-cell text-right">{{harga}}</div>
-                        <div class="items-cell text-right">{{jumlah}}</div>
+                   <div class="items-row">
+                    <div class="items-cell">{{no}}</div>
+                
+                    <div class="items-cell text-left">
+                        {{nama_uraian}}<br>
+                        <span style="font-size: 10px !important;">{{periode}}</span>
                     </div>
+                
+                    <div class="items-cell text-center">{{satuan}}</div>
+                    <div class="items-cell text-center">{{volume}}</div>
+                    <div class="items-cell text-center">{{harga}}</div>
+                    <div class="items-cell text-center">{{jumlah}}</div>
+                </div>
+
                     {{/uraian}}
 
                     <!-- Spacer (fills remaining space) -->

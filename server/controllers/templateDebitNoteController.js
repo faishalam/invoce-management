@@ -23,7 +23,12 @@ class TemplateBeritaAcaraController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number", "jenis_berita_acara"],
+            attributes: [
+              "customer_id",
+              "number",
+              "jenis_berita_acara",
+              "periode",
+            ],
             include: [
               {
                 model: Berita_Acara_Uraian,
@@ -95,6 +100,7 @@ class TemplateBeritaAcaraController {
         logo_url: "https://career.kppmining.com/logo.svg",
         number_debit_note: findDebitNote.debit_note_number,
         nama_customer: findCustomer.name,
+        customer_code: findCustomer?.code,
         alamat_customer: findCustomer.alamat,
         tanggal: new Date(findDebitNote?.createdAt).toLocaleDateString(
           "id-ID",
@@ -116,8 +122,10 @@ class TemplateBeritaAcaraController {
         uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
           (item, i) => {
             let periodeFormatted = "-";
-            if (item.periode) {
-              const periodeStr = item.periode.toString().padStart(4, "0");
+            if (findDebitNote.berita_acara?.periode) {
+              const periodeStr = findDebitNote.berita_acara?.periode
+                .toString()
+                .padStart(4, "0");
               const month = parseInt(periodeStr.slice(0, 2), 10);
               const year = parseInt("20" + periodeStr.slice(2), 10);
               const monthName = new Date(year, month - 1).toLocaleString(
@@ -141,17 +149,26 @@ class TemplateBeritaAcaraController {
               jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
               periode: `${periodeFormatted} ${
                 findDebitNote?.berita_acara?.jenis_berita_acara === "fuel"
-                  ? ` - ${
+                  ? ` : ${
                       item?.start_date
-                        ? `${new Date(item.start_date).getDate()} ${
-                            monthNames[new Date(item.start_date).getMonth()]
-                          } ${new Date(item.start_date).getFullYear()}`
+                        ? `${String(
+                            new Date(item.start_date).getDate()
+                          ).padStart(2, "0")}-${String(
+                            new Date(item.start_date).getMonth() + 1
+                          ).padStart(2, "0")}-${new Date(
+                            item.start_date
+                          ).getFullYear()}`
                         : "-"
                     } - ${
                       item?.end_date
-                        ? `${new Date(item.end_date).getDate()} ${
-                            monthNames[new Date(item.end_date).getMonth()]
-                          } ${new Date(item.end_date).getFullYear()}`
+                        ? `${String(new Date(item.end_date).getDate()).padStart(
+                            2,
+                            "0"
+                          )}-${String(
+                            new Date(item.end_date).getMonth() + 1
+                          ).padStart(2, "0")}-${new Date(
+                            item.end_date
+                          ).getFullYear()}`
                         : "-"
                     }`
                   : ""
@@ -206,7 +223,12 @@ class TemplateBeritaAcaraController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["customer_id", "number", "jenis_berita_acara"],
+            attributes: [
+              "customer_id",
+              "number",
+              "jenis_berita_acara",
+              "periode",
+            ],
             include: [
               {
                 model: Berita_Acara_Uraian,
@@ -262,6 +284,21 @@ class TemplateBeritaAcaraController {
         raw: true,
       });
 
+      const monthNames = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+      ];
+
       const goodsMap = goodsList.reduce((acc, item) => {
         acc[item.id] = item.name;
         return acc;
@@ -271,6 +308,7 @@ class TemplateBeritaAcaraController {
         logo_url: "https://career.kppmining.com/logo.svg",
         number_debit_note: findDebitNote.debit_note_number,
         nama_customer: findCustomer.name,
+        customer_code: findCustomer?.code,
         alamat_customer: findCustomer.alamat,
         harga_terbilang: findDebitNote.harga_terbilang,
         tanggal: new Date(findDebitNote?.createdAt).toLocaleDateString(
@@ -290,11 +328,13 @@ class TemplateBeritaAcaraController {
           }
         ),
         harga_terbilang: findDebitNote.harga_terbilang,
-        uraian: findDebitNote.berita_acara?.berita_acara_uraian.map(
+        uraian: findDebitNote.berita_acara?.berita_acara_uraian?.map(
           (item, i) => {
             let periodeFormatted = "-";
-            if (item.periode) {
-              const periodeStr = item.periode.toString().padStart(4, "0");
+            if (findDebitNote.berita_acara.periode) {
+              const periodeStr = findDebitNote.berita_acara.periode
+                .toString()
+                .padStart(4, "0");
               const month = parseInt(periodeStr.slice(0, 2), 10);
               const year = parseInt("20" + periodeStr.slice(2), 10);
               const monthName = new Date(year, month - 1).toLocaleString(
@@ -308,7 +348,6 @@ class TemplateBeritaAcaraController {
                 monthName.slice(1) +
                 ` ${year}`;
             }
-
             return {
               no: i + 1,
               nama_uraian: goodsMap[item.goods_id] || "-",
@@ -318,17 +357,26 @@ class TemplateBeritaAcaraController {
               jumlah: `Rp ${Number(item.total).toLocaleString("id-ID")}`,
               periode: `${periodeFormatted} ${
                 findDebitNote?.berita_acara?.jenis_berita_acara === "fuel"
-                  ? ` - ${
+                  ? ` : ${
                       item?.start_date
-                        ? `${new Date(item.start_date).getDate()} ${
-                            monthNames[new Date(item.start_date).getMonth()]
-                          } ${new Date(item.start_date).getFullYear()}`
+                        ? `${String(
+                            new Date(item.start_date).getDate()
+                          ).padStart(2, "0")}-${String(
+                            new Date(item.start_date).getMonth() + 1
+                          ).padStart(2, "0")}-${new Date(
+                            item.start_date
+                          ).getFullYear()}`
                         : "-"
                     } - ${
                       item?.end_date
-                        ? `${new Date(item.end_date).getDate()} ${
-                            monthNames[new Date(item.end_date).getMonth()]
-                          } ${new Date(item.end_date).getFullYear()}`
+                        ? `${String(new Date(item.end_date).getDate()).padStart(
+                            2,
+                            "0"
+                          )}-${String(
+                            new Date(item.end_date).getMonth() + 1
+                          ).padStart(2, "0")}-${new Date(
+                            item.end_date
+                          ).getFullYear()}`
                         : "-"
                     }`
                   : ""
@@ -340,8 +388,13 @@ class TemplateBeritaAcaraController {
           "id-ID"
         )}`,
         ppn: `Rp ${Number(
-          findDebitNote.sub_total * (findDebitNote.ppn / 100)
+          Math.round(
+            (11 / 12) *
+              findDebitNote.sub_total *
+              (parseFloat(findDebitNote.ppn || 0) / 100)
+          )
         ).toLocaleString("id-ID")}`,
+
         total: `Rp ${Number(findDebitNote.total).toLocaleString("id-ID")}`,
       };
 

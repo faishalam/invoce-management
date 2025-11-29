@@ -115,14 +115,30 @@ class TemplateBeritaAcaraController {
           jenis_pekerjaan: find_type_of_work?.name || "-",
           number: findBeritaAcara?.number,
           logo_url: "https://career.kppmining.com/logo.svg",
-          customer: find_customer?.name || "-",
+          customer: find_customer?.name
+            ? (() => {
+                const parts = find_customer.name.trim().split(" ");
+                const first = parts[0].toUpperCase();
+
+                const prefix =
+                  first === "PT" || first === "CV" ? `${first}.` : first;
+
+                const rest = parts
+                  .slice(1)
+                  .map(
+                    (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                  )
+                  .join(" ");
+
+                return `${prefix} ${rest}`.trim();
+              })()
+            : "-",
           pic: findBeritaAcara?.pic,
           items: generalItems?.map((item, index) => {
             const g = goodsMap[item.goods_id];
             return {
               no: index + 1,
               nama_barang: g?.name || "-",
-              kode: g?.code || "-",
               qty_drum: item.satuan,
               qty_liter: item.quantity,
             };
@@ -155,19 +171,45 @@ class TemplateBeritaAcaraController {
           logo_url: "https://career.kppmining.com/logo.svg",
           periode: periodeFormatted,
           number: findBeritaAcara?.number,
-          customer: find_customer?.name || "-",
+          customer: find_customer?.name
+            ? (() => {
+                const parts = find_customer.name.trim().split(" ");
+                const first = parts[0].toUpperCase();
+
+                const prefix =
+                  first === "PT" || first === "CV" ? `${first}.` : first;
+
+                const rest = parts
+                  .slice(1)
+                  .map(
+                    (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                  )
+                  .join(" ");
+
+                return `${prefix} ${rest}`.trim();
+              })()
+            : "-",
           plan_kontrak: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1} - ${
+            periode: `Periode ${index + 1} : ${
               item?.start_date
-                ? `${new Date(item.start_date).getDate()} ${
-                    monthNames[new Date(item.start_date).getMonth()]
-                  } ${new Date(item.start_date).getFullYear()}`
+                ? `${String(new Date(item.start_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(
+                    new Date(item.start_date).getMonth() + 1
+                  ).padStart(2, "0")}-${new Date(
+                    item.start_date
+                  ).getFullYear()}`
                 : "-"
             } - ${
               item?.end_date
-                ? `${new Date(item.end_date).getDate()} ${
-                    monthNames[new Date(item.end_date).getMonth()]
-                  } ${new Date(item.end_date).getFullYear()}`
+                ? `${String(new Date(item.end_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(new Date(item.end_date).getMonth() + 1).padStart(
+                    2,
+                    "0"
+                  )}-${new Date(item.end_date).getFullYear()}`
                 : "-"
             }`,
             harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
@@ -178,17 +220,26 @@ class TemplateBeritaAcaraController {
           })),
           total_kelebihan: planAlokasi?.[0]?.total_kelebihan || 0,
           alokasi_backcharge: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1} - ${
+            periode: `Periode ${index + 1} : ${
               item?.start_date
-                ? `${new Date(item.start_date).getDate()} ${
-                    monthNames[new Date(item.start_date).getMonth()]
-                  } ${new Date(item.start_date).getFullYear()}`
+                ? `${String(new Date(item.start_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(
+                    new Date(item.start_date).getMonth() + 1
+                  ).padStart(2, "0")}-${new Date(
+                    item.start_date
+                  ).getFullYear()}`
                 : "-"
             } - ${
               item?.end_date
-                ? `${new Date(item.end_date).getDate()} ${
-                    monthNames[new Date(item.end_date).getMonth()]
-                  } ${new Date(item.end_date).getFullYear()}`
+                ? `${String(new Date(item.end_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(new Date(item.end_date).getMonth() + 1).padStart(
+                    2,
+                    "0"
+                  )}-${new Date(item.end_date).getFullYear()}`
                 : "-"
             }`,
             harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
@@ -374,14 +425,30 @@ class TemplateBeritaAcaraController {
           jenis_pekerjaan: find_type_of_work?.name || "-",
           number: findBeritaAcara?.number,
           logo_url: "https://career.kppmining.com/logo.svg",
-          customer: find_customer?.name || "-",
+          customer: find_customer?.name
+            ? (() => {
+                const parts = find_customer.name.trim().split(" ");
+                const first = parts[0].toUpperCase();
+
+                const prefix =
+                  first === "PT" || first === "CV" ? `${first}.` : first;
+
+                const rest = parts
+                  .slice(1)
+                  .map(
+                    (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                  )
+                  .join(" ");
+
+                return `${prefix} ${rest}`.trim();
+              })()
+            : "-",
           pic: findBeritaAcara?.pic,
           items: generalItems?.map((item, index) => {
             const g = goodsMap[item.goods_id];
             return {
               no: index + 1,
               nama_barang: g?.name || "-",
-              kode: g?.code || "-",
               qty_drum: item.satuan,
               qty_liter: item.quantity,
             };
@@ -415,19 +482,45 @@ class TemplateBeritaAcaraController {
           logo_url: "https://career.kppmining.com/logo.svg",
           periode: periodeFormatted,
           number: findBeritaAcara?.number,
-          customer: find_customer?.name || "-",
+          customer: find_customer?.name
+            ? (() => {
+                const parts = find_customer.name.trim().split(" ");
+                const first = parts[0].toUpperCase();
+
+                const prefix =
+                  first === "PT" || first === "CV" ? `${first}.` : first;
+
+                const rest = parts
+                  .slice(1)
+                  .map(
+                    (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                  )
+                  .join(" ");
+
+                return `${prefix} ${rest}`.trim();
+              })()
+            : "-",
           plan_kontrak: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1} - ${
+            periode: `Periode ${index + 1} : ${
               item?.start_date
-                ? `${new Date(item.start_date).getDate()} ${
-                    monthNames[new Date(item.start_date).getMonth()]
-                  } ${new Date(item.start_date).getFullYear()}`
+                ? `${String(new Date(item.start_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(
+                    new Date(item.start_date).getMonth() + 1
+                  ).padStart(2, "0")}-${new Date(
+                    item.start_date
+                  ).getFullYear()}`
                 : "-"
             } - ${
               item?.end_date
-                ? `${new Date(item.end_date).getDate()} ${
-                    monthNames[new Date(item.end_date).getMonth()]
-                  } ${new Date(item.end_date).getFullYear()}`
+                ? `${String(new Date(item.end_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(new Date(item.end_date).getMonth() + 1).padStart(
+                    2,
+                    "0"
+                  )}-${new Date(item.end_date).getFullYear()}`
                 : "-"
             }`,
             harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(
@@ -438,17 +531,26 @@ class TemplateBeritaAcaraController {
           })),
           total_kelebihan: planAlokasi?.[0]?.total_kelebihan || 0,
           alokasi_backcharge: planAlokasi.map((item, index) => ({
-            periode: `Periode ${index + 1} - ${
+            periode: `Periode ${index + 1} : ${
               item?.start_date
-                ? `${new Date(item.start_date).getDate()} ${
-                    monthNames[new Date(item.start_date).getMonth()]
-                  } ${new Date(item.start_date).getFullYear()}`
+                ? `${String(new Date(item.start_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(
+                    new Date(item.start_date).getMonth() + 1
+                  ).padStart(2, "0")}-${new Date(
+                    item.start_date
+                  ).getFullYear()}`
                 : "-"
             } - ${
               item?.end_date
-                ? `${new Date(item.end_date).getDate()} ${
-                    monthNames[new Date(item.end_date).getMonth()]
-                  } ${new Date(item.end_date).getFullYear()}`
+                ? `${String(new Date(item.end_date).getDate()).padStart(
+                    2,
+                    "0"
+                  )}-${String(new Date(item.end_date).getMonth() + 1).padStart(
+                    2,
+                    "0"
+                  )}-${new Date(item.end_date).getFullYear()}`
                 : "-"
             }`,
             harga_per_liter: Number(item?.harga_per_liter ?? 0).toLocaleString(

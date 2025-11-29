@@ -156,7 +156,13 @@ class DebitNoteController {
           {
             model: Berita_Acara,
             as: "berita_acara",
-            attributes: ["number", "customer_id", "id", "jenis_berita_acara"],
+            attributes: [
+              "number",
+              "customer_id",
+              "id",
+              "jenis_berita_acara",
+              "periode",
+            ],
             include: [
               {
                 model: Berita_Acara_Uraian,
