@@ -185,6 +185,8 @@ cron.schedule(
       if (findBeritaAcara.length > 0) {
         const cc = getCCByDepartment(findUserPlant.department?.name);
         await sendEmailCaseTwo(findUserPlant.email, findBeritaAcara, cc);
+      } else {
+        console.log("📨 Tidak ada berita acara.");
       }
     } catch (err) {
       console.error("❌ Error cron reminder:", err);
@@ -193,7 +195,7 @@ cron.schedule(
   { timezone: "Asia/Jakarta" }
 );
 
-//case 3 (done)
+// //case 3 (done)
 cron.schedule(
   "0 9 * * *", // setiap hari jam 09:00
   async () => {
@@ -246,7 +248,7 @@ cron.schedule(
   { timezone: "Asia/Jakarta" }
 );
 
-//case 4
+// //case 4
 cron.schedule(
   "0 9 * * *",
   async () => {
@@ -266,15 +268,9 @@ cron.schedule(
           {
             model: User,
             attributes: ["email"],
-            include: [
-              {
-                model: Department,
-                as: "department",
-              },
-            ],
+            include: [{ model: Department, as: "department" }],
           },
         ],
-        raw: true,
       });
 
       if (waitingBA.length === 0) return;
@@ -293,7 +289,7 @@ cron.schedule(
   { timezone: "Asia/Jakarta" }
 );
 
-//case 5
+// //case 5
 cron.schedule(
   "0 9 * * *",
   async () => {
@@ -325,7 +321,7 @@ cron.schedule(
   { timezone: "Asia/Jakarta" }
 );
 
-//case 6
+// //case 6
 cron.schedule(
   "0 9 * * *",
   async () => {

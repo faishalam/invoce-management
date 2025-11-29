@@ -171,6 +171,10 @@ async function sendEmailCaseTwo(email, findBeritaAcara, cc = []) {
       </html>
     `,
   });
+
+  console.log(
+    '📨 Email "Kirim BA Full Sign ke Department Finance & Tax" dikirim.'
+  );
 }
 
 async function sendEmailCaseThree(emailList, cc) {
@@ -300,6 +304,7 @@ async function sendEmailCaseFour(email, beritaAcara, cc = []) {
       </html>
     `,
   });
+  console.log("📨 Reminder BA Waiting Signed dikirim.");
 }
 
 async function sendEmailCaseFive(email, customers, cc = []) {
