@@ -12,7 +12,11 @@ const {
   Satuan,
   Customer,
 } = require("../models");
-const { generateNoBA } = require("../helpers/generateNoBA");
+const {
+  generateNoBA,
+  getLastNumberNonTrade,
+  getLastNumberTrade,
+} = require("../helpers/generateNoBA");
 const cron = require("node-cron");
 const { Op } = require("sequelize");
 
@@ -435,36 +439,8 @@ class BeritaAcaraController {
         });
       }
 
-      const baType = tipe_transaksi === "trade" ? "BA-I" : "BA-II";
-
-      // Query last BA untuk trade
-      const lastBATrade = await Berita_Acara.findOne({
-        where: {
-          number: {
-            [Op.like]: "%BA-I%",
-          },
-        },
-        order: [["createdAt", "DESC"]],
-        transaction: t,
-      });
-
-      const lastBANonTrade = await Berita_Acara.findOne({
-        where: {
-          number: {
-            [Op.like]: "%BA-II%",
-          },
-        },
-        order: [["createdAt", "DESC"]],
-        transaction: t,
-      });
-
-      const lastNumberTrade = lastBATrade
-        ? parseInt(lastBATrade.number.split("/")[1]) || 0
-        : 33; // Start dari 33, sehingga +1 = 34
-
-      const lastNumberNonTrade = lastBANonTrade
-        ? parseInt(lastBANonTrade.number.split("/")[1]) || 0
-        : 45; // Start dari 45, sehingga +1 = 46
+      const lastNumberTrade = await getLastNumberTrade();
+      const lastNumberNonTrade = await getLastNumberNonTrade();
 
       const number = generateNoBA(
         lastNumberTrade,

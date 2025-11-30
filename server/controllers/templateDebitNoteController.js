@@ -181,7 +181,11 @@ class TemplateBeritaAcaraController {
           "id-ID"
         )}`,
         ppn: `Rp ${Number(
-          findDebitNote.sub_total * (findDebitNote.ppn / 100)
+          Math.round(
+            (11 / 12) *
+              findDebitNote.sub_total *
+              (parseFloat(findDebitNote.ppn || 0) / 100)
+          )
         ).toLocaleString("id-ID")}`,
         total: `Rp ${Number(findDebitNote.total).toLocaleString("id-ID")}`,
       };
