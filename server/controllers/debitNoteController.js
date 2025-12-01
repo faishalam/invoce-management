@@ -14,7 +14,7 @@ class DebitNoteController {
     try {
       const yearSuffix = new Date().getFullYear().toString().slice(-2);
       const count = await Debit_Note.count();
-      const nextNumber = String(count + 1).padStart(3, "0");
+      const nextNumber = String(count + 23).padStart(3, "0");
       const debitNoteNumber = `${yearSuffix}D${nextNumber}YY`;
 
       const {
