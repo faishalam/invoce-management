@@ -430,6 +430,7 @@ class BeritaAcaraController {
         jenis_berita_acara,
         plan_alokasi_periode,
         berita_acara_uraian,
+        periode,
       } = body;
 
       if (!tipe_transaksi || !jenis_berita_acara) {
@@ -445,7 +446,8 @@ class BeritaAcaraController {
       const number = generateNoBA(
         lastNumberTrade,
         lastNumberNonTrade,
-        tipe_transaksi
+        tipe_transaksi,
+        periode
       );
 
       const baseData = {
