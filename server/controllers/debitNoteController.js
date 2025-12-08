@@ -50,7 +50,7 @@ class DebitNoteController {
         ],
       });
 
-      if (findBeritaAcara?.status !== "Signed") {
+      if (findBeritaAcara?.status.toLowerCase() !== "signed") {
         return res.status(400).json({
           status: "error",
           message: "Berita Acara belum disetujui",

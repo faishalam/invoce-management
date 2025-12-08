@@ -97,9 +97,12 @@ cron.schedule(
 
       //const id plant
       const findPlantDept = await Department.findOne({
-        where: { name: "PLANT" },
+        where: {
+          name: {
+            [Op.iLike]: "plant",
+          },
+        },
       });
-
       // find user plant
       const findUserPlant = await User.findOne({
         where: { department_id: findPlantDept?.id },
@@ -115,7 +118,9 @@ cron.schedule(
 
       // customer reguler
       const regulerCustomers = await Customer.findAll({
-        where: { reguler: "reguler" },
+        where: {
+          reguler: { [Op.iLike]: "reguler" },
+        },
       });
 
       const regulerIds = regulerCustomers.map((c) => c.id);
@@ -138,7 +143,9 @@ cron.schedule(
       }
 
       const findCustomerReguler = await Customer.findAll({
-        where: { reguler: "reguler" },
+        where: {
+          reguler: { [Op.iLike]: "reguler" },
+        },
       });
 
       // kirim reminder
@@ -159,9 +166,12 @@ cron.schedule(
   async () => {
     try {
       const findPlantDept = await Department.findOne({
-        where: { name: "PLANT" },
+        where: {
+          name: {
+            [Op.iLike]: "plant",
+          },
+        },
       });
-
       const findUserPlant = await User.findOne({
         where: { department_id: findPlantDept?.id },
         include: [
@@ -173,9 +183,10 @@ cron.schedule(
       });
 
       const regulerCustomers = await Customer.findAll({
-        where: { reguler: "reguler" },
+        where: {
+          reguler: { [Op.iLike]: "reguler" },
+        },
       });
-
       const regulerIds = regulerCustomers.map((c) => c.id);
 
       const findBeritaAcara = await Berita_Acara.findAll({
@@ -258,9 +269,10 @@ cron.schedule(
   async () => {
     try {
       const regulerCustomers = await Customer.findAll({
-        where: { reguler: "reguler" },
+        where: {
+          reguler: { [Op.iLike]: "reguler" },
+        },
       });
-
       const regulerIds = regulerCustomers.map((c) => c.id);
 
       const waitingBA = await Berita_Acara.findAll({
@@ -496,13 +508,16 @@ class BeritaAcaraController {
           await Berita_Acara_Periode.bulkCreate(periodeList, {
             transaction: t,
           });
-
           const findGoods = await Goods.findOne({
-            where: { name: "Backcharge Fuel" },
+            where: {
+              name: { [Op.iLike]: "backcharge fuel" },
+            },
             transaction: t,
           });
           const findSatuan = await Satuan.findOne({
-            where: { name: "LITER" },
+            where: {
+              name: { [Op.iLike]: "liter" },
+            },
             transaction: t,
           });
 
@@ -681,7 +696,9 @@ class BeritaAcaraController {
       }
 
       const beritaAcara = await Berita_Acara.findAll({
-        where: { status: "waiting" },
+        where: {
+          status: { [Op.iLike]: "waiting" },
+        },
       });
 
       return res.status(200).json({
@@ -777,7 +794,7 @@ class BeritaAcaraController {
         { ...baseData, tipe_transaksi, jenis_berita_acara },
         { transaction: t }
       );
-      if (nill_ditagihkan === "nill") {
+      if (nill_ditagihkan.toLowerCase() === "nill") {
         const findDebitNote = await Debit_Note.findOne({
           where: { berita_acara_id: id },
           transaction: t,
@@ -796,6 +813,23 @@ class BeritaAcaraController {
           { status: "Waiting Signed" },
           { transaction: t }
         );
+      }
+      if (nill_ditagihkan.toLowerCase() === "ditagihkan") {
+        const findDebitNote = await Debit_Note.findOne({
+          where: { berita_acara_id: id },
+          transaction: t,
+        });
+        if (findDebitNote) {
+          await findDebitNote.destroy({ transaction: t });
+        }
+        const findFaktur = await Faktur.findOne({
+          where: { berita_acara_id: id },
+          transaction: t,
+        });
+        if (findFaktur) {
+          await findFaktur.destroy({ transaction: t });
+        }
+        await findBeritaAcara.update({ status: "Signed" }, { transaction: t });
       }
 
       // 🔹 Helper untuk upsert + delete missing
@@ -864,12 +898,16 @@ class BeritaAcaraController {
         );
 
         const findGoods = await Goods.findOne({
-          where: { name: "Backcharge Fuel" },
+          where: {
+            name: { [Op.iLike]: "backcharge fuel" },
+          },
           transaction: t,
         });
 
         const findSatuan = await Satuan.findOne({
-          where: { name: "LITER" },
+          where: {
+            name: { [Op.iLike]: "liter" },
+          },
           transaction: t,
         });
 

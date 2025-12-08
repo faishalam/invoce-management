@@ -26,6 +26,14 @@ const useUpdateBeritaAcara = (props?: TUseUpdateBeritaAcaraProps) => {
       if (status !== 200) return;
 
       if (updateBeritaAcaraRes?.data?.data?.tipe_transaksi === "trade") {
+        const updateStatusRevised = await HeroServices.patch<
+          TResponseType<TBeritaAcaraList>
+        >(`/berita-acara-status/${id}`, {
+          revised: null,
+        });
+
+        if (updateStatusRevised.status !== 200) return;
+
         return updateBeritaAcaraRes?.data?.data;
       }
 

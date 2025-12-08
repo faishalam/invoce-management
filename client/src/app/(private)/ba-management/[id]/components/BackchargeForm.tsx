@@ -436,8 +436,8 @@ export default function BackchargeForm() {
                     value={value}
                     disabled={mode === "view"}
                     onChange={(e) => {
-                      const numeric = e.target.value.replace(/[^\d]/g, ""); // hanya angka
-                      onChange(numeric); // simpan sebagai string angka murni
+                      const numeric = e.target.value.replace(/[^\d]/g, "");
+                      onChange(numeric === "" ? "0" : numeric);
                     }}
                     placeholder="0"
                     error={
