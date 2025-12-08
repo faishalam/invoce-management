@@ -792,7 +792,10 @@ class BeritaAcaraController {
         if (findFaktur) {
           await findFaktur.destroy({ transaction: t });
         }
-        await findBeritaAcara.update({ status: "Signed" }, { transaction: t });
+        await findBeritaAcara.update(
+          { status: "Waiting Signed" },
+          { transaction: t }
+        );
       }
 
       // 🔹 Helper untuk upsert + delete missing
