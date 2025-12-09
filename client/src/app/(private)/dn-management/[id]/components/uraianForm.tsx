@@ -50,7 +50,7 @@ export default function UraianSection() {
 
   const ppnPersen = parseFloat(ppn) || 0;
   const dppNilaiLain = (11 / 12) * subTotal;
-  const nilaiPpn = Math.round(dppNilaiLain * (ppnPersen / 100));
+  const nilaiPpn = Math.floor(dppNilaiLain * (ppnPersen / 100));
   const total = subTotal + nilaiPpn;
 
   useEffect(() => {
@@ -303,7 +303,9 @@ export default function UraianSection() {
           </div>
 
           <div className="flex justify-between items-center pt-2">
-            <span className="text-gray-900 font-bold text-lg">Total (Sub Total + Nilai PPN):</span>
+            <span className="text-gray-900 font-bold text-lg">
+              Total (Sub Total + Nilai PPN):
+            </span>
             <span className="text-2xl font-bold text-green-600">
               Rp {total.toLocaleString("id-ID")}
             </span>
