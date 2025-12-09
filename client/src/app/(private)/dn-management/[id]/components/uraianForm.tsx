@@ -59,7 +59,6 @@ export default function UraianSection() {
     setValue("dpp_nilai_lain_fk", dppNilaiLain.toString());
   }, [subTotal, total, setValue]);
 
-  console.log(dataDebitNoteById?.data?.berita_acara);
   return (
     <div className="w-full bg-white rounded-md shadow flex flex-col p-6 gap-4">
       {/* Header */}
