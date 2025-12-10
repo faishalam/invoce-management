@@ -48,9 +48,9 @@ export default function UraianSection() {
     }, 0);
   }, [uraian]);
 
-  const ppnPersen = parseFloat(ppn) || 0;
-  const dppNilaiLain = (11 / 12) * subTotal;
-  const nilaiPpn = Math.floor(dppNilaiLain * (ppnPersen / 100));
+  const ppnPersen = Number(ppn) || 0;
+  const dppNilaiLain = Math.round((11 / 12) * subTotal);
+  const nilaiPpn = Math.round(dppNilaiLain * (ppnPersen / 100));
   const total = subTotal + nilaiPpn;
 
   useEffect(() => {
