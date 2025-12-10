@@ -800,10 +800,10 @@ const useFakturManagement = () => {
         dataDebitNoteById?.data?.berita_acara?.berita_acara_uraian?.map(
           (item: TBeritaAcaraUraian) => ({
             ...item,
-            harga: item.harga ?? "",
-            dpp_nilai_lain_of: item.dpp_nilai_lain_of ?? "",
-            jumlah_ppn_of: item.jumlah_ppn_of ?? "",
-            total: item.total ?? "",
+            harga: item.harga ?? "0",
+            dpp_nilai_lain_of: item.dpp_nilai_lain_of ?? "0",
+            jumlah_ppn_of: item.jumlah_ppn_of ?? "0",
+            total: item.total ?? "0",
           })
         ) || []
       );
