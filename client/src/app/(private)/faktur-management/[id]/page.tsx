@@ -335,7 +335,18 @@ export default function Page() {
                   label="Jumlah PPN*"
                   type="text"
                   icon="Rp"
-                  value={formatCurrency(value)}
+                  value={
+                    value
+                      ? new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 0,
+                        })
+                          .format(Number(value))
+                          .replace("Rp", "")
+                          .trim()
+                      : ""
+                  }
                   placeholder="0"
                   disabled
                   error={!!errors.jumlah_ppn_fk}
