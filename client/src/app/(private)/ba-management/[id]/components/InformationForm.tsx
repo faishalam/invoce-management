@@ -75,7 +75,7 @@ export default function InformationForm() {
                 className="w-full"
                 error={!!errors.periode}
                 type="month"
-                disabled={mode === "view"}
+                disabled={mode === "view" || mode === "edit"}
                 value={
                   value ? `20${value.slice(2, 4)}-${value.slice(0, 2)}` : ""
                 }

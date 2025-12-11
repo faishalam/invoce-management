@@ -70,6 +70,8 @@ const getCCByDepartment = (departmentName) => {
         "andi.naufal@kppmining.com",
         "ari.pratama@kppmining.com",
       ];
+    case "FAT":
+      return ["cholis.tanthowi@kppmining.com", "andi.naufal@kppmining.com"];
     default:
       return [];
   }
@@ -829,7 +831,10 @@ class BeritaAcaraController {
         if (findFaktur) {
           await findFaktur.destroy({ transaction: t });
         }
-        await findBeritaAcara.update({ status: "Signed" }, { transaction: t });
+        await findBeritaAcara.update(
+          { status: "Waiting Signed" },
+          { transaction: t }
+        );
       }
 
       // 🔹 Helper untuk upsert + delete missing
