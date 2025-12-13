@@ -164,44 +164,33 @@ cron.schedule(
 
 //case2
 cron.schedule(
-  "0 9 * * *",
+  "* 9 * * *",
   async () => {
     try {
-      const findPlantDept = await Department.findOne({
+      const findBeritaAcara = await Berita_Acara.findAll({
         where: {
-          name: {
-            [Op.iLike]: "plant",
-          },
+          status: "Waiting Signed",
         },
-      });
-      const findUserPlant = await User.findOne({
-        where: { department_id: findPlantDept?.id },
         include: [
           {
-            model: Department,
-            as: "department",
+            model: User,
+            attributes: ["id", "email", "name"],
+            include: [{ model: Department, as: "department" }],
           },
         ],
       });
 
-      const regulerCustomers = await Customer.findAll({
-        where: {
-          reguler: { [Op.iLike]: "reguler" },
-        },
-      });
-      const regulerIds = regulerCustomers.map((c) => c.id);
-
-      const findBeritaAcara = await Berita_Acara.findAll({
-        where: {
-          status: "Waiting Signed",
-          user_id: findUserPlant?.id,
-          customer_id: { [Op.in]: regulerIds },
-        },
-      });
-
       if (findBeritaAcara.length > 0) {
-        const cc = getCCByDepartment(findUserPlant.department?.name);
-        await sendEmailCaseTwo(findUserPlant.email, findBeritaAcara, cc);
+        for (const ba of findBeritaAcara) {
+          if (!ba.User?.email) continue;
+
+          const cc = getCCByDepartment(ba.User.department?.name);
+          await sendEmailCaseTwo(
+            ba.User.email,
+            [ba], // kirim BA terkait user tsb
+            cc
+          );
+        }
       } else {
         console.log("📨 Tidak ada berita acara.");
       }
@@ -266,46 +255,46 @@ cron.schedule(
 );
 
 // //case 4
-cron.schedule(
-  "0 9 * * *",
-  async () => {
-    try {
-      const regulerCustomers = await Customer.findAll({
-        where: {
-          reguler: { [Op.iLike]: "reguler" },
-        },
-      });
-      const regulerIds = regulerCustomers.map((c) => c.id);
+// cron.schedule(
+//   "0 9 * * *",
+//   async () => {
+//     try {
+//       const regulerCustomers = await Customer.findAll({
+//         where: {
+//           reguler: { [Op.iLike]: "reguler" },
+//         },
+//       });
+//       const regulerIds = regulerCustomers.map((c) => c.id);
 
-      const waitingBA = await Berita_Acara.findAll({
-        where: {
-          status: "Waiting Signed",
-          customer_id: { [Op.in]: regulerIds },
-        },
-        include: [
-          {
-            model: User,
-            attributes: ["email"],
-            include: [{ model: Department, as: "department" }],
-          },
-        ],
-      });
+//       const waitingBA = await Berita_Acara.findAll({
+//         where: {
+//           status: "Waiting Signed",
+//           customer_id: { [Op.in]: regulerIds },
+//         },
+//         include: [
+//           {
+//             model: User,
+//             attributes: ["email"],
+//             include: [{ model: Department, as: "department" }],
+//           },
+//         ],
+//       });
 
-      if (waitingBA.length === 0) return;
+//       if (waitingBA.length === 0) return;
 
-      // kirim reminder ke user pemilik BA
-      for (const ba of waitingBA) {
-        const cc = getCCByDepartment(ba.User?.department?.name);
-        await sendEmailCaseFour(ba.User?.email, ba?.number, cc);
-      }
+//       // kirim reminder ke user pemilik BA
+//       for (const ba of waitingBA) {
+//         const cc = getCCByDepartment(ba.User?.department?.name);
+//         await sendEmailCaseFour(ba.User?.email, ba?.number, cc);
+//       }
 
-      console.log("📨 Reminder BA Waiting Signed dikirim.");
-    } catch (err) {
-      console.error("❌ Error cron reminder:", err);
-    }
-  },
-  { timezone: "Asia/Jakarta" }
-);
+//       console.log("📨 Reminder BA Waiting Signed dikirim.");
+//     } catch (err) {
+//       console.error("❌ Error cron reminder:", err);
+//     }
+//   },
+//   { timezone: "Asia/Jakarta" }
+// );
 
 // //case 5
 cron.schedule(
@@ -341,14 +330,13 @@ cron.schedule(
 
 // //case 6
 cron.schedule(
-  "0 9 * * *",
+  "* * * * *",
   async () => {
     try {
       const waitingBA = await Berita_Acara.findAll({
         where: {
           status: "Signed",
         },
-        raw: true,
       });
 
       if (waitingBA.length === 0) return;
@@ -367,9 +355,8 @@ cron.schedule(
         ],
       });
 
-      const cc = getCCByDepartment(findUserFinance.department?.name);
-
-      await sendEmailCaseSix(findUserFinance?.email, waitingBA, cc);
+      const cc = getCCByDepartment("FAT");
+      await sendEmailCaseSix("ari.pratama@kpppmining.com", waitingBA, cc);
     } catch (err) {
       console.error("❌ Error cron reminder:", err);
     }
