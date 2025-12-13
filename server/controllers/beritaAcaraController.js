@@ -330,7 +330,7 @@ cron.schedule(
 
 // //case 6
 cron.schedule(
-  "* * * * *",
+  "* 9 * * *",
   async () => {
     try {
       const waitingBA = await Berita_Acara.findAll({
