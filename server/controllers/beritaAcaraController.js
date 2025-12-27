@@ -71,7 +71,11 @@ const getCCByDepartment = (departmentName) => {
         "ari.pratama@kppmining.com",
       ];
     case "FAT":
-      return ["cholis.tanthowi@kppmining.com", "andi.naufal@kppmining.com"];
+      return [
+        "cholis.tanthowi@kppmining.com",
+        "andi.naufal@kppmining.com",
+        "fredy.wijaya@kppmining.com",
+      ];
     default:
       return [];
   }
